@@ -1,0 +1,19 @@
+{
+	"folders":
+	[
+		{
+			"path": "/Users/austin/devProjects/c/hcal/object_factory"
+		}
+	],
+    "build_systems":
+    [
+        {
+            "name": "gyp_tst",
+            "working_dir": "$project_path",
+            "cmd":
+            [
+                "./build.sh"
+            ]                  
+        }
+    ]
+}

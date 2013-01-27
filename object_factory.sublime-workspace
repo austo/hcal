@@ -1,0 +1,1244 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"month",
+				"monthStr"
+			],
+			[
+				"mon",
+				"monthStr"
+			],
+			[
+				"Ev",
+				"EventWriter"
+			],
+			[
+				"title",
+				"titleStream"
+			],
+			[
+				"pa",
+				"page_title"
+			],
+			[
+				"ro",
+				"rowHeight"
+			],
+			[
+				"row",
+				"rowHeight"
+			],
+			[
+				"fir",
+				"firstWeekDays"
+			],
+			[
+				"dat",
+				"dateNumChar"
+			],
+			[
+				"y",
+				"y_dayOffset"
+			],
+			[
+				"da",
+				"dayNum"
+			],
+			[
+				"date",
+				"dateNum"
+			],
+			[
+				"string",
+				"stringstream"
+			],
+			[
+				"dateN",
+				"dateNumChar"
+			],
+			[
+				"day",
+				"dayNum"
+			],
+			[
+				"HP",
+				"HPDF_Page"
+			],
+			[
+				"time_",
+				"time_of_day"
+			],
+			[
+				"td",
+				"tdNumVal"
+			],
+			[
+				"t",
+				"testDateNum"
+			],
+			[
+				"re",
+				"result"
+			],
+			[
+				"ha",
+				"hash"
+			],
+			[
+				"in",
+				"index"
+			],
+			[
+				"ele",
+				"elemAddr"
+			],
+			[
+				"buck",
+				"buckets"
+			],
+			[
+				"k",
+				"kNotFound"
+			],
+			[
+				"con",
+				"comparefn"
+			],
+			[
+				"elem",
+				"elemAddr"
+			],
+			[
+				"bu",
+				"buckets"
+			],
+			[
+				"bucke",
+				"bucketAddr"
+			],
+			[
+				"b",
+				"buckets"
+			],
+			[
+				"HashSetC",
+				"HashSetCompareFunction"
+			],
+			[
+				"ques",
+				"questionWords"
+			],
+			[
+				"quest",
+				"questionWords"
+			],
+			[
+				"las",
+				"lastAddr"
+			],
+			[
+				"Prin",
+				"PrintString"
+			],
+			[
+				"qu",
+				"questionWord"
+			],
+			[
+				"sorted",
+				"sortedVector"
+			],
+			[
+				"vector",
+				"VectorNth"
+			],
+			[
+				"n",
+				"nmemb"
+			],
+			[
+				"move",
+				"moveBytes"
+			],
+			[
+				"a",
+				"allocationCount"
+			],
+			[
+				"all",
+				"allocBytes"
+			],
+			[
+				"des",
+				"destAddr"
+			],
+			[
+				"mem",
+				"memcpy"
+			],
+			[
+				"st",
+				"startp"
+			],
+			[
+				"j",
+				"jsonContainer"
+			],
+			[
+				"end",
+				"endFunc"
+			],
+			[
+				"lin",
+				"listItemContainer"
+			],
+			[
+				"ex",
+				"expandJson"
+			],
+			[
+				"object",
+				"objectFunc"
+			],
+			[
+				"ser",
+				"serveData"
+			],
+			[
+				"ret",
+				"retVal"
+			],
+			[
+				"test",
+				"testDoc"
+			],
+			[
+				"jso",
+				"jsonTest"
+			],
+			[
+				"te",
+				"test	QUnit test"
+			],
+			[
+				"tes",
+				"testDoc"
+			],
+			[
+				"list",
+				"listItem"
+			],
+			[
+				"wr",
+				"writeFile"
+			],
+			[
+				"padding",
+				"padding-left"
+			],
+			[
+				"mar",
+				"margin-left"
+			],
+			[
+				"border-l",
+				"border-left-width"
+			],
+			[
+				"border-c",
+				"border-right-color"
+			],
+			[
+				"padd",
+				"padding-left"
+			],
+			[
+				"br",
+				"border-right"
+			],
+			[
+				"bord",
+				"border-left"
+			],
+			[
+				"try",
+				"try	Try/Except/Finally"
+			],
+			[
+				"add",
+				"add_url_rule"
+			],
+			[
+				"link",
+				"link_id	(local, instance)"
+			],
+			[
+				"increment",
+				"incrementClickCount"
+			],
+			[
+				"ci",
+				"confirmLinkDelete"
+			],
+			[
+				"L",
+				"LINKALATOR"
+			],
+			[
+				"h",
+				"http_prefix	(attribute, instance)"
+			],
+			[
+				"cl",
+				"clean_href"
+			],
+			[
+				"to",
+				"top_users"
+			],
+			[
+				"get",
+				"get_statistics()	(attribute, function)"
+			],
+			[
+				"top",
+				"top_users"
+			],
+			[
+				"vi",
+				"view_func"
+			],
+			[
+				"get_link",
+				"get_link_stats()	(attribute, function)"
+			],
+			[
+				"get_t",
+				"get_top_entry_pages()	(attribute, function)"
+			],
+			[
+				"ge",
+				"get_page_gateway_totals()	(attribute, function)"
+			],
+			[
+				"data",
+				"DataLayer"
+			],
+			[
+				"cur",
+				"current_page_name	(local, instance)"
+			],
+			[
+				"th",
+				"th	Tag"
+			],
+			[
+				"sess",
+				"session_users"
+			],
+			[
+				"user",
+				"user_sessions"
+			],
+			[
+				"gate",
+				"gateway_totals"
+			],
+			[
+				"P",
+				"Page_gateway_total	(imported, class)"
+			],
+			[
+				"Lin",
+				"Link_stat	(imported, class)"
+			],
+			[
+				"Pa",
+				"Page_gateway_total	(global, class)"
+			],
+			[
+				"exit",
+				"exit_count	(local, instance)"
+			],
+			[
+				"en",
+				"entry_count	(local, instance)"
+			],
+			[
+				"exe",
+				"execute"
+			],
+			[
+				"page",
+				"page_id"
+			],
+			[
+				"cu",
+				"current_user_id	(attribute, instance)"
+			],
+			[
+				"us",
+				"user_id	(local, instance)"
+			],
+			[
+				"sta",
+				"start_page_id	(local, instance)"
+			],
+			[
+				"lo",
+				"logger"
+			],
+			[
+				"vie",
+				"views	(imported, instance)"
+			],
+			[
+				"sessi",
+				"session	(imported, instance)"
+			],
+			[
+				"req",
+				"requested_page_id	(local, instance)"
+			],
+			[
+				"deactive",
+				"deactivate_page"
+			],
+			[
+				"co",
+				"cursor"
+			],
+			[
+				"sessio",
+				"session_id	(local, instance)"
+			],
+			[
+				"ses",
+				"session_id	(local, instance)"
+			],
+			[
+				"call",
+				"callproc"
+			],
+			[
+				"pag",
+				"page_id	(local, instance)"
+			],
+			[
+				"reqe",
+				"requested_page_id"
+			],
+			[
+				"pass",
+				"password_field	(attribute, instance)"
+			],
+			[
+				"sh",
+				"show_pages"
+			],
+			[
+				"show",
+				"show_link_page"
+			],
+			[
+				"view",
+				"view_func"
+			],
+			[
+				"ap",
+				"api_agents"
+			],
+			[
+				"v",
+				"view_func"
+			],
+			[
+				"l",
+				"linkalator"
+			],
+			[
+				"USER",
+				"USER_NAMES	(global, instance)"
+			],
+			[
+				"A",
+				"AnonymousUser"
+			],
+			[
+				"login",
+				"login_manager	(global, instance)"
+			],
+			[
+				"User",
+				"UserMixin	(imported, instance)"
+			],
+			[
+				"a_c",
+				"a_commission	(local, instance)"
+			],
+			[
+				"a_",
+				"a_id	(local, instance)"
+			],
+			[
+				"c",
+				"cancel"
+			],
+			[
+				"p",
+				"python"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "event.cc",
+			"settings":
+			{
+				"buffer_size": 2877,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "event.h",
+			"settings":
+			{
+				"buffer_size": 1034,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "hcal.cc",
+			"settings":
+			{
+				"buffer_size": 4944,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "hcal.h",
+			"settings":
+			{
+				"buffer_size": 408,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "test.js",
+			"settings":
+			{
+				"buffer_size": 677,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "eventWriter.h",
+			"settings":
+			{
+				"buffer_size": 449,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "eventWriter.cc",
+			"settings":
+			{
+				"buffer_size": 5588,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/Users/austin/devProjects/javascript/concerto/node_modules/pg/src/binding.cc",
+			"settings":
+			{
+				"buffer_size": 19479,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/usr/local/include/hpdf.h",
+			"settings":
+			{
+				"buffer_size": 42545,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "binding.gyp",
+			"settings":
+			{
+				"buffer_size": 332,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "gyp_tst",
+	"command_palette":
+	{
+		"height": 392.0,
+		"selected_items":
+		[
+			[
+				"pack",
+				"Package Control: Install Package"
+			],
+			[
+				"pa",
+				"Package Control: List Packages"
+			],
+			[
+				"pacl",
+				"Package Control: Discover Packages"
+			],
+			[
+				"col",
+				"ColorSchemeSelector: Select Color Scheme"
+			],
+			[
+				"",
+				"Rope: New Project"
+			],
+			[
+				"pak",
+				"Package Control: Remove Package"
+			]
+		],
+		"width": 494.0
+	},
+	"console":
+	{
+		"height": 125.0
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/Users/austin/Documents/education/su_cs107/assn-2-six-degrees/imdb.cc",
+		"/Users/austin/Documents/education/su_cs107/assn-2-six-degrees/imdb.h",
+		"/Users/austin/devProjects/c/hcal/pdf_utils/makefile",
+		"/Users/austin/devProjects/c/hcal/pdf_utils/calendar.cc",
+		"/Users/austin/devProjects/c/hcal/object_factory/object_factory.sublime-project",
+		"/Users/austin/devProjects/c/node_tries/callback/callback.cc",
+		"/Users/austin/devProjects/c/node_tries/callback/binding.gyp",
+		"/Users/austin/devProjects/c/hcal/object_factory/build.sh",
+		"/Users/austin/devProjects/c/hcal/makefile",
+		"/Users/austin/.bash_profile",
+		"/Users/austin/devProjects/c/vector/vector.h",
+		"/Users/austin/Documents/education/su_cs107/ProgrammingParadigms/materials/icsppcs107/assn-2-six-degrees/imdb.h",
+		"/Users/austin/devProjects/c/boost_tries/print_month",
+		"/Users/austin/devProjects/c/boost_tries/simple_date_example.cc",
+		"/Users/austin/Documents/education/su_cs107/ProgrammingParadigms/materials/icsppcs107/assn-0-small-programs/02-word-games/Makefile",
+		"/Users/austin/devProjects/c/vector/Makefile",
+		"/Users/austin/Documents/education/su_cs107/ProgrammingParadigms/materials/icsppcs107/assn-1-rsg/Makefile",
+		"/Users/austin/devProjects/c/haru/lines.c",
+		"/Users/austin/devProjects/c/v8_tries/hello_world.cc",
+		"/Users/austin/devProjects/c/haru/grid_sheet.c",
+		"/usr/local/include/hpdf_error.h",
+		"/Users/austin/devProjects/c/haru/encodings.c",
+		"/usr/local/include/hpdf.h",
+		"/Users/austin/devProjects/c/haru/lines_2.c",
+		"/Users/austin/devProjects/c/node_tries/hello.cc",
+		"/Users/austin/devProjects/c/node_tries/binding.gyp",
+		"/Users/austin/devProjects/c/haru/fonts.c",
+		"/Users/austin/devProjects/javascript/concerto/package.json",
+		"/Users/austin/devProjects/javascript/concerto/public/vendor/css/dhtmlxscheduler_dhx_terrace.css",
+		"/Users/austin/devProjects/javascript/concerto/public/vendor/css/dhtmlxscheduler.css",
+		"/Users/austin/devProjects/javascript/concerto/node_build.sh",
+		"/Users/austin/devProjects/javascript/concerto/concerto.sublime-project",
+		"/Users/austin/devProjects/c/vector/thesaurus.txt",
+		"/Users/austin/devProjects/c/vector/thesaurus-lookup.c",
+		"/Users/austin/devProjects/c/vector/hashsettest.c",
+		"/Users/austin/devProjects/c/vector/vector.c",
+		"/Users/austin/devProjects/python/venv/bin/activate",
+		"/Users/austin/devProjects/c/vector/hashset.c",
+		"/Users/austin/devProjects/c/vector/hashset.h",
+		"/Users/austin/Downloads/konteck-wpp-64ade55/Makefile",
+		"/Users/austin/devProjects/c/vector/streamtokenizer.h",
+		"/Users/austin/devProjects/c/vector/vectortest.c",
+		"/Users/austin/devProjects/c/vector/stuff.todo",
+		"/Users/austin/devProjects/c/vector/vector-test",
+		"/Users/austin/devProjects/c/vector/vector_assn3.sublime-project",
+		"/Users/austin/devProjects/c/vector/README",
+		"/Users/austin/utils/mvname",
+		"/Users/austin/utils/cpname",
+		"/Users/austin/Documents/education/su_cs107/ProgrammingParadigms/materials/icsppcs107/assn-3-vector-hashset/vector-hashset.sublime-project",
+		"/Users/austin/Downloads/assn-2-six-degrees/Makefile",
+		"/Users/austin/Downloads/assn-2-six-degrees/six-degrees.cc",
+		"/Users/austin/devProjects/javascript/formulator/formulator.sublime-project",
+		"/Users/austin/Library/Application Support/Sublime Text 2/Packages/Default/Default (OSX).sublime-keymap",
+		"/Users/austin/devProjects/javascript/formulator/public/js/views/home.js",
+		"/Users/austin/devProjects/javascript/formulator/server/routes/login.js",
+		"/Users/austin/devProjects/javascript/formulator/formulator.js",
+		"/Users/austin/devProjects/javascript/formulator/server/routes/home.js",
+		"/Users/austin/devProjects/javascript/formulator/server/routes/signup.js",
+		"/Users/austin/devProjects/javascript/formulator/server/routes/serveJson.js",
+		"/Users/austin/devProjects/javascript/formulator/server/cfg.js",
+		"/Users/austin/devProjects/javascript/formulator/public/js/form-validators/accountValidator.js",
+		"/Users/austin/devProjects/javascript/formulator/server/views/signup.jade",
+		"/Users/austin/devProjects/javascript/formulator/public/js/controllers/homeController.js",
+		"/Users/austin/devProjects/javascript/formulator/server/views/login.jade",
+		"/Users/austin/devProjects/javascript/formulator/public/js/controllers/editorController.js",
+		"/Users/austin/devProjects/javascript/formulator/server/views/editor.jade",
+		"/Users/austin/devProjects/javascript/formulator/server/views/account.jade",
+		"/Users/austin/devProjects/javascript/formulator/server/views/layout-2.jade",
+		"/Users/austin/devProjects/javascript/formulator/public/css/style.css",
+		"/Users/austin/devProjects/javascript/formulator/server/routes/saveDoc.js",
+		"/Users/austin/devProjects/javascript/formulator/public/vendor/bootstrap.min.css",
+		"/Users/austin/devProjects/javascript/formulator/server/routes/editor.js",
+		"/Users/austin/devProjects/javascript/formulator/public/js/views/editor.js",
+		"/Users/austin/devProjects/javascript/formulator/.gitignore",
+		"/hd/devProjects/javascript/formulator/.gitignore",
+		"/Users/austin/devProjects/javascript/formulator/public/javascripts/main.js",
+		"/Users/austin/devProjects/javascript/formulator/server/views/layout.jade",
+		"/Users/austin/devProjects/javascript/formulator/routes/getUserDocs.js",
+		"/Users/austin/devProjects/javascript/formulator/routes/saveDoc.js",
+		"/Users/austin/devProjects/javascript/formulator/cfg.js",
+		"/Users/austin/devProjects/javascript/formulator/node_modules/bcrypt/package.json",
+		"/Users/austin/devProjects/javascript/formulator/views/main.jade",
+		"/Users/austin/devProjects/javascript/formulator/util.js",
+		"/hd/trans/util.js",
+		"/hd/trans/views/util.js",
+		"/Users/austin/utils/mountq",
+		"/usr/local/oracle/instantclient_10_2/mountq",
+		"/Users/austin/Downloads/node-login-master/app/server/router.js",
+		"/Users/austin/Downloads/node-login-master/app/config.js",
+		"/Users/austin/Downloads/node-login-master/app/server/modules/account-manager.js",
+		"/Users/austin/devProjects/javascript/formulator/stuff.todo",
+		"/Users/austin/devProjects/javascript/formulator/public/javascripts/constants.js",
+		"/Users/austin/devProjects/javascript/formulator/routes/index.js",
+		"/Users/austin/devProjects/javascript/formulator/routes/serveJson.js",
+		"/Users/austin/devResources/mongoclient.js",
+		"/Users/austin/.ssh/config",
+		"/Users/austin/.Xauthority",
+		"/Users/austin/.ssh/.Xauthority",
+		"/Users/austin/.ssh/known_hosts",
+		"/Users/austin/devProjects/javascript/formulator/package.json",
+		"/Users/austin/devProjects/javascript/formulator/node_modules/express/node_modules/connect/lib/middleware/favicon.js",
+		"/Users/austin/devProjects/javascript/formulator/public/stylesheets/style.css",
+		"/Users/austin/devProjects/javascript/formulator/test.json",
+		"/Users/austin/devProjects/javascript/formulator/node_build.sh",
+		"/Users/austin/devProjects/javascript/formulator/formulator.sublime-workspace",
+		"/Users/austin/devProjects/javascript/formulator/build.sh",
+		"/Users/austin/Library/Application Support/Sublime Text 2/Packages/Default/Preferences.sublime-settings",
+		"/Users/austin/Library/Application Support/Sublime Text 2/Packages/User/Preferences.sublime-settings",
+		"/Users/austin/devProjects/javascript/formulator/views/layout.jade",
+		"/Users/austin/devProjects/javascript/formulator/routes/main.js",
+		"/Users/austin/devProjects/scratch/tester.html",
+		"/Users/austin/devProjects/javascript/formulator/views/home.html",
+		"/etc/profile",
+		"/Users/austin/devProjects/javascript/formulator/testObj.js",
+		"/Users/austin/Library/Application Support/Sublime Text 2/Packages/JSLint/JSLint.sublime-build",
+		"/Users/austin/Library/Application Support/Sublime Text 2/Packages/JSLint/JSLint.sublime-settings",
+		"/Users/austin/Library/Application Support/Sublime Text 2/Packages/sublime-jslint/sublime-jslint.sublime-settings",
+		"/hd/devProjects/javascript/formulator/viewJson.js",
+		"/Users/austin/.corale.sh",
+		"/private/etc/profile",
+		"/Users/austin/.ssh/github_rsa",
+		"/Users/austin/devProjects/python/linkalator/.gitignore",
+		"/Users/austin/devProjects/python/linkalator/linkalator.sublime-project",
+		"/Users/austin/devProjects/python/linkalator/linkalator/templates/show_links.html",
+		"/Volumes/datastore/devProjects/python/linkalator/linkalator.sublime-project",
+		"/Users/austin/devProjects/python/linkalator/app.log",
+		"/Users/austin/devProjects/python/linkalator/linkalator/templates/stats.html",
+		"/Users/austin/Library/Application Support/Sublime Text 2/Packages/SublimeREPL/SublimeREPL.sublime-settings"
+	],
+	"find":
+	{
+		"height": 35.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"malloccstring",
+			"month",
+			"Month",
+			"month",
+			"error_handler",
+			"jmp_buf",
+			"static const char*",
+			"Event",
+			"using",
+			"eom_day",
+			"word-games",
+			"status",
+			"templates.hour_scale",
+			"scheduler.config",
+			"hour_sc",
+			"locale",
+			"GetVector",
+			"target",
+			"v->",
+			"startp",
+			"residue",
+			"free",
+			"elemAddr",
+			"nmemb",
+			"newAlloc",
+			"elemAlloc",
+			"totalAlloc",
+			"currElemAlloc",
+			"alphabet",
+			"vlen",
+			"destAddr",
+			"vlen",
+			"mvCount",
+			".active",
+			"active",
+			"../assets",
+			"../assets/js",
+			"addDocumentToMongo",
+			"serveData",
+			"e",
+			"					input#name-tf.input-xlarge(type='text', name='firstName', value= user.firstName)\n",
+			"addToMongo",
+			"../img",
+			"retUsername",
+			"retUser",
+			"o",
+			"user",
+			"pass",
+			"javascripts",
+			"host",
+			"collectionName",
+			"jObject",
+			"nestedObject",
+			"you",
+			"_getClassSelector",
+			"primative",
+			".join",
+			"listItem",
+			"listItemContainer",
+			"aus",
+			"node",
+			"arrayFunc",
+			"serveJson",
+			"http",
+			"jElem",
+			"jNode",
+			"include",
+			"get_links",
+			"change_current_page",
+			"h1",
+			"{% endblock %}",
+			"user_session_id",
+			"dl = DataLayer",
+			"create_user",
+			"show_pages",
+			"right",
+			"end",
+			"add_entry",
+			"show_entries",
+			"Sh",
+			"show_entries",
+			"	{ \"keys\": [\"super+shift+b\"], \"command\": \"build\", \"args\": {\"variant\": \"Run\"} },\n",
+			"build"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"h2",
+			"index"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 6,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "event.cc",
+					"settings":
+					{
+						"buffer_size": 2877,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1809,
+								1859
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 489.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "event.h",
+					"settings":
+					{
+						"buffer_size": 1034,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "hcal.cc",
+					"settings":
+					{
+						"buffer_size": 4944,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3818,
+								3818
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1469.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "hcal.h",
+					"settings":
+					{
+						"buffer_size": 408,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								408,
+								408
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "test.js",
+					"settings":
+					{
+						"buffer_size": 677,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								677,
+								677
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "eventWriter.h",
+					"settings":
+					{
+						"buffer_size": 449,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								442,
+								442
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "eventWriter.cc",
+					"settings":
+					{
+						"buffer_size": 5588,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								911,
+								911
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 397.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "/Users/austin/devProjects/javascript/concerto/node_modules/pg/src/binding.cc",
+					"settings":
+					{
+						"buffer_size": 19479,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								19039,
+								19375
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 572.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "/usr/local/include/hpdf.h",
+					"settings":
+					{
+						"buffer_size": 42545,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 22519.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "binding.gyp",
+					"settings":
+					{
+						"buffer_size": 332,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								332,
+								332
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Text/Plain text.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 0.0
+	},
+	"input":
+	{
+		"height": 31.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.exec":
+	{
+		"height": 155.0
+	},
+	"output.git":
+	{
+		"height": 100.0
+	},
+	"output.jslint_result_view":
+	{
+		"height": 195.0
+	},
+	"replace":
+	{
+		"height": 64.0
+	},
+	"save_all_on_build": false,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+			[
+				"fav",
+				"node_modules/express/node_modules/connect/lib/middleware/favicon.js"
+			],
+			[
+				"util",
+				"linkalator/util.py"
+			],
+			[
+				"tp",
+				"linkalator.sublime-project"
+			],
+			[
+				"con",
+				"/Users/austin/devProjects/python/fserv/ftest6.py"
+			],
+			[
+				"res",
+				"/Users/austin/devProjects/python/fserv/ftest6.py"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 271.0,
+	"status_bar_visible": true
+}
