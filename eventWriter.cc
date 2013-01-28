@@ -1,32 +1,18 @@
-/*
-    TODO:
-        Add views:
-            Month,
-            Week,
-            WorkWeek,
-            Room
-        Incoming event collection:
-*/
-
-#ifndef BOOST_NO_EXCEPTIONS
-#define BOOST_NO_EXCEPTIONS
-#endif
 #include <node.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <setjmp.h>
 #include <hpdf.h>
-#include <sstream>
-#include <iostream>
-#include <vector>
+#include <setjmp.h>
+#include <cstdlib>
+#include <cstdio>
 #include <cstring>
 #include <new>
+#include <sstream>
+#include <iostream>
 #include "eventWriter.h"
 #include "eventWrapper.h"
 #include "event.h"
 #include "posix_time/posix_time.hpp"
 #include "gregorian/gregorian.hpp"
+using namespace std;
 
 #define MARGIN 50
 
@@ -43,56 +29,45 @@ const char* EventWriter::weekdays[] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri",
 const char* EventWriter::months[] = {"January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"};
 
-EventWriter::EventWriter(std::vector<Event>* events, View v)
-{
-    eventMap_ = new std::map< int, std::list<Event> >();
-    events_ = events;
-    view_ = v;
-}
-
 EventWriter::EventWriter(v8::Array* arr, View v){
     view_ = v;
-    events_ = new std::vector<Event>();
     eventMap_ = GetEventMap(arr);
 }
 
 EventWriter::EventWriter()
 {
-    events_ = new std::vector<Event>();
-    eventMap_ = new std::map< int, std::list<Event> >();
+    eventMap_ = new map< int, list<Event> >();
 }
 
 //TODO: come up with a better way of checking for a non null events_ vector
 EventWriter::~EventWriter()
 {
-    // if ((*events_)[0].Id() > 0) {
-    //     delete events_;     
-    // }
-    delete events_;
     delete eventMap_;
 }
 
-void EventWriter::set_events(std::vector<Event>* events)
-{
-    delete events_;
-    events_ = events;
-}
+map< int, list<Event> >* EventWriter::GetEventMap(v8::Array* arr){
+    try{
+        uint32_t len = arr->Length();
+        map< int, list<Event> >* retVal = new map< int, list<Event> >();
 
-std::map< int, std::list<Event> >* EventWriter::GetEventMap(v8::Array* arr){
-    uint32_t len = arr->Length();
-    std::map< int, std::list<Event> >* retVal = new std::map< int, std::list<Event> >();
-
-    //TODO: handle other views (function pointers)
-    for (uint32_t i = 0; i < len; ++i){
-        v8::Local<v8::Object> obj = arr->CloneElementAt(i);
-        if (!obj.IsEmpty()) {            
-            EventWrapper* evtWrp = node::ObjectWrap::Unwrap<EventWrapper>(obj);
-            Event evt = Event(evtWrp);
-            int monthNo = (int)evt.Start().date().month().as_number();
-            (*retVal)[monthNo].push_back(evt);
+        //TODO: handle other views (function pointers)
+        for (uint32_t i = 0; i < len; ++i){
+            v8::Local<v8::Object> obj = arr->CloneElementAt(i);
+            if (!obj.IsEmpty()) {            
+                EventWrapper* evtWrp = node::ObjectWrap::Unwrap<EventWrapper>(obj);
+                Event evt = Event(evtWrp);
+                int monthNo = (int)evt.Start().date().month().as_number();
+                (*retVal)[monthNo].push_back(evt);
+            }
         }
+        return retVal;
     }
-    return retVal;
+    catch(bad_alloc&){
+        cout << "error allocating memory..." << endl;
+    }
+    catch (...){
+        cout << "other exception...";
+    }    
 }
 
 
@@ -116,20 +91,19 @@ const char* EventWriter::write_monthly_calendar()
 {
     const char* fname = "test_calendar.pdf";
     const char* problem = "there was a problem...";
-    std::stringstream ss;//create a stringstream     
+    stringstream ss;//create a stringstream     
     if (eventMap_ != NULL && eventMap_->size() > 0){
-        std::map< int, std::list<Event> >::iterator m_itr;
+        map< int, list<Event> >::iterator m_itr;
         for (m_itr = eventMap_->begin(); m_itr != eventMap_->end(); ++m_itr){
             m_itr->second.sort();
             boost::gregorian::date startDate(m_itr->second.begin()->Start().date());
-            //int stMonth = (int)startDate.month();
             int stYear = (int)startDate.year();
             const char* it_val = write_monthly_calendar(m_itr->first, stYear);
             ss << it_val << "-";
         }
-        std::string retString = ss.str();
+        string retString = ss.str();
         return retString.c_str();        
-    }       
+    }      
     
     return problem;
 }
@@ -138,9 +112,9 @@ const char* EventWriter::write_monthly_calendar(int month, int year)
 {
     using namespace boost::gregorian;
 
-    std::stringstream titleStream;//create a stringstream
+    stringstream titleStream;//create a stringstream
     titleStream << months[month - 1] << " " << year;//add number to the stream
-    std::string tstring = titleStream.str();
+    string tstring = titleStream.str();
     const char* page_title = tstring.c_str();
     //const char* page_title = "Calendar Test";
     const char* fname = "test_calendar.pdf"; 
@@ -227,9 +201,9 @@ const char* EventWriter::write_monthly_calendar(int month, int year)
                 currentRowNum -= 1;
             }
         }
-        std::stringstream ss;//create a stringstream
+        stringstream ss;//create a stringstream
         ss << dateNum;//add number to the stream
-        std::string dstring = ss.str();
+        string dstring = ss.str();
         const char* dateNumChar = dstring.c_str();
 
         tw = HPDF_Page_TextWidth(page, dateNumChar);
@@ -249,7 +223,7 @@ const char* EventWriter::write_monthly_calendar(int month, int year)
     
     HPDF_Page_SetFontAndSize (page, font, 8);
     write_events(page, dayHeight, dayWidth, month, year, firstDayNum, rowNum, (int)endOfMonth.day().as_number());
-    std::cout << "after writing events" << std::endl;
+    cout << "after writing events" << endl;
     /* save the document to a file */
     HPDF_SaveToFile (pdf, fname);
 
@@ -270,50 +244,54 @@ void EventWriter::write_events( HPDF_Page page,
                                 int daysInMonth )
 {
 
-    std::vector<int> rowArray = build_row_array(rows, firstDayNum, daysInMonth);
-    std::list<Event>::const_iterator i;
+    vector<int> rowArray = build_row_array(rows, firstDayNum, daysInMonth);
+    list<Event>::const_iterator i;
     int evtMargin = MARGIN + 5;
     float evtHeight = (cellHeight - 10) / 5;
     int c = 1;
+    try{
+        for (i = (*eventMap_)[monthOrdinal].begin(); i != (*eventMap_)[monthOrdinal].end(); ++i){
+            cout << "write event loop iteration " << c << endl;
+            c += 1;
+            boost::gregorian::date evtDate(i->Start().date());
 
-    for (i = (*eventMap_)[monthOrdinal].begin(); i != (*eventMap_)[monthOrdinal].end(); ++i){
-        std::cout << "write event loop iteration " << c << std::endl;
-        c += 1;
-        boost::gregorian::date evtDate(i->Start().date());
+            //Only add current month's events to calendar
+            if ((int)evtDate.month().as_number() != monthOrdinal || (int)evtDate.year() != year){
+                continue;
+            }
+            int dayNum = (int)evtDate.day_of_week();
+            int dateNum = (int)evtDate.day().as_number();
+            int rowNum = get_day_row(&rowArray, dateNum);
+            
+            //Write start and event title in cellHeight/rows
+            float x_offset = (cellWidth * dayNum) + evtMargin;
+            float y_offset = ((cellHeight * rowNum) + MARGIN) - 15;
 
-        //Only add current month's events to calendar
-        if ((int)evtDate.month().as_number() != monthOrdinal || (int)evtDate.year() != year){
-            continue;
-        }
-        int dayNum = (int)evtDate.day_of_week();
-        int dateNum = (int)evtDate.day().as_number();
-        int rowNum = get_day_row(&rowArray, dateNum);
-        
-        //Write start and event title in cellHeight/rows
-        float x_offset = (cellWidth * dayNum) + evtMargin;
-        float y_offset = ((cellHeight * rowNum) + MARGIN) - 15;
+            boost::posix_time::time_duration stdur = i->Start().time_of_day();
+            long hours = stdur.hours();
+            string meridian = "am";
+            if (hours > 12){
+                hours -= 12;
+                meridian = "pm";
+            }
 
-        boost::posix_time::time_duration stdur = i->Start().time_of_day();
-        long hours = stdur.hours();
-        std::string meridian = "am";
-        if (hours > 12){
-            hours -= 12;
-            meridian = "pm";
+            stringstream ss;
+            if (stdur.minutes() == 0){
+                ss << hours <<  ":00 " << meridian << " - " << i->Title();
+            }
+            else{
+                ss << hours << ":" << stdur.minutes() << " " << meridian << " - " << i->Title();
+            }
+            string tstring = ss.str();
+            const char* evtTitle = tstring.c_str();
+            cout << "v8 - event title string: " << evtTitle << endl;
+            write_text(page, x_offset, y_offset, evtTitle);        
         }
-
-        std::stringstream ss;
-        if (stdur.minutes() == 0){
-            ss << hours <<  ":00 " << meridian << " - " << i->Title();
-        }
-        else{
-            ss << hours << ":" << stdur.minutes() << " " << meridian << " - " << i->Title();
-        }
-        std::string tstring = ss.str();
-        const char* evtTitle = tstring.c_str();
-        std::cout << "v8 - event title string: " << evtTitle << std::endl;
-        write_text(page, x_offset, y_offset, evtTitle);        
     }
-    std::cout << "after write events loop\n";
+    catch(exception& e){
+        cout << "  Exception: " << e.what() << endl;
+    }
+    cout << "after write events loop\n";
     // HPDF_Page_SetLineWidth(page, 12);
     // HPDF_Page_SetRGBStroke (page, 0.0, 0.5, 0.0);
 
@@ -326,10 +304,10 @@ void EventWriter::write_events( HPDF_Page page,
     //delete rowArray;
 }
 
-std::vector<int> EventWriter::build_row_array(int rows, int firstDayNum, int daysInMonth)
+vector<int> EventWriter::build_row_array(int rows, int firstDayNum, int daysInMonth)
 {
     int ldfw = 7 - firstDayNum;
-    std::vector<int> retVal = std::vector<int>();
+    vector<int> retVal = vector<int>();
 
     for (int i = 0; i < rows; ++i) {
         retVal.push_back(ldfw + (i * 7));
@@ -337,7 +315,7 @@ std::vector<int> EventWriter::build_row_array(int rows, int firstDayNum, int day
     return retVal;
 }
 
-int EventWriter::get_day_row(std::vector<int>* rowArray, int dayNum)
+int EventWriter::get_day_row(vector<int>* rowArray, int dayNum)
 {
     int rows = rowArray->size();
 

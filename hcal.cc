@@ -1,7 +1,4 @@
 #define BUILDING_NODE_EXTENSION
-#ifndef BOOST_NO_EXCEPTIONS
-#define BOOST_NO_EXCEPTIONS
-#endif
 #define __DEBUG__
 
 #ifdef __DEBUG__
@@ -17,6 +14,7 @@
 #include <list>
 #include <map>
 #include <hpdf.h>
+#include "throw_exception.hpp"
 #include "posix_time/posix_time.hpp"
 #include "gregorian/gregorian.hpp"
 #include "eventWrapper.h"
@@ -70,19 +68,7 @@ Handle<Value> TestEventArray(const Arguments& args){
     uint32_t len;
     time_t st, et;
     if (args[0]->IsArray()) {
-        Array* arr = Array::Cast(*args[0]);
-        //std::vector<Event>* events = GetEvents(arr);
-        std::map< int, std::list<Event> >* mevents = GetEventMap(arr);
-        //EventWriter ew = EventWriter(events);
-        //std::string ldr = (*events)[1].Leader();
-        std::list<Event>::const_iterator litr;
-        for (litr = (*mevents)[1].begin(); litr != (*mevents)[1].end(); ++litr){
-            std::cout << "v8 - mapped event leader: " << litr->Leader() << std::endl;
-        }
-        //std::string mldr = (*mevents)[1].begin()->Leader();
-        //delete events;
-        //std::cout << "v8 - inner event leader: " << ldr << std::endl;
-        
+        Array* arr = Array::Cast(*args[0]);        
         Local<Object> obj = arr->CloneElementAt(0);
         if (obj.IsEmpty()) {  
             WriteException(trycatch);
@@ -119,73 +105,11 @@ Handle<Value> TestEventArray(const Arguments& args){
             printf("v8 - Current local time and date: %s", asctime (timeinfo));
             #endif
         }
-        delete mevents;
     }
     else {
        WriteException(trycatch);
     }
     return scope.Close(Number::New(st));
-}
-
-std::vector<Event>* GetEvents(Array* arr){
-    TryCatch trycatch;
-    uint32_t len = arr->Length();
-    std::vector<Event>* retVal = new std::vector<Event>();
-
-    for (uint32_t i = 0; i < len; ++i){
-        Local<Object> obj = arr->CloneElementAt(i);
-        if (obj.IsEmpty()) {  
-            WriteException(trycatch);
-        }
-        else {
-            EventWrapper* evtWrp = node::ObjectWrap::Unwrap<EventWrapper>(obj);
-            Event evt = Event(evtWrp);
-            retVal->push_back(evt);
-        }
-    }
-    return retVal;
-}
-
-std::list<Event>* GetEventList(v8::Array* arr){
-    TryCatch trycatch;
-    uint32_t len = arr->Length();
-    std::list<Event>* retVal = new std::list<Event>();
-
-    for (uint32_t i = 0; i < len; ++i){
-        Local<Object> obj = arr->CloneElementAt(i);
-        if (obj.IsEmpty()) {
-            WriteException(trycatch);
-        }
-        else {
-            EventWrapper* evtWrp = node::ObjectWrap::Unwrap<EventWrapper>(obj);
-            Event evt = Event(evtWrp);
-            retVal->push_back(evt);
-        }
-    }
-    retVal->sort();
-    return retVal;
-}
-
-using namespace std;
-
-map< int, list<Event> >* GetEventMap(v8::Array* arr){
-    TryCatch trycatch;
-    uint32_t len = arr->Length();
-    map< int, list<Event> >* retVal = new map< int, list<Event> >();
-
-    for (uint32_t i = 0; i < len; ++i){
-        Local<Object> obj = arr->CloneElementAt(i);
-        if (obj.IsEmpty()) {
-            WriteException(trycatch);
-        }
-        else {
-            EventWrapper* evtWrp = node::ObjectWrap::Unwrap<EventWrapper>(obj);
-            Event evt = Event(evtWrp);
-            int monthNo = (int)evt.Start().date().month().as_number();
-            (*retVal)[monthNo].push_back(evt);
-        }
-    }
-    return retVal;
 }
 
 /*  TODO: changes this to provide for a function with two args:
@@ -201,7 +125,6 @@ Handle<Value> BuildCalendar(const Arguments& args) {
     HandleScope scope;
     if (args[0]->IsArray()) {
         Array* arr = Array::Cast(*args[0]);
-        //std::vector<Event>* events = GetEvents(arr);
         Local<Function> cb = Local<Function>::Cast(args[2]);
         String::AsciiValue viewStr(args[1]->ToString());
         if (strcmp(*viewStr, "month") == 0){

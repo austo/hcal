@@ -1,10 +1,6 @@
 #ifndef GUARD__EVENTWRITER_H
 #define GUARD__EVENTWRITER_H
 
-#ifndef BOOST_NO_EXCEPTIONS
-#define BOOST_NO_EXCEPTIONS
-#endif
-
 #include <node.h>
 #include "posix_time/posix_time.hpp"
 #include "gregorian/gregorian.hpp"
@@ -18,15 +14,12 @@ class EventWriter {
 
 public:
     enum View {day = 1, week, month, custom};
-    EventWriter(std::vector<Event>*, View);
     EventWriter(v8::Array *, View);
     EventWriter();
     ~EventWriter();
-    void set_events(std::vector<Event>*);
     const char* write_calendar();
 
 private:
-    std::vector<Event>* events_;
     std::map< int, std::list<Event> >* eventMap_;
     std::map< int, std::list<Event> >* GetEventMap(v8::Array* arr);
     View view_;
@@ -38,7 +31,6 @@ private:
     static std::vector<int> build_row_array(int, int, int);
     static int get_day_row(std::vector<int>*, int);
     static void write_text(HPDF_Page, float, float, const char*);
-
 };
 
 #endif

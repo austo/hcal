@@ -2,10 +2,6 @@
 #define __DEBUG__
 #endif
 
-#ifndef BOOST_NO_EXCEPTIONS
-#define BOOST_NO_EXCEPTIONS
-#endif
-
 #define BUILDING_NODE_EXTENSION
 #include <node.h>
 #include <iostream>

@@ -3,15 +3,12 @@
     #define OFFSET -5 //TODO: improve using real boost timezones
 #endif
 
-#ifndef BOOST_NO_EXCEPTIONS
-#define BOOST_NO_EXCEPTIONS
-#endif
-
 #include <ctime>
 #include <string>
 #include "event.h"
 #include "eventWrapper.h"
 #include "posix_time/posix_time.hpp"
+
 
 using namespace std;
 

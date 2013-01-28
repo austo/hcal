@@ -1,40 +1,36 @@
 #ifndef GUARD__EVENTWRAPPER_H
-    #define GUARD__EVENTWRAPPER_H
-    #define BUILDING_NODE_EXTENSION
+#define GUARD__EVENTWRAPPER_H
+#define BUILDING_NODE_EXTENSION
 
-    #ifndef BOOST_NO_EXCEPTIONS
-    #define BOOST_NO_EXCEPTIONS
-    #endif
+#include <node.h>
+#include <ctime>
+#include <string>
 
-    #include <node.h>
-    #include <ctime>
-    #include <string>
+class EventWrapper : public node::ObjectWrap {
+    public:
+        EventWrapper();
+        ~EventWrapper();
 
-    class EventWrapper : public node::ObjectWrap {
-        public:
-            EventWrapper();
-            ~EventWrapper();
+        static void Init();
+        static v8::Handle<v8::Value> NewInstance(const v8::Arguments& args);
+        int Id() const { return id_; }
+        time_t Start() const { return start_; }
+        time_t End() const { return end_; }
+        int Room() const { return room_; }
+        std::string Leader() const { return leader_; }
+        std::string Title() const { return title_; }
+        time_t Minutes() const { return (end_ - start_) / 60; }        
 
-            static void Init();
-            static v8::Handle<v8::Value> NewInstance(const v8::Arguments& args);
-            int Id() const { return id_; }
-            time_t Start() const { return start_; }
-            time_t End() const { return end_; }
-            int Room() const { return room_; }
-            std::string Leader() const { return leader_; }
-            std::string Title() const { return title_; }
-            time_t Minutes() const { return (end_ - start_) / 60; }        
-
-        private:
-            static v8::Persistent<v8::Function> constructor;
-            static v8::Handle<v8::Value> New(const v8::Arguments& args);
-            static v8::Handle<v8::Value> Duration(const v8::Arguments& args);
-            int id_;
-            time_t start_;
-            time_t end_;
-            int room_;
-            std::string leader_;
-            std::string title_;
-    };
+    private:
+        static v8::Persistent<v8::Function> constructor;
+        static v8::Handle<v8::Value> New(const v8::Arguments& args);
+        static v8::Handle<v8::Value> Duration(const v8::Arguments& args);
+        int id_;
+        time_t start_;
+        time_t end_;
+        int room_;
+        std::string leader_;
+        std::string title_;
+};
 
 #endif

@@ -28,7 +28,6 @@ CFLAGS_C_Debug := \
 # Flags passed to only C++ files.
 CFLAGS_CC_Debug := \
 	-fno-rtti \
-	-fno-exceptions \
 	-fno-threadsafe-statics \
 	-fno-strict-aliasing
 
@@ -42,7 +41,10 @@ INCS_Debug := \
 	-I/Users/austin/.node-gyp/0.8.9/src \
 	-I/Users/austin/.node-gyp/0.8.9/deps/uv/include \
 	-I/Users/austin/.node-gyp/0.8.9/deps/v8/include \
-	-I/usr/local/boost_1_52_0/boost/date_time
+	-I/usr/local/boost_1_52_0/boost/date_time \
+	-I/usr/local/boost_1_52_0/boost \
+	-I/usr/local/boost_1_52_0/boost/exception \
+	-I/usr/local/boost_1_52_0
 
 DEFS_Release := \
 	'-D_LARGEFILE_SOURCE' \
@@ -68,7 +70,6 @@ CFLAGS_C_Release := \
 # Flags passed to only C++ files.
 CFLAGS_CC_Release := \
 	-fno-rtti \
-	-fno-exceptions \
 	-fno-threadsafe-statics \
 	-fno-strict-aliasing
 
@@ -82,7 +83,10 @@ INCS_Release := \
 	-I/Users/austin/.node-gyp/0.8.9/src \
 	-I/Users/austin/.node-gyp/0.8.9/deps/uv/include \
 	-I/Users/austin/.node-gyp/0.8.9/deps/v8/include \
-	-I/usr/local/boost_1_52_0/boost/date_time
+	-I/usr/local/boost_1_52_0/boost/date_time \
+	-I/usr/local/boost_1_52_0/boost \
+	-I/usr/local/boost_1_52_0/boost/exception \
+	-I/usr/local/boost_1_52_0
 
 OBJS := \
 	$(obj).target/$(TARGET)/hcal.o \
@@ -139,7 +143,8 @@ LIBTOOLFLAGS_Release := \
 LIBS := \
 	-undefined dynamic_lookup \
 	-lhpdf \
-	-lboost_date_time
+	-lboost_date_time \
+	-lboost_exception
 
 $(builddir)/hcal.node: GYP_LDFLAGS := $(LDFLAGS_$(BUILDTYPE))
 $(builddir)/hcal.node: LIBS := $(LIBS)
