@@ -3,8 +3,8 @@ var hcal = require('./build/Release/hcal');
 console.log('\n\n!#----------Test results----------#!\n');
 var d1 = new Date(2013, 0, 13, 13);
 var d2 = new Date(2013, 0, 13, 14);
-var d3 = new Date(2013, 0, 22, 23, 30);
-var d4 = new Date(2013, 0, 23, 0, 30);
+var d3 = new Date(2013, 1, 22, 23, 30);
+var d4 = new Date(2013, 1, 23, 0, 30);
 var d5 = new Date(2013, 0, 13, 16);
 var d6 = new Date(2013, 0, 13, 18);
 

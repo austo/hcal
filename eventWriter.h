@@ -25,8 +25,8 @@ private:
     View view_;
     static const char* weekdays[7];
     static const char* months[12];
-    const char* write_monthly_calendar(int, int);
     const char* write_monthly_calendar();
+    void write_monthly_calendar_page(HPDF_Doc, HPDF_Font, int, int);
     void write_events(HPDF_Page, float, float, int, int, int, int, int);
     static std::vector<int> build_row_array(int, int, int);
     static int get_day_row(std::vector<int>*, int);

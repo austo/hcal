@@ -42,14 +42,21 @@ EventWriter::EventWriter()
 //TODO: come up with a better way of checking for a non null events_ vector
 EventWriter::~EventWriter()
 {
-    delete eventMap_;
+    if (eventMap_) delete eventMap_;
 }
 
 map< int, list<Event> >* EventWriter::GetEventMap(v8::Array* arr){
-    try{
-        uint32_t len = arr->Length();
-        map< int, list<Event> >* retVal = new map< int, list<Event> >();
+    map< int, list<Event> >* retVal = 0;
+    uint32_t len = arr->Length();
 
+    try{
+        retVal = new map< int, list<Event> >();
+    }
+    catch(bad_alloc&){
+        cout << "error allocating memory..." << endl;
+    }
+
+    if (retVal != 0){
         //TODO: handle other views (function pointers)
         for (uint32_t i = 0; i < len; ++i){
             v8::Local<v8::Object> obj = arr->CloneElementAt(i);
@@ -60,14 +67,8 @@ map< int, list<Event> >* EventWriter::GetEventMap(v8::Array* arr){
                 (*retVal)[monthNo].push_back(evt);
             }
         }
-        return retVal;
     }
-    catch(bad_alloc&){
-        cout << "error allocating memory..." << endl;
-    }
-    catch (...){
-        cout << "other exception...";
-    }    
+    return retVal;  
 }
 
 
@@ -86,11 +87,25 @@ const char* EventWriter::write_calendar(){
     2. build calendar with correct view based on start date of first event
     3. (monthly calendar) using calculated dayCellHeight, place events in correct time-slot
         (five or six events per day - viewable)
+    TODO: create PDF in this method, pass PDF handle to worker overload
 */
 const char* EventWriter::write_monthly_calendar()
 {
     const char* fname = "test_calendar.pdf";
-    const char* problem = "there was a problem...";
+
+    HPDF_Doc pdf;
+    HPDF_Font font;
+    pdf = HPDF_New (error_handler, NULL);
+    if (!pdf) {
+        printf ("error: cannot create PdfDoc object\n");
+        return "failed";
+    }
+    if (setjmp(env)) {
+        HPDF_Free (pdf);
+        return "failed";
+    }
+    font = HPDF_GetFont (pdf, "Helvetica", NULL);
+
     stringstream ss;//create a stringstream     
     if (eventMap_ != NULL && eventMap_->size() > 0){
         map< int, list<Event> >::iterator m_itr;
@@ -98,46 +113,27 @@ const char* EventWriter::write_monthly_calendar()
             m_itr->second.sort();
             boost::gregorian::date startDate(m_itr->second.begin()->Start().date());
             int stYear = (int)startDate.year();
-            const char* it_val = write_monthly_calendar(m_itr->first, stYear);
-            ss << it_val << "-";
-        }
-        string retString = ss.str();
-        return retString.c_str();        
+            write_monthly_calendar_page(pdf, font, m_itr->first, stYear);
+        }          
     }      
     
-    return problem;
+    HPDF_SaveToFile (pdf, fname);
+    HPDF_Free (pdf);
+    return fname;
 }
 
-const char* EventWriter::write_monthly_calendar(int month, int year)
+void EventWriter::write_monthly_calendar_page(HPDF_Doc pdf, HPDF_Font font, int month, int year)
 {
     using namespace boost::gregorian;
 
     stringstream titleStream;//create a stringstream
     titleStream << months[month - 1] << " " << year;//add number to the stream
     string tstring = titleStream.str();
-    const char* page_title = tstring.c_str();
-    //const char* page_title = "Calendar Test";
-    const char* fname = "test_calendar.pdf"; 
+    const char* page_title = tstring.c_str();  
 
-    HPDF_Doc pdf;
-    HPDF_Font font;
     HPDF_Page page;
     float tw;
     int rowNum;
-
-    pdf = HPDF_New (error_handler, NULL);
-    if (!pdf) {
-        printf ("error: cannot create PdfDoc object\n");
-        return "failed";
-    }
-
-    if (setjmp(env)) {
-        HPDF_Free (pdf);
-        return "failed";
-    }
-
-    /* create default font */
-    font = HPDF_GetFont (pdf, "Helvetica", NULL);
 
     /* add new page object w/ A4 size and landscape orientation */
     page = HPDF_AddPage (pdf);
@@ -223,14 +219,7 @@ const char* EventWriter::write_monthly_calendar(int month, int year)
     
     HPDF_Page_SetFontAndSize (page, font, 8);
     write_events(page, dayHeight, dayWidth, month, year, firstDayNum, rowNum, (int)endOfMonth.day().as_number());
-    cout << "after writing events" << endl;
-    /* save the document to a file */
-    HPDF_SaveToFile (pdf, fname);
-
-    /* clean up */
-    HPDF_Free (pdf);
-
-    return fname;
+    cout << "after writing events" << endl;    
 }
 
 
