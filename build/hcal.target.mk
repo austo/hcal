@@ -5,42 +5,34 @@ TARGET := hcal
 DEFS_Debug := \
 	'-D_LARGEFILE_SOURCE' \
 	'-D_FILE_OFFSET_BITS=64' \
-	'-D_DARWIN_USE_64_BIT_INODE=1' \
 	'-DBUILDING_NODE_EXTENSION' \
 	'-DDEBUG' \
 	'-D_DEBUG'
 
 # Flags passed to all source files.
 CFLAGS_Debug := \
-	-Os \
-	-gdwarf-2 \
-	-mmacosx-version-min=10.5 \
-	-arch x86_64 \
+	-fPIC \
 	-Wall \
-	-Wendif-labels \
-	-W \
-	-Wno-unused-parameter
+	-Wextra \
+	-Wno-unused-parameter \
+	-pthread \
+	-m64 \
+	-Wall \
+	-fexceptions \
+	-g \
+	-O0
 
 # Flags passed to only C files.
-CFLAGS_C_Debug := \
-	-fno-strict-aliasing
+CFLAGS_C_Debug :=
 
 # Flags passed to only C++ files.
 CFLAGS_CC_Debug := \
-	-fno-rtti \
-	-fno-threadsafe-statics \
-	-fno-strict-aliasing
-
-# Flags passed to only ObjC files.
-CFLAGS_OBJC_Debug :=
-
-# Flags passed to only ObjC++ files.
-CFLAGS_OBJCC_Debug :=
+	-fno-rtti
 
 INCS_Debug := \
-	-I/Users/austin/.node-gyp/0.8.9/src \
-	-I/Users/austin/.node-gyp/0.8.9/deps/uv/include \
-	-I/Users/austin/.node-gyp/0.8.9/deps/v8/include \
+	-I/home/austin/node/src \
+	-I/home/austin/node/deps/uv/include \
+	-I/home/austin/node/deps/v8/include \
 	-I/usr/local/boost_1_52_0/boost/date_time \
 	-I/usr/local/boost_1_52_0/boost \
 	-I/usr/local/boost_1_52_0/boost/exception \
@@ -49,40 +41,33 @@ INCS_Debug := \
 DEFS_Release := \
 	'-D_LARGEFILE_SOURCE' \
 	'-D_FILE_OFFSET_BITS=64' \
-	'-D_DARWIN_USE_64_BIT_INODE=1' \
 	'-DBUILDING_NODE_EXTENSION'
 
 # Flags passed to all source files.
 CFLAGS_Release := \
-	-Os \
-	-gdwarf-2 \
-	-mmacosx-version-min=10.5 \
-	-arch x86_64 \
+	-fPIC \
 	-Wall \
-	-Wendif-labels \
-	-W \
-	-Wno-unused-parameter
+	-Wextra \
+	-Wno-unused-parameter \
+	-pthread \
+	-m64 \
+	-Wall \
+	-fexceptions \
+	-O2 \
+	-fno-strict-aliasing \
+	-fno-tree-vrp
 
 # Flags passed to only C files.
-CFLAGS_C_Release := \
-	-fno-strict-aliasing
+CFLAGS_C_Release :=
 
 # Flags passed to only C++ files.
 CFLAGS_CC_Release := \
-	-fno-rtti \
-	-fno-threadsafe-statics \
-	-fno-strict-aliasing
-
-# Flags passed to only ObjC files.
-CFLAGS_OBJC_Release :=
-
-# Flags passed to only ObjC++ files.
-CFLAGS_OBJCC_Release :=
+	-fno-rtti
 
 INCS_Release := \
-	-I/Users/austin/.node-gyp/0.8.9/src \
-	-I/Users/austin/.node-gyp/0.8.9/deps/uv/include \
-	-I/Users/austin/.node-gyp/0.8.9/deps/v8/include \
+	-I/home/austin/node/src \
+	-I/home/austin/node/deps/uv/include \
+	-I/home/austin/node/deps/v8/include \
 	-I/usr/local/boost_1_52_0/boost/date_time \
 	-I/usr/local/boost_1_52_0/boost \
 	-I/usr/local/boost_1_52_0/boost/exception \
@@ -102,8 +87,6 @@ all_deps += $(OBJS)
 $(OBJS): TOOLSET := $(TOOLSET)
 $(OBJS): GYP_CFLAGS := $(DEFS_$(BUILDTYPE)) $(INCS_$(BUILDTYPE))  $(CFLAGS_$(BUILDTYPE)) $(CFLAGS_C_$(BUILDTYPE))
 $(OBJS): GYP_CXXFLAGS := $(DEFS_$(BUILDTYPE)) $(INCS_$(BUILDTYPE))  $(CFLAGS_$(BUILDTYPE)) $(CFLAGS_CC_$(BUILDTYPE))
-$(OBJS): GYP_OBJCFLAGS := $(DEFS_$(BUILDTYPE)) $(INCS_$(BUILDTYPE))  $(CFLAGS_$(BUILDTYPE)) $(CFLAGS_C_$(BUILDTYPE)) $(CFLAGS_OBJC_$(BUILDTYPE))
-$(OBJS): GYP_OBJCXXFLAGS := $(DEFS_$(BUILDTYPE)) $(INCS_$(BUILDTYPE))  $(CFLAGS_$(BUILDTYPE)) $(CFLAGS_CC_$(BUILDTYPE)) $(CFLAGS_OBJCC_$(BUILDTYPE))
 
 # Suffix rules, putting all outputs into $(obj).
 
@@ -121,46 +104,42 @@ $(obj).$(TOOLSET)/$(TARGET)/%.o: $(obj)/%.cc FORCE_DO_CMD
 # End of this set of suffix rules
 ### Rules for final target.
 LDFLAGS_Debug := \
-	-Wl,-search_paths_first \
-	-mmacosx-version-min=10.5 \
-	-arch x86_64 \
-	-L$(builddir) \
-	-install_name @rpath/hcal.node
-
-LIBTOOLFLAGS_Debug := \
-	-Wl,-search_paths_first
+	-pthread \
+	-rdynamic \
+	-m64 \
+	-L/usr/local/boost_1_52_0/stage/lib
 
 LDFLAGS_Release := \
-	-Wl,-search_paths_first \
-	-mmacosx-version-min=10.5 \
-	-arch x86_64 \
-	-L$(builddir) \
-	-install_name @rpath/hcal.node
-
-LIBTOOLFLAGS_Release := \
-	-Wl,-search_paths_first
+	-pthread \
+	-rdynamic \
+	-m64 \
+	-L/usr/local/boost_1_52_0/stage/lib
 
 LIBS := \
-	-undefined dynamic_lookup \
 	-lhpdf \
 	-lboost_date_time \
 	-lboost_exception
 
-$(builddir)/hcal.node: GYP_LDFLAGS := $(LDFLAGS_$(BUILDTYPE))
-$(builddir)/hcal.node: LIBS := $(LIBS)
-$(builddir)/hcal.node: GYP_LIBTOOLFLAGS := $(LIBTOOLFLAGS_$(BUILDTYPE))
-$(builddir)/hcal.node: TOOLSET := $(TOOLSET)
-$(builddir)/hcal.node: $(OBJS) FORCE_DO_CMD
+$(obj).target/hcal.node: GYP_LDFLAGS := $(LDFLAGS_$(BUILDTYPE))
+$(obj).target/hcal.node: LIBS := $(LIBS)
+$(obj).target/hcal.node: TOOLSET := $(TOOLSET)
+$(obj).target/hcal.node: $(OBJS) FORCE_DO_CMD
 	$(call do_cmd,solink_module)
 
-all_deps += $(builddir)/hcal.node
+all_deps += $(obj).target/hcal.node
 # Add target alias
 .PHONY: hcal
 hcal: $(builddir)/hcal.node
 
+# Copy this to the executable output path.
+$(builddir)/hcal.node: TOOLSET := $(TOOLSET)
+$(builddir)/hcal.node: $(obj).target/hcal.node FORCE_DO_CMD
+	$(call do_cmd,copy)
+
+all_deps += $(builddir)/hcal.node
 # Short alias for building this executable.
 .PHONY: hcal.node
-hcal.node: $(builddir)/hcal.node
+hcal.node: $(obj).target/hcal.node $(builddir)/hcal.node
 
 # Add executable to "all" target.
 .PHONY: all

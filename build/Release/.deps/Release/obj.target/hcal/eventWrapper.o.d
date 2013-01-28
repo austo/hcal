@@ -1,30 +1,21 @@
-cmd_Release/obj.target/hcal/eventWrapper.o := c++ '-D_LARGEFILE_SOURCE' '-D_FILE_OFFSET_BITS=64' '-D_DARWIN_USE_64_BIT_INODE=1' '-DBUILDING_NODE_EXTENSION' -I/Users/austin/.node-gyp/0.8.9/src -I/Users/austin/.node-gyp/0.8.9/deps/uv/include -I/Users/austin/.node-gyp/0.8.9/deps/v8/include -I/usr/local/boost_1_52_0/boost/date_time -I/usr/local/boost_1_52_0/boost -I/usr/local/boost_1_52_0/boost/exception -I/usr/local/boost_1_52_0  -Os -gdwarf-2 -mmacosx-version-min=10.5 -arch x86_64 -Wall -Wendif-labels -W -Wno-unused-parameter -fno-rtti -fno-threadsafe-statics -fno-strict-aliasing -MMD -MF ./Release/.deps/Release/obj.target/hcal/eventWrapper.o.d.raw  -c -o Release/obj.target/hcal/eventWrapper.o ../eventWrapper.cc
+cmd_Release/obj.target/hcal/eventWrapper.o := g++ '-D_LARGEFILE_SOURCE' '-D_FILE_OFFSET_BITS=64' '-DBUILDING_NODE_EXTENSION' -I/home/austin/node/src -I/home/austin/node/deps/uv/include -I/home/austin/node/deps/v8/include -I/usr/local/boost_1_52_0/boost/date_time -I/usr/local/boost_1_52_0/boost -I/usr/local/boost_1_52_0/boost/exception -I/usr/local/boost_1_52_0  -fPIC -Wall -Wextra -Wno-unused-parameter -pthread -m64 -Wall -fexceptions -O2 -fno-strict-aliasing -fno-tree-vrp -fno-rtti -MMD -MF ./Release/.deps/Release/obj.target/hcal/eventWrapper.o.d.raw  -c -o Release/obj.target/hcal/eventWrapper.o ../eventWrapper.cc
 Release/obj.target/hcal/eventWrapper.o: ../eventWrapper.cc \
-  /Users/austin/.node-gyp/0.8.9/src/node.h \
-  /Users/austin/.node-gyp/0.8.9/deps/uv/include/uv.h \
-  /Users/austin/.node-gyp/0.8.9/deps/uv/include/ares.h \
-  /Users/austin/.node-gyp/0.8.9/deps/uv/include/ares_version.h \
-  /Users/austin/.node-gyp/0.8.9/deps/uv/include/uv-private/uv-unix.h \
-  /Users/austin/.node-gyp/0.8.9/deps/uv/include/uv-private/ngx-queue.h \
-  /Users/austin/.node-gyp/0.8.9/deps/uv/include/uv-private/ev.h \
-  /Users/austin/.node-gyp/0.8.9/deps/uv/include/uv-private/eio.h \
-  /Users/austin/.node-gyp/0.8.9/deps/v8/include/v8.h \
-  /Users/austin/.node-gyp/0.8.9/deps/v8/include/v8stdint.h \
-  /Users/austin/.node-gyp/0.8.9/src/node_object_wrap.h \
-  /Users/austin/.node-gyp/0.8.9/src/ev-emul.h \
-  /Users/austin/.node-gyp/0.8.9/src/eio-emul.h ../eventWrapper.h
+ /home/austin/node/src/node.h /home/austin/node/deps/uv/include/uv.h \
+ /home/austin/node/deps/uv/include/uv-private/uv-unix.h \
+ /home/austin/node/deps/uv/include/uv-private/ngx-queue.h \
+ /home/austin/node/deps/uv/include/uv-private/uv-linux.h \
+ /home/austin/node/deps/v8/include/v8.h \
+ /home/austin/node/deps/v8/include/v8stdint.h \
+ /home/austin/node/src/node_object_wrap.h /home/austin/node/src/node.h \
+ ../eventWrapper.h
 ../eventWrapper.cc:
-/Users/austin/.node-gyp/0.8.9/src/node.h:
-/Users/austin/.node-gyp/0.8.9/deps/uv/include/uv.h:
-/Users/austin/.node-gyp/0.8.9/deps/uv/include/ares.h:
-/Users/austin/.node-gyp/0.8.9/deps/uv/include/ares_version.h:
-/Users/austin/.node-gyp/0.8.9/deps/uv/include/uv-private/uv-unix.h:
-/Users/austin/.node-gyp/0.8.9/deps/uv/include/uv-private/ngx-queue.h:
-/Users/austin/.node-gyp/0.8.9/deps/uv/include/uv-private/ev.h:
-/Users/austin/.node-gyp/0.8.9/deps/uv/include/uv-private/eio.h:
-/Users/austin/.node-gyp/0.8.9/deps/v8/include/v8.h:
-/Users/austin/.node-gyp/0.8.9/deps/v8/include/v8stdint.h:
-/Users/austin/.node-gyp/0.8.9/src/node_object_wrap.h:
-/Users/austin/.node-gyp/0.8.9/src/ev-emul.h:
-/Users/austin/.node-gyp/0.8.9/src/eio-emul.h:
+/home/austin/node/src/node.h:
+/home/austin/node/deps/uv/include/uv.h:
+/home/austin/node/deps/uv/include/uv-private/uv-unix.h:
+/home/austin/node/deps/uv/include/uv-private/ngx-queue.h:
+/home/austin/node/deps/uv/include/uv-private/uv-linux.h:
+/home/austin/node/deps/v8/include/v8.h:
+/home/austin/node/deps/v8/include/v8stdint.h:
+/home/austin/node/src/node_object_wrap.h:
+/home/austin/node/src/node.h:
 ../eventWrapper.h:

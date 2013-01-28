@@ -247,9 +247,10 @@ void EventWriter::write_events( HPDF_Page page,
     vector<int> rowArray = build_row_array(rows, firstDayNum, daysInMonth);
     list<Event>::const_iterator i;
     int evtMargin = MARGIN + 5;
-    float evtHeight = (cellHeight - 10) / 5;
+    float evtHeight = (cellHeight - 15) / 5;
     int c = 1;
     try{
+        int dailyEvtCount = 0, currentDateNum = 0;
         for (i = (*eventMap_)[monthOrdinal].begin(); i != (*eventMap_)[monthOrdinal].end(); ++i){
             cout << "write event loop iteration " << c << endl;
             c += 1;
@@ -262,10 +263,17 @@ void EventWriter::write_events( HPDF_Page page,
             int dayNum = (int)evtDate.day_of_week();
             int dateNum = (int)evtDate.day().as_number();
             int rowNum = get_day_row(&rowArray, dateNum);
-            
+            if (dateNum == currentDateNum){
+                dailyEvtCount += 1;
+            }
+            else{
+                dailyEvtCount = 0;
+                currentDateNum = dateNum;
+            }
+
             //Write start and event title in cellHeight/rows
             float x_offset = (cellWidth * dayNum) + evtMargin;
-            float y_offset = ((cellHeight * rowNum) + MARGIN) - 15;
+            float y_offset = ((cellHeight * rowNum) + MARGIN) - (15 + (dailyEvtCount * evtHeight));
 
             boost::posix_time::time_duration stdur = i->Start().time_of_day();
             long hours = stdur.hours();
