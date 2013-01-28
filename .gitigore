@@ -3,3 +3,5 @@
 *.pdf
 build.sh
 build/
+core
+_hpdfh
