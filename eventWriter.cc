@@ -265,7 +265,7 @@ void EventWriter::write_events( HPDF_Page page,
             boost::gregorian::date evtDate(i->Start().date());
 
             //Only add current month's events to calendar
-            if ((int)evtDate.month().as_number() != monthOrdinal || (int)evtDate.year() != year){
+            if ((int)evtDate.year() != year){
                 continue;
             }
             int dayNum = (int)evtDate.day_of_week();
