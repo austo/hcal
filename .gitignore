@@ -1,0 +1,7 @@
+*.sublime-project
+*.sublime-workspace
+*.pdf
+build.sh
+build/
+core
+_hpdfh
