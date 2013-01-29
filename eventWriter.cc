@@ -7,6 +7,7 @@
 #include <new>
 #include <sstream>
 #include <iostream>
+#include <stdexcept>
 #include "eventWriter.h"
 #include "eventWrapper.h"
 #include "event.h"
@@ -30,8 +31,11 @@ const char* EventWriter::months[] = {"January", "February", "March", "April", "M
     "July", "August", "September", "October", "November", "December"};
 
 EventWriter::EventWriter(v8::Array* arr, View v){
-    view_ = v;
     eventMap_ = GetEventMap(arr);
+    if (eventMap_ == 0){
+        throw runtime_error("Unable to create event map.");
+    }
+    view_ = v;
 }
 
 EventWriter::EventWriter()
@@ -56,7 +60,7 @@ map< int, list<Event> >* EventWriter::GetEventMap(v8::Array* arr){
         cout << "error allocating memory..." << endl;
     }
 
-    if (retVal != 0){
+    if (retVal){
         //TODO: handle other views (function pointers)
         for (uint32_t i = 0; i < len; ++i){
             v8::Local<v8::Object> obj = arr->CloneElementAt(i);
