@@ -22,6 +22,9 @@
           'xcode_settings': {
             'GCC_ENABLE_CPP_EXCEPTIONS': 'YES'
           }
+        }],
+        ['OS=="linux"', {
+          'ldflags': [ '-L/usr/local/boost_1_52_0/stage/lib']
         }]
       ]
     }
