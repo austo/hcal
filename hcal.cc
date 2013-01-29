@@ -14,6 +14,7 @@
 #include <list>
 #include <map>
 #include <hpdf.h>
+#include <exception>
 #include "throw_exception.hpp"
 #include "posix_time/posix_time.hpp"
 #include "gregorian/gregorian.hpp"
@@ -24,7 +25,6 @@
 
 //TODO: accept as param from JS
 #define OFFSET -5 //Cheap way of getting UTC offset to boost::date_time without defining timezone
-
 #define THROW(msg) return ThrowException(Exception::Error(String::New(msg)));
 
 using namespace v8;

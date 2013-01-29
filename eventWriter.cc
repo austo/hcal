@@ -32,12 +32,11 @@ const char* EventWriter::months[] = {"January", "February", "March", "April", "M
     "July", "August", "September", "October", "November", "December"};
 
 EventWriter::EventWriter(v8::Array* arr, View v){
-    eventMap_ = 0;
-    // eventMap_ = GetEventMap(arr);
+    view_ = v;
+    eventMap_ = get_evt_map(arr);
     if (eventMap_ == 0){
         throw runtime_error(ERR_CTOR_EMAP);
-    }
-    view_ = v;
+    }    
 }
 
 EventWriter::EventWriter()
@@ -45,13 +44,15 @@ EventWriter::EventWriter()
     eventMap_ = new map< int, list<Event> >();
 }
 
-//TODO: come up with a better way of checking for a non null events_ vector
 EventWriter::~EventWriter()
 {
     if (eventMap_) delete eventMap_;
 }
 
-map< int, list<Event> >* EventWriter::GetEventMap(v8::Array* arr){
+/*  
+    TODO: handle other views (function pointers - maybe not really necessary inside a class)
+*/
+map< int, list<Event> >* EventWriter::get_evt_map(v8::Array* arr){
     map< int, list<Event> >* retVal = 0;
     uint32_t len = arr->Length();
 
@@ -59,24 +60,41 @@ map< int, list<Event> >* EventWriter::GetEventMap(v8::Array* arr){
         retVal = new map< int, list<Event> >();
     }
     catch(bad_alloc&){
+        retVal = 0;
         cout << "error allocating memory..." << endl;
     }
 
     if (retVal){
-        //TODO: handle other views (function pointers)
-        for (uint32_t i = 0; i < len; ++i){
-            v8::Local<v8::Object> obj = arr->CloneElementAt(i);
-            if (!obj.IsEmpty()) {            
-                EventWrapper* evtWrp = node::ObjectWrap::Unwrap<EventWrapper>(obj);
-                Event evt = Event(evtWrp);
-                int monthNo = (int)evt.Start().date().month().as_number();
-                (*retVal)[monthNo].push_back(evt);
-            }
-        }
+        package_evt_map(retVal, arr, len);          
     }
-    return retVal;  
+    return retVal;
 }
 
+//TODO: handle case when events span multiple years
+void EventWriter::package_evt_map(map< int, list<Event> >* emap, v8::Array* arr, uint32_t len){
+    int index = 0;
+    for (uint32_t i = 0; i < len; ++i){
+        v8::Local<v8::Object> obj = arr->CloneElementAt(i);
+        if (!obj.IsEmpty()) {            
+            EventWrapper* evtWrp = node::ObjectWrap::Unwrap<EventWrapper>(obj);
+            Event evt = Event(evtWrp);
+            switch(view_){
+                case month:
+                    index = (int)evt.Start().date().month().as_number();
+                    break;
+                case week:
+                    index = evt.Start().date().week_number();
+                    break;
+                case day:
+                    index = (int)evt.Start().date().day_of_year();
+                    break;
+                default:
+                    break;
+            }
+            (*emap)[index].push_back(evt);
+        }
+    }
+}
 
 const char* EventWriter::write_calendar(){
     const char* not_implemented = "not done yet...";
@@ -160,7 +178,6 @@ void EventWriter::write_monthly_calendar_page(HPDF_Doc pdf, HPDF_Font font, int 
     HPDF_Page_SetFontAndSize (page, font, 10);
     HPDF_Page_SetLineWidth (page, 1);
 
-    //TODO: refactor into class and methods 
     float dayWidth = ((float)pageUsedWidth / 7);
 
     //vertical lines
@@ -168,9 +185,7 @@ void EventWriter::write_monthly_calendar_page(HPDF_Doc pdf, HPDF_Font font, int 
     for (i = 1; i < 8; i++)
     {
         float line_x = MARGIN + (dayWidth * i);
-        HPDF_Page_MoveTo (page, line_x, MARGIN);
-        HPDF_Page_LineTo (page, line_x, MARGIN + pageUsedHeight);
-        HPDF_Page_Stroke (page);
+        draw_line(page, line_x, MARGIN, line_x, MARGIN + pageUsedHeight);        
     }
 
     //weekdays
@@ -218,9 +233,7 @@ void EventWriter::write_monthly_calendar_page(HPDF_Doc pdf, HPDF_Font font, int 
     for (i = 1; i < rowNum; i++)
     {
         float line_y = MARGIN + (dayHeight * i);
-        HPDF_Page_MoveTo (page, MARGIN, line_y);
-        HPDF_Page_LineTo (page, MARGIN + pageUsedWidth, line_y);
-        HPDF_Page_Stroke (page);
+        draw_line(page, MARGIN, line_y, MARGIN + pageUsedWidth, line_y);        
     }
     
     HPDF_Page_SetFontAndSize (page, font, 8);
@@ -341,4 +354,10 @@ void EventWriter::write_text(HPDF_Page page, float x_offset, float y_offset, con
     HPDF_Page_MoveTextPos (page, x_offset, y_offset);
     HPDF_Page_ShowText (page, text);
     HPDF_Page_EndText (page);
+}
+
+void EventWriter::draw_line(HPDF_Page page, float x_start, float y_start, float x_end, float y_end){
+    HPDF_Page_MoveTo (page, x_start, y_start);
+    HPDF_Page_LineTo (page, x_end, y_end);
+    HPDF_Page_Stroke (page);
 }
