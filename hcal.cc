@@ -24,6 +24,9 @@
 
 //TODO: accept as param from JS
 #define OFFSET -5 //Cheap way of getting UTC offset to boost::date_time without defining timezone
+
+#define THROW(msg) return ThrowException(Exception::Error(String::New(msg)));
+
 using namespace v8;
 
 //extracts a C string from a V8 Utf8Value.
@@ -129,10 +132,15 @@ Handle<Value> BuildCalendar(const Arguments& args) {
         String::AsciiValue viewStr(args[1]->ToString());
         if (strcmp(*viewStr, "month") == 0){
             const unsigned argc = 1;
-            EventWriter evtWtr = EventWriter(arr, EventWriter::month);
-            const char* fname = evtWtr.write_calendar();
-            Local<Value> argv[argc] = { Local<Value>::New(String::New(fname)) };
-            cb->Call(Context::GetCurrent()->Global(), argc, argv);
+            try{
+                EventWriter evtWtr = EventWriter(arr, EventWriter::month);
+                const char* fname = evtWtr.write_calendar();
+                Local<Value> argv[argc] = { Local<Value>::New(String::New(fname)) };
+                cb->Call(Context::GetCurrent()->Global(), argc, argv);
+            }
+            catch(std::exception& e){
+                THROW(e.what());
+            }
         }
     }
     return scope.Close(Undefined());

@@ -18,6 +18,6 @@ console.log(ret);
 console.log("First event duration: " + a.duration() + " minutes");
 
 hcal.buildCalendar(events, "month", function(fileName){
-    console.log("Calendar file: " + fileName);
+    console.log("Calendar file: " + fileName);    
 });
 //console.log(notRet);

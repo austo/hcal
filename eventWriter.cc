@@ -16,6 +16,7 @@
 using namespace std;
 
 #define MARGIN 50
+#define ERR_CTOR_EMAP "EventWriter: Constructor unable to create event map."
 
 jmp_buf env;
 
@@ -31,9 +32,10 @@ const char* EventWriter::months[] = {"January", "February", "March", "April", "M
     "July", "August", "September", "October", "November", "December"};
 
 EventWriter::EventWriter(v8::Array* arr, View v){
-    eventMap_ = GetEventMap(arr);
+    eventMap_ = 0;
+    // eventMap_ = GetEventMap(arr);
     if (eventMap_ == 0){
-        throw runtime_error("Unable to create event map.");
+        throw runtime_error(ERR_CTOR_EMAP);
     }
     view_ = v;
 }
