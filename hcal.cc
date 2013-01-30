@@ -127,21 +127,21 @@ Handle<Value> BuildCalendar(const Arguments& args) {
         Array* arr = Array::Cast(*args[0]);
         Local<Function> cb = Local<Function>::Cast(args[2]);
         String::AsciiValue viewStr(args[1]->ToString());
-        if (strcmp(*viewStr, "month") == 0){
-            const unsigned argc = 1;
-            try{
-                EventWriter evtWtr = EventWriter(arr, EventWriter::month);
-                const char* fname = evtWtr.write_calendar();
-                Local<Value> argv[argc] = { Local<Value>::New(String::New(fname)) };
-                cb->Call(Context::GetCurrent()->Global(), argc, argv);
-            }
-            catch(std::exception& e){
-                THROW(e.what());
-            }
+        const unsigned argc = 1;
+        try{
+            EventWriter::View view = EventWriter::get_view(viewStr);
+            EventWriter evtWtr = EventWriter(arr, view);
+            const char* fname = evtWtr.write_calendar();
+            Local<Value> argv[argc] = { Local<Value>::New(String::New(fname)) };
+            cb->Call(Context::GetCurrent()->Global(), argc, argv);
         }
+        catch(std::exception& e){
+            THROW(e.what());
+        }    
     }
     return scope.Close(Undefined());
 }
+
 
 void InitAll(Handle<Object> target) {
     EventWrapper::Init();

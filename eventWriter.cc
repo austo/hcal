@@ -1,6 +1,5 @@
 #include <node.h>
 #include <hpdf.h>
-#include <setjmp.h>
 #include <cstdlib>
 #include <cstdio>
 #include <cstring>
@@ -18,12 +17,14 @@ using namespace std;
 #define MARGIN 50
 #define ERR_CTOR_EMAP "EventWriter: Constructor unable to create event map."
 #define ERR_WRITE_MONTHLY_EVENTS "EventWriter: Error writing monthly events."
+#define ERR_UREC_VIEW "EventWriter: Unrecognized calendar view."
+#define ERR_CREATE_PDF "EventWriter: failed to create HPDF object."
 
-jmp_buf env;
 void error_handler (HPDF_STATUS error_no, HPDF_STATUS detail_no, void *user_data)
 {
-    printf ("ERROR: error_no=%04X, detail_no=%u\n", (HPDF_UINT)error_no, (HPDF_UINT)detail_no);
-    longjmp(env, 1);
+    stringstream ss;
+    ss << "ERROR: error_no = " << (HPDF_UINT)error_no << "\ndetail_no = " << (HPDF_UINT)detail_no << endl;    
+    throw runtime_error(ss.str());
 }
 
 const char* EventWriter::weekdays[] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
@@ -118,20 +119,10 @@ const char* EventWriter::write_calendar()
 */
 const char* EventWriter::write_monthly_calendar()
 {
-    const char* fname = "test_calendar.pdf";
+    const char* fname = "monthly_calendar.pdf";
 
-    HPDF_Doc pdf;
-    HPDF_Font font;
-    pdf = HPDF_New(error_handler, NULL);
-    if (!pdf) {
-        printf ("error: cannot create PdfDoc object\n");
-        return "failed";
-    }
-    if (setjmp(env)) {
-        HPDF_Free(pdf);
-        return "failed";
-    }
-    font = HPDF_GetFont(pdf, "Helvetica", NULL);
+    HPDF_Doc pdf = get_pdf();
+    HPDF_Font font = HPDF_GetFont(pdf, "Helvetica", NULL);
 
     stringstream ss;    
     if (eventMap_ != NULL && eventMap_->size() > 0){
@@ -142,10 +133,10 @@ const char* EventWriter::write_monthly_calendar()
             int stYear = (int)startDate.year();
             write_monthly_calendar_page(pdf, font, mitr->first, stYear);
         }          
-    }      
-    
-    HPDF_SaveToFile (pdf, fname);
-    HPDF_Free (pdf);
+    }
+
+    HPDF_SaveToFile(pdf, fname);
+    HPDF_Free(pdf);
     return fname;
 }
 
@@ -373,4 +364,36 @@ void EventWriter::draw_line(HPDF_Page page, float x_start, float y_start, float 
     HPDF_Page_MoveTo (page, x_start, y_start);
     HPDF_Page_LineTo (page, x_end, y_end);
     HPDF_Page_Stroke (page);
+}
+
+EventWriter::View EventWriter::get_view(v8::String::AsciiValue& viewStr)
+{
+    if (strcmp(*viewStr, "month") == 0){
+        return EventWriter::month;
+    }
+    else if (strcmp(*viewStr, "week") == 0){
+        return EventWriter::week;
+    }
+    else if (strcmp(*viewStr, "day") == 0){
+        return EventWriter::day;
+    }
+    else{
+        throw runtime_error(ERR_UREC_VIEW);
+    }
+}
+
+HPDF_Doc EventWriter::get_pdf()
+{
+    HPDF_Doc pdf;
+    try{
+        pdf = HPDF_New(error_handler, NULL);
+        return pdf;
+    }
+    catch(exception& e){
+        HPDF_Free(pdf);
+        throw runtime_error(e.what());
+    }
+    if (!pdf) {
+        throw runtime_error(ERR_CREATE_PDF);        
+    }
 }

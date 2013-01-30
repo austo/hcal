@@ -18,6 +18,7 @@ public:
     EventWriter();
     ~EventWriter();
     const char* write_calendar();
+    static EventWriter::View get_view(v8::String::AsciiValue&);
 
 private:
     View view_;
@@ -31,6 +32,7 @@ private:
     void write_events(HPDF_Page, float, float, int, int, int, int, int);
     static std::vector<int> build_row_array(int, int, int);
     static int get_day_row(std::vector<int>*, int);
+    static HPDF_Doc get_pdf();
     static void write_text(HPDF_Page, float, float, const char*);
     static void draw_line(HPDF_Page, float, float, float, float);
 };
