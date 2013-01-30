@@ -28,12 +28,16 @@ private:
     static const char* weekdays[7];
     static const char* months[12];
     const char* write_monthly_calendar();
+    const char* write_weekly_calendar();
+    void write_weekday_cols(HPDF_Page, HPDF_Font, int, int);
     void write_monthly_calendar_page(HPDF_Doc, HPDF_Font, int, int);
     void write_events(HPDF_Page, float, float, int, int, int, int, int);
     static std::vector<int> build_row_array(int, int, int);
     static int get_day_row(std::vector<int>*, int);
     static HPDF_Doc get_pdf();
     static void write_text(HPDF_Page, float, float, const char*);
+    static void write_page_title(HPDF_Page, HPDF_Font, const char*);
+
     static void draw_line(HPDF_Page, float, float, float, float);
 };
 

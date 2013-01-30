@@ -115,7 +115,6 @@ const char* EventWriter::write_calendar()
     2. build calendar with correct view based on start date of first event
     3. (monthly calendar) using calculated dayCellHeight, place events in correct time-slot
         (five or six events per day - viewable)
-    TODO: create PDF in this method, pass PDF handle to worker overload
 */
 const char* EventWriter::write_monthly_calendar()
 {
@@ -140,6 +139,29 @@ const char* EventWriter::write_monthly_calendar()
     return fname;
 }
 
+const char* EventWriter::write_weekly_calendar()
+{
+    const char* fname = "weekly_calendar.pdf";
+
+    HPDF_Doc pdf = get_pdf();
+    HPDF_Font font = HPDF_GetFont(pdf, "Helvetica", NULL);
+
+    // stringstream ss;    
+    // if (eventMap_ != NULL && eventMap_->size() > 0){
+    //     map< int, list<Event> >::iterator mitr;
+    //     for (mitr = eventMap_->begin(); mitr != eventMap_->end(); ++mitr){
+    //         mitr->second.sort();
+    //         boost::gregorian::date startDate(mitr->second.begin()->Start().date());
+    //         int stYear = (int)startDate.year();
+    //         write_monthly_calendar_page(pdf, font, mitr->first, stYear);
+    //     }          
+    // }
+
+    HPDF_SaveToFile(pdf, fname);
+    HPDF_Free(pdf);
+    return fname;    
+}
+
 void EventWriter::write_monthly_calendar_page(HPDF_Doc pdf, HPDF_Font font, int month, int year)
 {
     using namespace boost::gregorian;
@@ -147,48 +169,18 @@ void EventWriter::write_monthly_calendar_page(HPDF_Doc pdf, HPDF_Font font, int 
     stringstream titleStream;
     titleStream << months[month - 1] << " " << year;
     string tstring = titleStream.str();
-    const char* page_title = tstring.c_str();  
+    const char* page_title = tstring.c_str();
 
-    HPDF_Page page;
-    float tw;
-    int rowNum;
-
-    /* add new letter-size page w/landscape orientation */
-    page = HPDF_AddPage(pdf);
+    //add new letter-size page w/landscape orientation
+    HPDF_Page page = HPDF_AddPage(pdf);
     HPDF_Page_SetSize(page, HPDF_PAGE_SIZE_LETTER, HPDF_PAGE_LANDSCAPE);
 
     //page usable area
     int pageUsedWidth = HPDF_Page_GetWidth(page) - 100;
-    int pageUsedHeight = HPDF_Page_GetHeight (page) - 125;
+    int pageUsedHeight = HPDF_Page_GetHeight(page) - 125;
 
-    HPDF_Page_SetLineWidth (page, 1);
-    HPDF_Page_Rectangle (page, MARGIN, MARGIN, pageUsedWidth, pageUsedHeight);
-    HPDF_Page_Stroke (page);
-
-    /* print the title of the page (with positioning center). */
-    HPDF_Page_SetFontAndSize(page, font, 20);
-    tw = HPDF_Page_TextWidth(page, page_title);
-    write_text(page, (HPDF_Page_GetWidth(page) - tw) / 2, HPDF_Page_GetHeight(page) - 40, page_title);
-    HPDF_Page_SetFontAndSize(page, font, 10);
-    HPDF_Page_SetLineWidth(page, 1);
-
-    float dayWidth = ((float)pageUsedWidth / 7);
-
-    //vertical lines
-    int i;
-    for (i = 1; i < 8; i++)
-    {
-        float line_x = MARGIN + (dayWidth * i);
-        draw_line(page, line_x, MARGIN, line_x, MARGIN + pageUsedHeight);        
-    }
-
-    //weekdays
-    float dayMargin = MARGIN + (dayWidth / 2);
-    for (i = 0; i < 7; i++){
-        tw = HPDF_Page_TextWidth(page, weekdays[i]);
-        float textpos = (dayMargin - (tw /2)) + (dayWidth * i);
-        write_text(page, textpos, HPDF_Page_GetHeight(page) - (MARGIN + 15), weekdays[i]);        
-    }
+    write_page_title(page, font, page_title);
+    write_weekday_cols(page, font, pageUsedWidth, pageUsedHeight);    
 
     //Use the calendar to get the last day of the month
     int eomDay = gregorian_calendar::end_of_month_day(year, month);
@@ -199,10 +191,11 @@ void EventWriter::write_monthly_calendar_page(HPDF_Doc pdf, HPDF_Font font, int 
     int firstDayNum = (int)ditr->day_of_week();
     int firstWeekDays = 8 - firstDayNum;
     int remainingDays = eomDay - firstWeekDays + 1; 
-    rowNum = remainingDays % 7 == 0 ? (remainingDays / 7) + 1 : (remainingDays / 7) + 2;
+    int rowNum = remainingDays % 7 == 0 ? (remainingDays / 7) + 1 : (remainingDays / 7) + 2;
     int currentRowNum = rowNum;
     float dayHeight = ((float)pageUsedHeight / rowNum);
-    
+    float dayWidth = ((float)pageUsedWidth / 7);
+
     //loop days & print each one in calendar box
     for (; ditr <= endOfMonth; ++ditr) {
         int dayNum = (int)ditr->day_of_week();
@@ -217,20 +210,20 @@ void EventWriter::write_monthly_calendar_page(HPDF_Doc pdf, HPDF_Font font, int 
         string dstring = ss.str();
         const char* dateNumChar = dstring.c_str();
 
-        tw = HPDF_Page_TextWidth(page, dateNumChar);
+        float tw = HPDF_Page_TextWidth(page, dateNumChar);
         float x_dayOffset = (dayWidth * dayNum) + ((dayWidth + MARGIN) - (tw + 2));
         float y_dayOffset = 40 + (dayHeight * currentRowNum);
         write_text(page, x_dayOffset, y_dayOffset, dateNumChar);        
     }
 
     //horizontal lines
-    for (i = 1; i < rowNum; i++)
+    for (int i = 1; i < rowNum; i++)
     {
         float line_y = MARGIN + (dayHeight * i);
         draw_line(page, MARGIN, line_y, MARGIN + pageUsedWidth, line_y);        
     }
     
-    HPDF_Page_SetFontAndSize (page, font, 8);
+    HPDF_Page_SetFontAndSize(page, font, 8);
     write_events(page, dayHeight, dayWidth, month, year, firstDayNum, rowNum, (int)endOfMonth.day().as_number());
     #ifdef __DEBUG__
     cout << "v8 - after writing events" << endl;
@@ -360,6 +353,16 @@ void EventWriter::write_text(HPDF_Page page, float x_offset, float y_offset, con
     HPDF_Page_EndText (page);
 }
 
+void EventWriter::write_page_title(HPDF_Page page, HPDF_Font font, const char* page_title)
+{
+    /* print the title of the page (with positioning center). */
+    HPDF_Page_SetFontAndSize(page, font, 20);
+    float tw = HPDF_Page_TextWidth(page, page_title);
+    write_text(page, (HPDF_Page_GetWidth(page) - tw) / 2, HPDF_Page_GetHeight(page) - 40, page_title);
+    HPDF_Page_SetFontAndSize(page, font, 10);
+    HPDF_Page_SetLineWidth(page, 1);
+}
+
 void EventWriter::draw_line(HPDF_Page page, float x_start, float y_start, float x_end, float y_end){
     HPDF_Page_MoveTo (page, x_start, y_start);
     HPDF_Page_LineTo (page, x_end, y_end);
@@ -382,18 +385,47 @@ EventWriter::View EventWriter::get_view(v8::String::AsciiValue& viewStr)
     }
 }
 
+
 HPDF_Doc EventWriter::get_pdf()
 {
-    HPDF_Doc pdf;
+    HPDF_Doc pdf = 0;
     try{
         pdf = HPDF_New(error_handler, NULL);
         return pdf;
     }
     catch(exception& e){
-        HPDF_Free(pdf);
+        if (pdf){
+            HPDF_Free(pdf);
+        }
         throw runtime_error(e.what());
     }
     if (!pdf) {
         throw runtime_error(ERR_CREATE_PDF);        
+    }
+}
+
+
+void EventWriter::write_weekday_cols(HPDF_Page page, HPDF_Font font, int pageUsedWidth, int pageUsedHeight)
+{
+    HPDF_Page_SetLineWidth(page, 1);
+    HPDF_Page_Rectangle(page, MARGIN, MARGIN, pageUsedWidth, pageUsedHeight);
+    HPDF_Page_Stroke(page);
+
+    float dayWidth = ((float)pageUsedWidth / 7);
+
+    //vertical lines
+    int i;
+    for (i = 1; i < 8; i++)
+    {
+        float line_x = MARGIN + (dayWidth * i);
+        draw_line(page, line_x, MARGIN, line_x, MARGIN + pageUsedHeight);        
+    }
+
+    //weekdays
+    float dayMargin = MARGIN + (dayWidth / 2);
+    for (i = 0; i < 7; i++){
+        float tw = HPDF_Page_TextWidth(page, weekdays[i]);
+        float textpos = (dayMargin - (tw /2)) + (dayWidth * i);
+        write_text(page, textpos, HPDF_Page_GetHeight(page) - (MARGIN + 15), weekdays[i]);        
     }
 }
