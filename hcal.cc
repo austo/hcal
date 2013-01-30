@@ -1,10 +1,7 @@
 #define BUILDING_NODE_EXTENSION
 #define __DEBUG__
 
-#ifdef __DEBUG__
 #include <iostream>
-#endif
-
 #include <node.h>
 #include <new>
 #include <ctime>

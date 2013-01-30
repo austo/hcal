@@ -17,13 +17,12 @@ using namespace std;
 
 #define MARGIN 50
 #define ERR_CTOR_EMAP "EventWriter: Constructor unable to create event map."
+#define ERR_WRITE_MONTHLY_EVENTS "EventWriter: Error writing monthly events."
 
 jmp_buf env;
-
 void error_handler (HPDF_STATUS error_no, HPDF_STATUS detail_no, void *user_data)
 {
-    printf ("ERROR: error_no=%04X, detail_no=%u\n", (HPDF_UINT)error_no,
-                (HPDF_UINT)detail_no);
+    printf ("ERROR: error_no=%04X, detail_no=%u\n", (HPDF_UINT)error_no, (HPDF_UINT)detail_no);
     longjmp(env, 1);
 }
 
@@ -31,7 +30,8 @@ const char* EventWriter::weekdays[] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri",
 const char* EventWriter::months[] = {"January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"};
 
-EventWriter::EventWriter(v8::Array* arr, View v){
+EventWriter::EventWriter(v8::Array* arr, View v)
+{
     view_ = v;
     eventMap_ = get_evt_map(arr);
     if (eventMap_ == 0){
@@ -52,7 +52,8 @@ EventWriter::~EventWriter()
 /*  
     TODO: handle other views (function pointers - maybe not really necessary inside a class)
 */
-map< int, list<Event> >* EventWriter::get_evt_map(v8::Array* arr){
+map< int, list<Event> >* EventWriter::get_evt_map(v8::Array* arr)
+{
     map< int, list<Event> >* retVal = 0;
     uint32_t len = arr->Length();
 
@@ -71,7 +72,8 @@ map< int, list<Event> >* EventWriter::get_evt_map(v8::Array* arr){
 }
 
 //TODO: handle case when events span multiple years
-void EventWriter::package_evt_map(map< int, list<Event> >* emap, v8::Array* arr, uint32_t len){
+void EventWriter::package_evt_map(map< int, list<Event> >* emap, v8::Array* arr, uint32_t len)
+{
     int index = 0;
     for (uint32_t i = 0; i < len; ++i){
         v8::Local<v8::Object> obj = arr->CloneElementAt(i);
@@ -96,7 +98,8 @@ void EventWriter::package_evt_map(map< int, list<Event> >* emap, v8::Array* arr,
     }
 }
 
-const char* EventWriter::write_calendar(){
+const char* EventWriter::write_calendar()
+{
     const char* not_implemented = "not done yet...";
     switch (view_){
         case month:
@@ -119,25 +122,25 @@ const char* EventWriter::write_monthly_calendar()
 
     HPDF_Doc pdf;
     HPDF_Font font;
-    pdf = HPDF_New (error_handler, NULL);
+    pdf = HPDF_New(error_handler, NULL);
     if (!pdf) {
         printf ("error: cannot create PdfDoc object\n");
         return "failed";
     }
     if (setjmp(env)) {
-        HPDF_Free (pdf);
+        HPDF_Free(pdf);
         return "failed";
     }
-    font = HPDF_GetFont (pdf, "Helvetica", NULL);
+    font = HPDF_GetFont(pdf, "Helvetica", NULL);
 
-    stringstream ss;//create a stringstream     
+    stringstream ss;    
     if (eventMap_ != NULL && eventMap_->size() > 0){
-        map< int, list<Event> >::iterator m_itr;
-        for (m_itr = eventMap_->begin(); m_itr != eventMap_->end(); ++m_itr){
-            m_itr->second.sort();
-            boost::gregorian::date startDate(m_itr->second.begin()->Start().date());
+        map< int, list<Event> >::iterator mitr;
+        for (mitr = eventMap_->begin(); mitr != eventMap_->end(); ++mitr){
+            mitr->second.sort();
+            boost::gregorian::date startDate(mitr->second.begin()->Start().date());
             int stYear = (int)startDate.year();
-            write_monthly_calendar_page(pdf, font, m_itr->first, stYear);
+            write_monthly_calendar_page(pdf, font, mitr->first, stYear);
         }          
     }      
     
@@ -150,8 +153,8 @@ void EventWriter::write_monthly_calendar_page(HPDF_Doc pdf, HPDF_Font font, int 
 {
     using namespace boost::gregorian;
 
-    stringstream titleStream;//create a stringstream
-    titleStream << months[month - 1] << " " << year;//add number to the stream
+    stringstream titleStream;
+    titleStream << months[month - 1] << " " << year;
     string tstring = titleStream.str();
     const char* page_title = tstring.c_str();  
 
@@ -159,9 +162,9 @@ void EventWriter::write_monthly_calendar_page(HPDF_Doc pdf, HPDF_Font font, int 
     float tw;
     int rowNum;
 
-    /* add new page object w/ A4 size and landscape orientation */
-    page = HPDF_AddPage (pdf);
-    HPDF_Page_SetSize (page, HPDF_PAGE_SIZE_LETTER, HPDF_PAGE_LANDSCAPE);
+    /* add new letter-size page w/landscape orientation */
+    page = HPDF_AddPage(pdf);
+    HPDF_Page_SetSize(page, HPDF_PAGE_SIZE_LETTER, HPDF_PAGE_LANDSCAPE);
 
     //page usable area
     int pageUsedWidth = HPDF_Page_GetWidth(page) - 100;
@@ -172,11 +175,11 @@ void EventWriter::write_monthly_calendar_page(HPDF_Doc pdf, HPDF_Font font, int 
     HPDF_Page_Stroke (page);
 
     /* print the title of the page (with positioning center). */
-    HPDF_Page_SetFontAndSize (page, font, 20);
-    tw = HPDF_Page_TextWidth (page, page_title);
-    write_text(page, (HPDF_Page_GetWidth(page) - tw) / 2, HPDF_Page_GetHeight (page) - 40, page_title);
-    HPDF_Page_SetFontAndSize (page, font, 10);
-    HPDF_Page_SetLineWidth (page, 1);
+    HPDF_Page_SetFontAndSize(page, font, 20);
+    tw = HPDF_Page_TextWidth(page, page_title);
+    write_text(page, (HPDF_Page_GetWidth(page) - tw) / 2, HPDF_Page_GetHeight(page) - 40, page_title);
+    HPDF_Page_SetFontAndSize(page, font, 10);
+    HPDF_Page_SetLineWidth(page, 1);
 
     float dayWidth = ((float)pageUsedWidth / 7);
 
@@ -191,9 +194,9 @@ void EventWriter::write_monthly_calendar_page(HPDF_Doc pdf, HPDF_Font font, int 
     //weekdays
     float dayMargin = MARGIN + (dayWidth / 2);
     for (i = 0; i < 7; i++){
-        tw = HPDF_Page_TextWidth (page, weekdays[i]);
+        tw = HPDF_Page_TextWidth(page, weekdays[i]);
         float textpos = (dayMargin - (tw /2)) + (dayWidth * i);
-        write_text(page, textpos, HPDF_Page_GetHeight (page) - (MARGIN + 15), weekdays[i]);        
+        write_text(page, textpos, HPDF_Page_GetHeight(page) - (MARGIN + 15), weekdays[i]);        
     }
 
     //Use the calendar to get the last day of the month
@@ -218,8 +221,8 @@ void EventWriter::write_monthly_calendar_page(HPDF_Doc pdf, HPDF_Font font, int 
                 currentRowNum -= 1;
             }
         }
-        stringstream ss;//create a stringstream
-        ss << dateNum;//add number to the stream
+        stringstream ss;
+        ss << dateNum;
         string dstring = ss.str();
         const char* dateNumChar = dstring.c_str();
 
@@ -238,7 +241,9 @@ void EventWriter::write_monthly_calendar_page(HPDF_Doc pdf, HPDF_Font font, int 
     
     HPDF_Page_SetFontAndSize (page, font, 8);
     write_events(page, dayHeight, dayWidth, month, year, firstDayNum, rowNum, (int)endOfMonth.day().as_number());
-    cout << "after writing events" << endl;    
+    #ifdef __DEBUG__
+    cout << "v8 - after writing events" << endl;
+    #endif  
 }
 
 
@@ -251,17 +256,20 @@ void EventWriter::write_events( HPDF_Page page,
                                 int rows,
                                 int daysInMonth )
 {
-
     vector<int> rowArray = build_row_array(rows, firstDayNum, daysInMonth);
     list<Event>::const_iterator i;
     int evtMargin = MARGIN + 5;
     float evtHeight = (cellHeight - 15) / 5;
+    #ifdef __DEBUG__
     int c = 1;
+    #endif
     try{
         int dailyEvtCount = 0, currentDateNum = 0;
         for (i = (*eventMap_)[monthOrdinal].begin(); i != (*eventMap_)[monthOrdinal].end(); ++i){
+            #ifdef __DEBUG__
             cout << "write event loop iteration " << c << endl;
             c += 1;
+            #endif
             boost::gregorian::date evtDate(i->Start().date());
 
             //Only add current month's events to calendar
@@ -300,14 +308,19 @@ void EventWriter::write_events( HPDF_Page page,
             }
             string tstring = ss.str();
             const char* evtTitle = tstring.c_str();
+            #ifdef __DEBUG__
             cout << "v8 - event title string: " << evtTitle << endl;
+            #endif
             write_text(page, x_offset, y_offset, evtTitle);        
         }
     }
     catch(exception& e){
         cout << "  Exception: " << e.what() << endl;
+        throw runtime_error(ERR_WRITE_MONTHLY_EVENTS);
     }
-    cout << "after write events loop\n";
+    #ifdef __DEBUG__
+    cout << "v8 - after write events loop\n";
+    #endif
     // HPDF_Page_SetLineWidth(page, 12);
     // HPDF_Page_SetRGBStroke (page, 0.0, 0.5, 0.0);
 

@@ -1,7 +1,3 @@
-#ifndef __DEBUG__
-#define __DEBUG__
-#endif
-
 #define BUILDING_NODE_EXTENSION
 #include <node.h>
 #include <iostream>
