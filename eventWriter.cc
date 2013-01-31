@@ -105,6 +105,8 @@ const char* EventWriter::write_calendar()
     switch (view_){
         case month:
             return write_monthly_calendar();
+        case week:
+            return write_weekly_calendar();
         default:
             return not_implemented;
     }
@@ -146,20 +148,64 @@ const char* EventWriter::write_weekly_calendar()
     HPDF_Doc pdf = get_pdf();
     HPDF_Font font = HPDF_GetFont(pdf, "Helvetica", NULL);
 
-    // stringstream ss;    
-    // if (eventMap_ != NULL && eventMap_->size() > 0){
-    //     map< int, list<Event> >::iterator mitr;
-    //     for (mitr = eventMap_->begin(); mitr != eventMap_->end(); ++mitr){
-    //         mitr->second.sort();
-    //         boost::gregorian::date startDate(mitr->second.begin()->Start().date());
-    //         int stYear = (int)startDate.year();
-    //         write_monthly_calendar_page(pdf, font, mitr->first, stYear);
-    //     }          
-    // }
+    /*
+        1. get week start and end dates based on first event in mapped list
+        2. build new week page
+        loop
+            a. is event in current week?
+                i. yes - write event
+                    (handle vertical offset of events on same day)
+                ii. no - build new week page
+    */
+    // stringstream ss;  
+
+    if (eventMap_ != NULL && eventMap_->size() > 0){
+        map< int, list<Event> >::iterator mitr;
+        for (mitr = eventMap_->begin(); mitr != eventMap_->end(); ++mitr){
+            mitr->second.sort();            
+            write_weekly_calendar_page(pdf, font, mitr->first);
+        }          
+    }    
 
     HPDF_SaveToFile(pdf, fname);
     HPDF_Free(pdf);
     return fname;    
+}
+
+void EventWriter::write_weekly_calendar_page(HPDF_Doc pdf, HPDF_Font font, int weekOrdinal)
+{
+    using namespace boost::gregorian;
+
+    /*
+        1. week start and end dates
+        2. page title
+        3. write events (handling vertical offset)
+    */
+   
+    //add new letter-size page w/landscape orientation
+    HPDF_Page page = HPDF_AddPage(pdf);
+    HPDF_Page_SetSize(page, HPDF_PAGE_SIZE_LETTER, HPDF_PAGE_LANDSCAPE);
+
+    //page usable area
+    int pageUsedWidth = HPDF_Page_GetWidth(page) - 100;
+    int pageUsedHeight = HPDF_Page_GetHeight(page) - 125;
+
+    list<Event>::const_iterator i = (*eventMap_)[weekOrdinal].begin();
+    date startDate(i->Start().date());
+    date_duration dd((int)startDate.day_of_week());
+    date_duration wkdur(7);
+    date wkstart = startDate - dd;
+    date wkend = wkstart + wkdur;
+    stringstream ss;
+    ss << to_simple_string(wkstart) << " through " << to_simple_string(wkend);
+    string tstring = ss.str();
+    const char* page_title = tstring.c_str();
+
+    //for (; i != (*eventMap_)[weekOrdinal].end(); ++i){}
+
+    write_page_title(page, font, page_title);
+    write_weekday_cols(page, font, pageUsedWidth, pageUsedHeight);    
+
 }
 
 void EventWriter::write_monthly_calendar_page(HPDF_Doc pdf, HPDF_Font font, int month, int year)
@@ -196,7 +242,7 @@ void EventWriter::write_monthly_calendar_page(HPDF_Doc pdf, HPDF_Font font, int 
     float dayHeight = ((float)pageUsedHeight / rowNum);
     float dayWidth = ((float)pageUsedWidth / 7);
 
-    //loop days & print each one in calendar box
+    //loop days & print each one in column at correct height
     for (; ditr <= endOfMonth; ++ditr) {
         int dayNum = (int)ditr->day_of_week();
         unsigned short dateNum = ditr->day().as_number();
@@ -256,7 +302,7 @@ void EventWriter::write_events( HPDF_Page page,
             #endif
             boost::gregorian::date evtDate(i->Start().date());
 
-            //Only add current month's events to calendar
+            //Only add current year's events to calendar
             if ((int)evtDate.year() != year){
                 continue;
             }
@@ -363,7 +409,8 @@ void EventWriter::write_page_title(HPDF_Page page, HPDF_Font font, const char* p
     HPDF_Page_SetLineWidth(page, 1);
 }
 
-void EventWriter::draw_line(HPDF_Page page, float x_start, float y_start, float x_end, float y_end){
+void EventWriter::draw_line(HPDF_Page page, float x_start, float y_start, float x_end, float y_end)
+{
     HPDF_Page_MoveTo (page, x_start, y_start);
     HPDF_Page_LineTo (page, x_end, y_end);
     HPDF_Page_Stroke (page);
