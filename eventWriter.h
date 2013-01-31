@@ -38,7 +38,7 @@ private:
     static HPDF_Doc get_pdf();
     static void write_text(HPDF_Page, float, float, const char*);
     static void write_page_title(HPDF_Page, HPDF_Font, const char*);
-
+    static void write_weekly_hour_rows(HPDF_Page, int, int, int, int, double&);
     static void draw_line(HPDF_Page, float, float, float, float);
 };
 

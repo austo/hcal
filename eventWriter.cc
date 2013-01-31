@@ -197,14 +197,26 @@ void EventWriter::write_weekly_calendar_page(HPDF_Doc pdf, HPDF_Font font, int w
     date wkstart = startDate - dd;
     date wkend = wkstart + wkdur;
     stringstream ss;
-    ss << to_simple_string(wkstart) << " through " << to_simple_string(wkend);
+    ss << months[(int)wkstart.month() - 1] << " " << wkstart.day() << " - " 
+        << months[(int)wkend.month() - 1] << " " << wkend.day();
     string tstring = ss.str();
     const char* page_title = tstring.c_str();
 
-    //for (; i != (*eventMap_)[weekOrdinal].end(); ++i){}
-
     write_page_title(page, font, page_title);
-    write_weekday_cols(page, font, pageUsedWidth, pageUsedHeight);    
+    write_weekday_cols(page, font, pageUsedWidth, pageUsedHeight);
+
+    double slotHeight;
+    write_weekly_hour_rows(page, 8, 12, pageUsedWidth, pageUsedHeight, slotHeight);
+
+    float dayWidth = ((float)pageUsedWidth / 7);
+    int evtMargin = MARGIN + 5;
+    date currentDate(startDate);
+
+    for (; i != (*eventMap_)[weekOrdinal].end(); ++i){
+        int dayNum = (int)i->Start().date().day_of_week();
+        float x_offset = (dayWidth * dayNum) + evtMargin;
+
+    }  
 
 }
 
@@ -277,14 +289,8 @@ void EventWriter::write_monthly_calendar_page(HPDF_Doc pdf, HPDF_Font font, int 
 }
 
 
-void EventWriter::write_events( HPDF_Page page,
-                                float cellHeight,
-                                float cellWidth,
-                                int monthOrdinal,
-                                int year,
-                                int firstDayNum,
-                                int rows,
-                                int daysInMonth )
+void EventWriter::write_events(HPDF_Page page, float cellHeight, float cellWidth,
+    int monthOrdinal, int year, int firstDayNum, int rows, int daysInMonth )
 {
     vector<int> rowArray = build_row_array(rows, firstDayNum, daysInMonth);
     list<Event>::const_iterator i;
@@ -474,5 +480,29 @@ void EventWriter::write_weekday_cols(HPDF_Page page, HPDF_Font font, int pageUse
         float tw = HPDF_Page_TextWidth(page, weekdays[i]);
         float textpos = (dayMargin - (tw /2)) + (dayWidth * i);
         write_text(page, textpos, HPDF_Page_GetHeight(page) - (MARGIN + 15), weekdays[i]);        
+    }
+}
+
+void EventWriter::write_weekly_hour_rows(HPDF_Page page, int startHour,
+    int numHours, int pageUsedWidth, int pageUsedHeight, double& slotHeight)
+{
+    int numLines = numHours * 2;
+    slotHeight = (double)pageUsedHeight / (double)numLines;
+    float line_y = MARGIN + slotHeight;
+
+    HPDF_Page_SetLineWidth(page, .15);
+
+    for (int i = 0, hrln = 1; i < numLines; ++i){
+        if (i == hrln){
+            HPDF_Page_SetLineWidth(page, .6);
+            draw_line(page, MARGIN, line_y, MARGIN + pageUsedWidth, line_y);
+            HPDF_Page_SetLineWidth(page, .15);
+            hrln += 2;
+        }
+        else{
+           draw_line(page, MARGIN, line_y, MARGIN + pageUsedWidth, line_y); 
+        }
+
+        line_y += slotHeight;
     }
 }
