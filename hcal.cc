@@ -16,6 +16,7 @@
 #include "posix_time/posix_time.hpp"
 #include "gregorian/gregorian.hpp"
 #include "eventWrapper.h"
+#include "configWrapper.h"
 #include "hcal.h"
 #include "eventWriter.h"
 #include "event.h"
@@ -52,6 +53,11 @@ void WriteException(TryCatch& trycatch){
 Handle<Value> CreateEvent(const Arguments& args) {
     HandleScope scope;
     return scope.Close(EventWrapper::NewInstance(args));
+}
+
+Handle<Value> CreateConfig(const Arguments& args) {
+    HandleScope scope;
+    return scope.Close(ConfigWrapper::NewInstance(args));
 }
 
 Handle<Value> Add(const Arguments& args) {
@@ -145,8 +151,12 @@ Handle<Value> BuildCalendar(const Arguments& args) {
 
 void InitAll(Handle<Object> target) {
     EventWrapper::Init();
+    ConfigWrapper::Init();
     target->Set(String::NewSymbol("createEvent"),
         FunctionTemplate::New(CreateEvent)->GetFunction());
+
+    target->Set(String::NewSymbol("createConfig"),
+        FunctionTemplate::New(CreateConfig)->GetFunction());
 
     target->Set(String::NewSymbol("add"),
         FunctionTemplate::New(Add)->GetFunction());

@@ -2,7 +2,7 @@
     "targets": [
     {
       "target_name": "hcal",
-      "sources": [ "hcal.cc", "eventWrapper.cc", "event.cc", "eventWriter.cc" ],
+      "sources": [ "hcal.cc", "eventWrapper.cc", "configWrapper.cc", "event.cc", "eventWriter.cc" ],
       'conditions': [
           ['OS!="win"', {
             'cflags': [ '-Wall', '-fexceptions' ],

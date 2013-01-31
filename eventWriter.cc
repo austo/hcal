@@ -155,6 +155,7 @@ const char* EventWriter::write_weekly_calendar()
             a. is event in current week?
                 i. yes - write event
                     (handle vertical offset of events on same day)
+                    (handle horiziontal offset of event at same time - should there be a limit?)
                 ii. no - build new week page
     */
     // stringstream ss;  
@@ -175,13 +176,7 @@ const char* EventWriter::write_weekly_calendar()
 void EventWriter::write_weekly_calendar_page(HPDF_Doc pdf, HPDF_Font font, int weekOrdinal)
 {
     using namespace boost::gregorian;
-
-    /*
-        1. week start and end dates
-        2. page title
-        3. write events (handling vertical offset)
-    */
-   
+    
     //add new letter-size page w/landscape orientation
     HPDF_Page page = HPDF_AddPage(pdf);
     HPDF_Page_SetSize(page, HPDF_PAGE_SIZE_LETTER, HPDF_PAGE_LANDSCAPE);
@@ -215,7 +210,14 @@ void EventWriter::write_weekly_calendar_page(HPDF_Doc pdf, HPDF_Font font, int w
     for (; i != (*eventMap_)[weekOrdinal].end(); ++i){
         int dayNum = (int)i->Start().date().day_of_week();
         float x_offset = (dayWidth * dayNum) + evtMargin;
-
+        /*
+            color in the slots based on room
+            need a reliable way of determing slot based on event time
+                using:
+                    number of hours on calendar
+                    first hour
+                    may need a configuratuion object
+        */
     }  
 
 }
