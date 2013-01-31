@@ -200,6 +200,12 @@ void EventWriter::write_weekly_calendar_page(HPDF_Doc pdf, HPDF_Font font, int w
     write_page_title(page, font, page_title);
     write_weekday_cols(page, font, pageUsedWidth, pageUsedHeight);
 
+    /*
+        TODO: this method should take a configWrapper obj
+        If it's a regular week, we make a configWrapper in calling
+        method and use it here
+        (Only bother unpacking configWrapper obj if we've got a custom view)
+    */
     double slotHeight;
     write_weekly_hour_rows(page, 8, 12, pageUsedWidth, pageUsedHeight, slotHeight);
 

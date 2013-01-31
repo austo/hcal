@@ -9,6 +9,12 @@
 class ConfigWrapper : public node::ObjectWrap {
     public:
         ConfigWrapper();
+        ConfigWrapper(int sday, int eday, int shour, int ehour){
+            sday_ = sday;
+            eday_ = eday;
+            shour_ = shour;
+            ehour_ = ehour;
+        }
         ~ConfigWrapper();
 
         static void Init();

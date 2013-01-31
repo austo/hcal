@@ -23,4 +23,5 @@ hcal.buildCalendar(events, "month", function(fileName){
 hcal.buildCalendar(events, "week", function(fileName){
     console.log("Weekly calendar file: " + fileName);
 });
+var cfg = hcal.createConfig(1, 5, 8, 20);
 //console.log(notRet);

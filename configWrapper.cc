@@ -24,7 +24,6 @@ void ConfigWrapper::Init() {
 Handle<Value> ConfigWrapper::New(const Arguments& args) {
     HandleScope scope;    
     ConfigWrapper* cfg = new ConfigWrapper();
-    //JS dates divided by 1000 to account for default posix time resolution
     cfg->sday_ = args[0]->IsUndefined() ? 0 : args[0]->NumberValue();
     cfg->eday_ = args[1]->IsUndefined() ? 0 : args[1]->NumberValue();
     cfg->shour_ = args[2]->IsUndefined() ? 0 : args[2]->NumberValue();
