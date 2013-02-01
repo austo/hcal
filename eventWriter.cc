@@ -9,6 +9,7 @@
 #include <stdexcept>
 #include "eventWriter.h"
 #include "eventWrapper.h"
+#include "configWrapper.h"
 #include "event.h"
 #include "posix_time/posix_time.hpp"
 #include "gregorian/gregorian.hpp"
@@ -147,7 +148,7 @@ const char* EventWriter::write_weekly_calendar()
 
     HPDF_Doc pdf = get_pdf();
     HPDF_Font font = HPDF_GetFont(pdf, "Helvetica", NULL);
-
+    ConfigWrapper cfg(0, 6, 8, 20);
     /*
         1. get week start and end dates based on first event in mapped list
         2. build new week page
@@ -198,6 +199,8 @@ void EventWriter::write_weekly_calendar_page(HPDF_Doc pdf, HPDF_Font font, int w
     const char* page_title = tstring.c_str();
 
     write_page_title(page, font, page_title);
+
+    //TODO: add configWrapper param
     write_weekday_cols(page, font, pageUsedWidth, pageUsedHeight);
 
     /*
