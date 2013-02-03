@@ -28,9 +28,10 @@ Handle<Value> EventWrapper::New(const Arguments& args) {
     HandleScope scope;    
     EventWrapper* evt = new EventWrapper();
     //JS dates divided by 1000 to account for default posix time resolution
+    //TODO: switch to NODE_V8_UNIXTIME(v)
     evt->id_ = args[0]->IsUndefined() ? -1 : args[0]->NumberValue();
-    evt->start_ = args[1]->IsUndefined() ? 0 : args[1]->NumberValue() / 1000;
-    evt->end_ = args[2]->IsUndefined() ? 0 : args[2]->NumberValue() / 1000;
+    evt->start_ = args[1]->IsUndefined() ? 0 : NODE_V8_UNIXTIME(args[1]); //->NumberValue() / 1000;
+    evt->end_ = args[2]->IsUndefined() ? 0 : NODE_V8_UNIXTIME(args[2]);//->NumberValue() / 1000;
     evt->room_ = args[3]->IsUndefined() ? 0 : args[3]->NumberValue();
 
     //Leader
