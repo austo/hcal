@@ -21,7 +21,8 @@ using namespace std;
 #define ERR_UREC_VIEW "EventWriter: Unrecognized calendar view."
 #define ERR_CREATE_PDF "EventWriter: failed to create HPDF object."
 
-void error_handler (HPDF_STATUS error_no, HPDF_STATUS detail_no, void *user_data)
+void
+error_handler (HPDF_STATUS error_no, HPDF_STATUS detail_no, void *user_data)
 {
     stringstream ss;
     ss << "ERROR: error_no = " << (HPDF_UINT)error_no << "\ndetail_no = " << (HPDF_UINT)detail_no << endl;    
@@ -54,7 +55,8 @@ EventWriter::~EventWriter()
 /*  
     TODO: handle other views (function pointers - maybe not really necessary inside a class)
 */
-map< int, list<Event> >* EventWriter::get_evt_map(v8::Array* arr)
+map< int, list<Event> >*
+EventWriter::get_evt_map(v8::Array* arr)
 {
     map< int, list<Event> >* retVal = 0;
     uint32_t len = arr->Length();
@@ -74,7 +76,8 @@ map< int, list<Event> >* EventWriter::get_evt_map(v8::Array* arr)
 }
 
 //TODO: handle case when events span multiple years
-void EventWriter::package_evt_map(map< int, list<Event> >* emap, v8::Array* arr, uint32_t len)
+void
+EventWriter::package_evt_map(map< int, list<Event> >* emap, v8::Array* arr, uint32_t len)
 {
     int index = 0;
     for (uint32_t i = 0; i < len; ++i){
@@ -100,7 +103,8 @@ void EventWriter::package_evt_map(map< int, list<Event> >* emap, v8::Array* arr,
     }
 }
 
-const char* EventWriter::write_calendar()
+const char*
+EventWriter::write_calendar()
 {
     const char* not_implemented = "not done yet...";
     switch (view_){
@@ -119,7 +123,8 @@ const char* EventWriter::write_calendar()
     3. (monthly calendar) using calculated dayCellHeight, place events in correct time-slot
         (five or six events per day - viewable)
 */
-const char* EventWriter::write_monthly_calendar()
+const char*
+EventWriter::write_monthly_calendar()
 {
     const char* fname = "monthly_calendar.pdf";
 
@@ -142,7 +147,8 @@ const char* EventWriter::write_monthly_calendar()
     return fname;
 }
 
-const char* EventWriter::write_weekly_calendar()
+const char*
+EventWriter::write_weekly_calendar()
 {
     const char* fname = "weekly_calendar.pdf";
 
@@ -174,7 +180,8 @@ const char* EventWriter::write_weekly_calendar()
     return fname;    
 }
 
-void EventWriter::write_weekly_calendar_page(HPDF_Doc pdf, HPDF_Font font, int weekOrdinal)
+void
+EventWriter::write_weekly_calendar_page(HPDF_Doc pdf, HPDF_Font font, int weekOrdinal)
 {
     using namespace boost::gregorian;
     
@@ -231,7 +238,8 @@ void EventWriter::write_weekly_calendar_page(HPDF_Doc pdf, HPDF_Font font, int w
 
 }
 
-void EventWriter::write_monthly_calendar_page(HPDF_Doc pdf, HPDF_Font font, int month, int year)
+void
+EventWriter::write_monthly_calendar_page(HPDF_Doc pdf, HPDF_Font font, int month, int year)
 {
     using namespace boost::gregorian;
 
@@ -300,7 +308,8 @@ void EventWriter::write_monthly_calendar_page(HPDF_Doc pdf, HPDF_Font font, int 
 }
 
 
-void EventWriter::write_events(HPDF_Page page, float cellHeight, float cellWidth,
+void
+EventWriter::write_events(HPDF_Page page, float cellHeight, float cellWidth,
     int monthOrdinal, int year, int firstDayNum, int rows, int daysInMonth )
 {
     vector<int> rowArray = build_row_array(rows, firstDayNum, daysInMonth);
@@ -380,7 +389,8 @@ void EventWriter::write_events(HPDF_Page page, float cellHeight, float cellWidth
     //delete rowArray;
 }
 
-vector<int> EventWriter::build_row_array(int rows, int firstDayNum, int daysInMonth)
+vector<int>
+EventWriter::build_row_array(int rows, int firstDayNum, int daysInMonth)
 {
     int ldfw = 7 - firstDayNum;
     vector<int> retVal = vector<int>();
@@ -391,7 +401,8 @@ vector<int> EventWriter::build_row_array(int rows, int firstDayNum, int daysInMo
     return retVal;
 }
 
-int EventWriter::get_day_row(vector<int>* rowArray, int dayNum)
+int
+EventWriter::get_day_row(vector<int>* rowArray, int dayNum)
 {
     int rows = rowArray->size();
 
@@ -408,7 +419,8 @@ int EventWriter::get_day_row(vector<int>* rowArray, int dayNum)
     return 0;
 }
 
-void EventWriter::write_text(HPDF_Page page, float x_offset, float y_offset, const char* text)
+void
+EventWriter::write_text(HPDF_Page page, float x_offset, float y_offset, const char* text)
 {
     HPDF_Page_BeginText (page);
     HPDF_Page_MoveTextPos (page, x_offset, y_offset);
@@ -416,7 +428,8 @@ void EventWriter::write_text(HPDF_Page page, float x_offset, float y_offset, con
     HPDF_Page_EndText (page);
 }
 
-void EventWriter::write_page_title(HPDF_Page page, HPDF_Font font, const char* page_title)
+void
+EventWriter::write_page_title(HPDF_Page page, HPDF_Font font, const char* page_title)
 {
     /* print the title of the page (with positioning center). */
     HPDF_Page_SetFontAndSize(page, font, 20);
@@ -426,14 +439,16 @@ void EventWriter::write_page_title(HPDF_Page page, HPDF_Font font, const char* p
     HPDF_Page_SetLineWidth(page, 1);
 }
 
-void EventWriter::draw_line(HPDF_Page page, float x_start, float y_start, float x_end, float y_end)
+void
+EventWriter::draw_line(HPDF_Page page, float x_start, float y_start, float x_end, float y_end)
 {
     HPDF_Page_MoveTo (page, x_start, y_start);
     HPDF_Page_LineTo (page, x_end, y_end);
     HPDF_Page_Stroke (page);
 }
 
-EventWriter::View EventWriter::get_view(v8::String::AsciiValue& viewStr)
+EventWriter::View
+EventWriter::get_view(v8::String::AsciiValue& viewStr)
 {
     if (strcmp(*viewStr, "month") == 0){
         return EventWriter::month;
@@ -450,7 +465,8 @@ EventWriter::View EventWriter::get_view(v8::String::AsciiValue& viewStr)
 }
 
 
-HPDF_Doc EventWriter::get_pdf()
+HPDF_Doc
+EventWriter::get_pdf()
 {
     HPDF_Doc pdf = 0;
     try{
@@ -469,7 +485,8 @@ HPDF_Doc EventWriter::get_pdf()
 }
 
 
-void EventWriter::write_weekday_cols(HPDF_Page page, HPDF_Font font, int pageUsedWidth, int pageUsedHeight)
+void
+EventWriter::write_weekday_cols(HPDF_Page page, HPDF_Font font, int pageUsedWidth, int pageUsedHeight)
 {
     HPDF_Page_SetLineWidth(page, 1);
     HPDF_Page_Rectangle(page, MARGIN, MARGIN, pageUsedWidth, pageUsedHeight);
@@ -494,7 +511,8 @@ void EventWriter::write_weekday_cols(HPDF_Page page, HPDF_Font font, int pageUse
     }
 }
 
-void EventWriter::write_weekly_hour_rows(HPDF_Page page, int startHour,
+void
+EventWriter::write_weekly_hour_rows(HPDF_Page page, int startHour,
     int numHours, int pageUsedWidth, int pageUsedHeight, double& slotHeight)
 {
     int numLines = numHours * 2;
