@@ -2,7 +2,7 @@ var hcal = require('./build/Release/hcal');
 
 console.log('\n\n!#----------Test results----------#!\n');
 var d1 = new Date(2013, 0, 13, 13);
-var d2 = new Date(2013, 0, 13, 14);
+var d2 = new Date(2013, 1, 13, 14);
 var d3 = new Date(2013, 1, 22, 23, 30);
 var d4 = new Date(2013, 1, 23, 0, 30);
 var d5 = new Date(2013, 0, 13, 16);
@@ -15,7 +15,7 @@ var events = [a, b, c];
 var ret = hcal.testEventArray(events);
 //var notRet = hcal.isJsArray();
 console.log(ret);
-console.log("First event duration: " + a.duration() + " minutes");
+console.log("second event duration: " + b.duration() + " minutes");
 
 hcal.buildCalendar(events, "month", function(fileName){
     console.log("Monthly calendar file: " + fileName);    

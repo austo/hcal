@@ -15,6 +15,7 @@
 #include "throw_exception.hpp"
 #include "posix_time/posix_time.hpp"
 #include "gregorian/gregorian.hpp"
+#include "dataLayer.h"
 #include "eventWrapper.h"
 #include "configWrapper.h"
 #include "hcal.h"
@@ -71,6 +72,8 @@ Handle<Value> Add(const Arguments& args) {
 Handle<Value> TestEventArray(const Arguments& args){
     HandleScope scope;
     TryCatch trycatch;
+    std::vector<EventWrapper>* evtWprs = 0;
+    Handle<Array> retval;
     uint32_t len;
     time_t st, et;
     if (args[0]->IsArray()) {
@@ -95,6 +98,14 @@ Handle<Value> TestEventArray(const Arguments& args){
             time_t rawtime;
             struct tm * timeinfo;
 
+            DataLayer dl = DataLayer();
+            retval = dl.get_wrapped_events(st, et);
+            // std::cout << evtWprs->begin()->Title() << std::endl;
+            // if (evtWprs){
+            //     //std::cout << (*evtWprs)[0].Title() << std::endl;
+            //     retval = Array::New(evtWprs->size());
+            // }
+
             boost::posix_time::ptime p1(boost::posix_time::not_a_date_time);
             boost::posix_time::ptime p2;
             p1 = boost::posix_time::from_time_t(st) + boost::posix_time::hours(OFFSET);
@@ -115,7 +126,12 @@ Handle<Value> TestEventArray(const Arguments& args){
     else {
        WriteException(trycatch);
     }
-    return scope.Close(Number::New(st));
+    //if (evtWprs){
+    return scope.Close(retval);
+    //}
+    //else{
+       // return scope.Close(String::New("failed"));
+    //}
 }
 
 /*  TODO: changes this to provide for a function with two args:

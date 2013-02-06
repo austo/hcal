@@ -9,6 +9,7 @@
 class EventWrapper : public node::ObjectWrap {
     public:
         EventWrapper();
+        EventWrapper(int, time_t, time_t, std::string, std::string, std::string);
         ~EventWrapper();
 
         static void Init();
@@ -31,6 +32,7 @@ class EventWrapper : public node::ObjectWrap {
         int room_;
         std::string leader_;
         std::string title_;
+        std::string room_name_;
 };
 
 #endif

@@ -8,6 +8,17 @@
 using namespace v8;
 
 EventWrapper::EventWrapper() {};
+EventWrapper::EventWrapper(int id, time_t start, time_t end,
+    std::string room_name, std::string leader, std::string title){
+
+    id_ = id;
+    start_ = start;
+    end_ = end;
+    room_name_ = room_name;
+    leader_ = leader;
+    title_ = title;
+}
+
 EventWrapper::~EventWrapper() {};
 
 Persistent<Function> EventWrapper::constructor;
@@ -68,6 +79,8 @@ Handle<Value> EventWrapper::New(const Arguments& args) {
     evt->Wrap(args.This());
     return args.This();
 }
+
+
 
 Handle<Value> EventWrapper::NewInstance(const Arguments& args) {
     HandleScope scope;
