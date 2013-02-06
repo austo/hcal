@@ -5,13 +5,11 @@
 #include <node.h>
 #include <ctime>
 #include <string>
-//#include "dataLayer.h"
 
 class EventWrapper : public node::ObjectWrap {
     friend class DataLayer;
     public:
         EventWrapper();
-        EventWrapper(int, time_t, time_t, std::string, std::string, std::string);
         ~EventWrapper();
 
         static void Init();

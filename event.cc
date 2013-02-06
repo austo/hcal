@@ -22,7 +22,6 @@ Event::Event(int id, time_t start, time_t end, int room, std::string leader, std
 }
 
 Event::Event(EventWrapper* evt){
-    //Event(evt->Id(), evt->Start(), evt->End(), evt->Room(), evt->Leader(), evt->Title());
     id_ = evt->Id();
     start_ = boost::posix_time::from_time_t(evt->Start()) + boost::posix_time::hours(OFFSET);
     end_ = boost::posix_time::from_time_t(evt->End()) + boost::posix_time::hours(OFFSET);

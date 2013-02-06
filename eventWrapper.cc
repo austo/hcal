@@ -8,17 +8,6 @@
 using namespace v8;
 
 EventWrapper::EventWrapper() {};
-EventWrapper::EventWrapper(int id, time_t start, time_t end,
-    std::string room_name, std::string leader, std::string title){
-
-    id_ = id;
-    start_ = start;
-    end_ = end;
-    room_name_ = room_name;
-    leader_ = leader;
-    title_ = title;
-}
-
 EventWrapper::~EventWrapper() {};
 
 Persistent<Function> EventWrapper::constructor;
@@ -82,31 +71,19 @@ Handle<Value> EventWrapper::New(const Arguments& args) {
     return args.This();
 }
 
-// Handle<Value> EventWrapper::get_wrapped_object(int id, time_t start, time_t end,
-//     std::string room_name, std::string leader, std::string title) {
-//     HandleScope scope;    
-//     EventWrapper* evt = new EventWrapper(id, start, end, room_name, leader, title);
-//     Handle<ObjectTemplate> ewtpl = ObjectTemplate::New(); 
-//     ewtpl->SetInternalFieldCount(6);
-//     Handle<Object> evt_ptr = ewtpl->NewInstance();
-//     evt->Wrap(evt_ptr);
-//     return evt_ptr;
-// }
-
 Handle<Value> EventWrapper::get_wrapped_object(int id, time_t start, time_t end,
     std::string room_name, std::string leader, std::string title) {
     HandleScope scope;
 
     const unsigned argc = 6;
-    Handle<Value> argv[argc] = { Number::New(id),
-        Number::New(start * 1000), Number::New(end * 1000),
-        Number::New(0), String::New(leader.c_str()), String::New(title.c_str()) };
+    Handle<Value> argv[argc] =  {   Number::New(id),
+                                    NODE_UNIXTIME_V8(start), NODE_UNIXTIME_V8(end),
+                                    Number::New(0), String::New(leader.c_str()),
+                                    String::New(title.c_str())
+                                };
     Local<Object> instance = constructor->NewInstance(argc, argv);
-    return scope.Close(instance);   
-    
+    return scope.Close(instance);    
 }
-
-
 
 Handle<Value> EventWrapper::NewInstance(const Arguments& args) {
     HandleScope scope;
@@ -131,7 +108,3 @@ Handle<Value> EventWrapper::Description(const Arguments& args) {
   EventWrapper* evt = ObjectWrap::Unwrap<EventWrapper>(args.This());
   return scope.Close(String::New(evt->Title().c_str()));
 }
-
-// EventWrapper::ToEvent(){
-//     return new Event(this);
-// }
