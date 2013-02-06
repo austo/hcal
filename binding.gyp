@@ -22,7 +22,8 @@
         ['OS=="mac"', {
           'xcode_settings': {
             'GCC_ENABLE_CPP_EXCEPTIONS': 'YES'
-          }
+          },
+          'ldflags': [ '-L/Applications/Postgres.app/Contents/MacOS/lib' ],
         }],
         ['OS=="linux"', {
           'ldflags': [ '-L/usr/local/boost_1_52_0/stage/lib']

@@ -14,7 +14,7 @@ var c = hcal.createEvent(2, d5, d6, 13, "Reginald", "Cartography");
 var events = [a, b, c];
 var ret = hcal.testEventArray(events);
 //var notRet = hcal.isJsArray();
-console.log(ret);
+console.log(ret[3].description());
 console.log("second event duration: " + b.duration() + " minutes");
 
 hcal.buildCalendar(events, "month", function(fileName){

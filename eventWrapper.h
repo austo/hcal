@@ -5,8 +5,10 @@
 #include <node.h>
 #include <ctime>
 #include <string>
+//#include "dataLayer.h"
 
 class EventWrapper : public node::ObjectWrap {
+    friend class DataLayer;
     public:
         EventWrapper();
         EventWrapper(int, time_t, time_t, std::string, std::string, std::string);
@@ -14,6 +16,7 @@ class EventWrapper : public node::ObjectWrap {
 
         static void Init();
         static v8::Handle<v8::Value> NewInstance(const v8::Arguments& args);
+        static v8::Handle<v8::Value> get_wrapped_object(int, time_t, time_t, std::string, std::string, std::string);
         int Id() const { return id_; }
         time_t Start() const { return start_; }
         time_t End() const { return end_; }
@@ -26,6 +29,7 @@ class EventWrapper : public node::ObjectWrap {
         static v8::Persistent<v8::Function> constructor;
         static v8::Handle<v8::Value> New(const v8::Arguments& args);
         static v8::Handle<v8::Value> Duration(const v8::Arguments& args);
+        static v8::Handle<v8::Value> Description(const v8::Arguments& args);
         int id_;
         time_t start_;
         time_t end_;

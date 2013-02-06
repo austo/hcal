@@ -73,10 +73,10 @@ DataLayer::build_wrapped_events(result& evts){
         //     v8::String::New(row["description"].as<string>().c_str())
         // };
         // retval->Set(i, EventWrapper::NewInstance(6, argv));
-        // ++i;
+        
         // //Local<Object> instance = EventWrapper::NewInstance(6, argv);
 
-        EventWrapper* evtwrp = new EventWrapper(
+        v8::Handle<v8::Value> evtHdl = EventWrapper::get_wrapped_object(
             row["id"].as<int>(),
             t_evt_start,
             t_evt_end,
@@ -84,7 +84,8 @@ DataLayer::build_wrapped_events(result& evts){
             row["leader"].as<string>(),
             row["description"].as<string>()
         );
-        retval->Set(i, evtwrp);
+        retval->Set(i, evtHdl);
+        ++i;
         //retval->push_back(evtwrp);
     }
     return scope.Close(retval);
