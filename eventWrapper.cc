@@ -72,13 +72,14 @@ Handle<Value> EventWrapper::New(const Arguments& args) {
 }
 
 Handle<Value> EventWrapper::get_wrapped_object(int id, time_t start, time_t end,
-    std::string room_name, std::string leader, std::string title) {
+    int room_id, std::string room_name, std::string leader, std::string title) {
     HandleScope scope;
 
     const unsigned argc = 6;
     Handle<Value> argv[argc] =  {   Number::New(id),
+                                    //Number::New(start), Number::New(end),
                                     NODE_UNIXTIME_V8(start), NODE_UNIXTIME_V8(end),
-                                    Number::New(0), String::New(leader.c_str()),
+                                    Number::New(room_id), String::New(leader.c_str()),
                                     String::New(title.c_str())
                                 };
     Local<Object> instance = constructor->NewInstance(argc, argv);

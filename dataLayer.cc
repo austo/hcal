@@ -12,7 +12,24 @@ using namespace std;
 using namespace pqxx;
 using namespace boost::posix_time;
 
+
+#define UTC_OFFSET 5 //TODO: improve using real boost timezones
+
 #define CONNSTRING "host=queequeg dbname=concerto user=appUser password=cAligul@"
+#define COL_ID "id"
+#define COL_DESCRIPTION "description"
+#define COL_TIME_START "time_start"
+#define COL_TIME_END "time_end"
+#define COL_ROOM_NAME "room_name"
+#define COL_ROOM_ID "room_id"
+#define COL_LEADER "leader"
+#define COMMA_SPACE ", "
+#define QUERY_GET_EVENTS "SELECT id, description, time_start, time_end, room_name, room_id, leader FROM calendar_events"
+#define QUERY_WHERE " where "
+#define QUERY_AND " and "
+#define QUERY_LT_EQ  " <= "
+#define QUERY_GT_EQ " >= "
+
 
 DataLayer::DataLayer(){}
 DataLayer::~DataLayer(){}
@@ -26,9 +43,9 @@ DataLayer::get_wrapped_events(time_t start, time_t end){
     connection c(CONNSTRING);
     work txn(c);
     std::stringstream ss;
-    ss << "select id, description, time_start, time_end, room, leader from calendar_events ";
-    ss << "where time_start >= " << txn.quote(to_simple_string(p_start));
-    ss << " and time_end <= " << txn.quote(to_simple_string(p_end));
+    ss << QUERY_GET_EVENTS << QUERY_WHERE << COL_TIME_START << QUERY_GT_EQ
+       << txn.quote(to_simple_string(p_start)) << QUERY_AND << COL_TIME_END
+       << QUERY_LT_EQ << txn.quote(to_simple_string(p_end)) << ";";
     result evts = execute_query(txn, ss.str());
 
     if (evts.size() > 0){
@@ -49,20 +66,23 @@ DataLayer::build_wrapped_events(result& evts){
     for (row = evts.begin(); row != evts.end(); ++row){
 
         //get time_t for start and end times
-        ptime p_evt_start(time_from_string(row["time_start"].as<string>()));
-        ptime p_evt_end(time_from_string(row["time_end"].as<string>()));
+        ptime p_evt_start(time_from_string(row[COL_TIME_START].as<string>()));
+        ptime p_evt_end(time_from_string(row[COL_TIME_END].as<string>()));
+        p_evt_start += boost::posix_time::hours(UTC_OFFSET);
+        p_evt_end += boost::posix_time::hours(UTC_OFFSET);
         td = p_evt_start - epoch_start;
         time_t t_evt_start = td.total_seconds();
         td = p_evt_end - epoch_start;
         time_t t_evt_end = td.total_seconds();       
 
         v8::Handle<v8::Value> evtHdl = EventWrapper::get_wrapped_object(
-            row["id"].as<int>(),
+            row[COL_ID].as<int>(),
             t_evt_start,
             t_evt_end,
-            row["room"].as<string>(),
-            row["leader"].as<string>(),
-            row["description"].as<string>()
+            row[COL_ROOM_ID].as<int>(),
+            row[COL_ROOM_NAME].as<string>(),
+            row[COL_LEADER].as<string>(),
+            row[COL_DESCRIPTION].as<string>()
         );
         retval->Set(i, evtHdl);
         ++i;

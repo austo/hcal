@@ -14,7 +14,7 @@ class EventWrapper : public node::ObjectWrap {
 
         static void Init();
         static v8::Handle<v8::Value> NewInstance(const v8::Arguments& args);
-        static v8::Handle<v8::Value> get_wrapped_object(int, time_t, time_t, std::string, std::string, std::string);
+        static v8::Handle<v8::Value> get_wrapped_object(int, time_t, time_t, int, std::string, std::string, std::string);
         int Id() const { return id_; }
         time_t Start() const { return start_; }
         time_t End() const { return end_; }

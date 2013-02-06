@@ -354,6 +354,9 @@ EventWriter::write_events(HPDF_Page page, float cellHeight, float cellWidth,
                 hours -= 12;
                 meridian = "pm";
             }
+            else if(hours == 12){
+                meridian = "pm";
+            }         
 
             stringstream ss;
             if (stdur.minutes() == 0){

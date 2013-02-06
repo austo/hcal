@@ -17,7 +17,7 @@ var ret = hcal.testEventArray(events);
 console.log(ret[3].description());
 console.log("second event duration: " + b.duration() + " minutes");
 
-hcal.buildCalendar(events, "month", function(fileName){
+hcal.buildCalendar(ret, "month", function(fileName){
     console.log("Monthly calendar file: " + fileName);    
 });
 hcal.buildCalendar(events, "week", function(fileName){
