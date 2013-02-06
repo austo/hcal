@@ -1,12 +1,4 @@
-#include <iostream>
-#include <string>
-#include <sstream>
-#include <ctime>
-#include <pqxx/pqxx>
-#include <node.h>
 #include "dataLayer.h"
-#include "eventWrapper.h"
-#include "posix_time/posix_time.hpp"
 
 using namespace std;
 using namespace pqxx;
@@ -14,6 +6,7 @@ using namespace boost::posix_time;
 
 
 #define UTC_OFFSET 5 //TODO: improve using real boost timezones
+#define HCAL_UTC_OFFSET "HCAL_UTC_OFFSET"
 
 #define CONNSTRING "host=queequeg dbname=concerto user=appUser password=cAligul@"
 #define COL_ID "id"
@@ -29,9 +22,15 @@ using namespace boost::posix_time;
 #define QUERY_AND " and "
 #define QUERY_LT_EQ  " <= "
 #define QUERY_GT_EQ " >= "
+#define QUERY_N_EQ " <> "
+#define QUERY_EQ " = "
 
 
-DataLayer::DataLayer(){}
+DataLayer::DataLayer(){
+    const char* utc_offset_char = getenv(HCAL_UTC_OFFSET);
+    utc_offset_ = atoi(utc_offset_char);
+    //cout << "v8 - env utc offset: " << (utc_offset_ + 1) << endl;
+}
 DataLayer::~DataLayer(){}
 
 v8::Handle<v8::Array>
@@ -65,11 +64,11 @@ DataLayer::build_wrapped_events(result& evts){
     result::const_iterator row;
     for (row = evts.begin(); row != evts.end(); ++row){
 
-        //get time_t for start and end times
+        //get time_t for start and end times, adding back utc offset
         ptime p_evt_start(time_from_string(row[COL_TIME_START].as<string>()));
         ptime p_evt_end(time_from_string(row[COL_TIME_END].as<string>()));
-        p_evt_start += boost::posix_time::hours(UTC_OFFSET);
-        p_evt_end += boost::posix_time::hours(UTC_OFFSET);
+        p_evt_start += boost::posix_time::hours(utc_offset_);
+        p_evt_end += boost::posix_time::hours(utc_offset_);
         td = p_evt_start - epoch_start;
         time_t t_evt_start = td.total_seconds();
         td = p_evt_end - epoch_start;
@@ -92,4 +91,9 @@ DataLayer::build_wrapped_events(result& evts){
 
 result DataLayer::execute_query(transaction_base& txn, std::string query){
   return txn.exec(query);
+}
+
+string get_env(const string& e_var) {
+    const char* val = std::getenv(e_var.c_str());
+    return val ? val : "";    
 }

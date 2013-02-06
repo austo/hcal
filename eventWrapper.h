@@ -5,6 +5,7 @@
 #include <node.h>
 #include <ctime>
 #include <string>
+#include <iostream>
 
 class EventWrapper : public node::ObjectWrap {
     friend class DataLayer;

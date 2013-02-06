@@ -4,12 +4,11 @@
 #include <sstream>
 #include <string>
 #include <ctime>
+#include <cstdlib>
 #include <node.h>
 #include <pqxx/pqxx>
-#include "event.h"
 #include "eventWrapper.h"
 #include "posix_time/posix_time.hpp"
-
 
 class DataLayer {
     public:
@@ -19,7 +18,9 @@ class DataLayer {
 
     private:
         pqxx::result execute_query(pqxx::transaction_base&, std::string);
-        v8::Handle<v8::Array> build_wrapped_events(pqxx::result&);        
+        v8::Handle<v8::Array> build_wrapped_events(pqxx::result&);
+        std::string get_env(const std::string&);
+        int utc_offset_;     
 };
 
 #endif

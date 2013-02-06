@@ -1,26 +1,7 @@
 #define BUILDING_NODE_EXTENSION
 #define __DEBUG__
 
-#include <iostream>
-#include <node.h>
-#include <new>
-#include <ctime>
-#include <string>
-#include <cstring>
-#include <vector>
-#include <list>
-#include <map>
-#include <hpdf.h>
-#include <exception>
-#include "throw_exception.hpp"
-#include "posix_time/posix_time.hpp"
-#include "gregorian/gregorian.hpp"
-#include "dataLayer.h"
-#include "eventWrapper.h"
-#include "configWrapper.h"
 #include "hcal.h"
-#include "eventWriter.h"
-#include "event.h"
 
 //TODO: accept as param from JS
 #define OFFSET -5 //Cheap way of getting UTC offset to boost::date_time without defining timezone

@@ -1,8 +1,4 @@
 #define BUILDING_NODE_EXTENSION
-#include <node.h>
-#include <iostream>
-#include <string>
-#include <ctime>
 #include "eventWrapper.h"
 
 using namespace v8;

@@ -3,6 +3,25 @@
 #define BUILDING_NODE_EXTENSION
 
 #include <node.h>
+#include <iostream>
+#include <new>
+#include <ctime>
+#include <string>
+#include <cstring>
+#include <vector>
+#include <list>
+#include <map>
+#include <hpdf.h>
+#include <exception>
+#include "throw_exception.hpp"
+#include "posix_time/posix_time.hpp"
+#include "gregorian/gregorian.hpp"
+#include "dataLayer.h"
+#include "eventWrapper.h"
+#include "configWrapper.h"
+#include "hcal.h"
+#include "eventWriter.h"
+#include "event.h"
 
 v8::Handle<v8::Value> CreateEvent(const v8::Arguments&);
 
