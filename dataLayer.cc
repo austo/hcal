@@ -28,7 +28,7 @@ using namespace boost::posix_time;
 
 DataLayer::DataLayer(){
     const char* utc_offset_char = getenv(HCAL_UTC_OFFSET);
-    utc_offset_ = atoi(utc_offset_char);
+    utc_offset_ = utc_offset_char ? atoi(utc_offset_char) : 0;
     //cout << "v8 - env utc offset: " << (utc_offset_ + 1) << endl;
 }
 DataLayer::~DataLayer(){}
