@@ -146,6 +146,39 @@ Handle<Value> BuildCalendar(const Arguments& args) {
 }
 
 
+Handle<Value> PrintCalendar(const Arguments& args) {
+    HandleScope scope;
+
+    if (args.Length() != 4) {
+        ThrowException(Exception::TypeError(String::New("Wrong number of arguments")));
+        return scope.Close(Undefined());
+    }    
+    if (args[0]->IsUndefined() || args[1]->IsUndefined() || args[2]->IsUndefined() || args[3]->IsUndefined()){
+        THROW("All arguments must be defined.");
+        return scope.Close(Undefined());
+    }
+    time_t start = NODE_V8_UNIXTIME(args[0]);
+    time_t end =  NODE_V8_UNIXTIME(args[1]);
+    String::AsciiValue viewStr(args[2]->ToString());
+    Local<Function> cb = Local<Function>::Cast(args[3]);
+    const unsigned argc = 1;
+
+    try{
+        EventWriter::View view = EventWriter::get_view(viewStr);
+        DataLayer dl = DataLayer();
+        std::map<int, std::list<Event> >* emap = dl.get_event_map(start, end);
+        EventWriter evtWtr = EventWriter(emap, view);
+        const char* fname = evtWtr.write_calendar();
+        Local<Value> argv[argc] = { Local<Value>::New(String::New(fname)) };
+        cb->Call(Context::GetCurrent()->Global(), argc, argv);
+    }
+    catch(std::exception& e){
+        THROW(e.what());
+    }    
+    return scope.Close(Undefined());
+}
+
+
 void InitAll(Handle<Object> target) {
     EventWrapper::Init();
     ConfigWrapper::Init();
@@ -163,6 +196,9 @@ void InitAll(Handle<Object> target) {
 
     target->Set(String::NewSymbol("buildCalendar"),
       FunctionTemplate::New(BuildCalendar)->GetFunction());
+
+    target->Set(String::NewSymbol("printCalendar"),
+      FunctionTemplate::New(PrintCalendar)->GetFunction());
 }
 
 NODE_MODULE(hcal, InitAll)

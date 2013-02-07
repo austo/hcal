@@ -33,6 +33,8 @@ v8::Handle<v8::Value> TestEventArray(const v8::Arguments&);
 
 v8::Handle<v8::Value> BuildCalendar(const v8::Arguments&);
 
+v8::Handle<v8::Value> PrintCalendar(const v8::Arguments&);
+
 void InitAll(v8::Handle<v8::Object>);
 
 void WriteException(v8::TryCatch&);

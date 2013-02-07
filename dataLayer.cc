@@ -85,21 +85,13 @@ DataLayer::build_wrapped_events(result& evts){
 
 emap_ptr DataLayer::get_event_map(time_t start, time_t end){
     emap_ptr retval = new map<int, list<Event> >();
-
     result evts = get_events_for_timespan(start, end);
-
-    //TODO: complete
-
-
+    populate_emap(evts, retval);
     return retval;
 }
 
 void DataLayer::populate_emap(result& evts, emap_ptr emap)
 {
-    ptime epoch_start = from_time_t(0);
-    time_duration td;
-
-    int i = 0;
     result::const_iterator row;
     for (row = evts.begin(); row != evts.end(); ++row){
 
@@ -108,12 +100,17 @@ void DataLayer::populate_emap(result& evts, emap_ptr emap)
         ptime p_evt_end(time_from_string(row[COL_TIME_END].as<string>()));
         p_evt_start += boost::posix_time::hours(utc_offset_);
         p_evt_end += boost::posix_time::hours(utc_offset_);
-       // Event(int id, time_t start, time_t end, int room, std::string leader, std::string title)
 
-        td = p_evt_start - epoch_start;
-        time_t t_evt_start = td.total_seconds();
-        td = p_evt_end - epoch_start;
-        time_t t_evt_end = td.total_seconds();
+        int index = (int)p_evt_start.date().month().as_number();;
+
+        Event evt(  row[COL_ID].as<int>(),
+                    p_evt_start,
+                    p_evt_end,
+                    row[COL_ROOM_ID].as<int>(),
+                    row[COL_LEADER].as<string>(),
+                    row[COL_DESCRIPTION].as<string>());
+
+        (*emap)[index].push_back(evt);
     }   
 }
 

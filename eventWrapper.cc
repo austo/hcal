@@ -73,7 +73,6 @@ Handle<Value> EventWrapper::get_wrapped_object(int id, time_t start, time_t end,
 
     const unsigned argc = 6;
     Handle<Value> argv[argc] =  {   Number::New(id),
-                                    //Number::New(start), Number::New(end),
                                     NODE_UNIXTIME_V8(start), NODE_UNIXTIME_V8(end),
                                     Number::New(room_id), String::New(leader.c_str()),
                                     String::New(title.c_str())
