@@ -15,6 +15,7 @@ class EventWriter {
 public:
     enum View {day = 1, week, month, custom};
     EventWriter(v8::Array *, View);
+    EventWriter(std::map< int, std::list<Event> >*, View);
     EventWriter();
     ~EventWriter();
     const char* write_calendar();

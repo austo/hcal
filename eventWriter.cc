@@ -47,6 +47,12 @@ EventWriter::EventWriter()
     eventMap_ = new map< int, list<Event> >();
 }
 
+EventWriter::EventWriter(map< int, list<Event> >* emap, View v)
+{
+    view_ = v;
+    eventMap_ = emap;
+}
+
 EventWriter::~EventWriter()
 {
     if (eventMap_) delete eventMap_;

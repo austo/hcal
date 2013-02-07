@@ -14,6 +14,7 @@
 class Event {
     public:
         Event(int, time_t, time_t, int, std::string, std::string);
+        Event(int, boost::posix_time::ptime, boost::posix_time::ptime, int, std::string, std::string);
         Event(EventWrapper*);
         //TODO: may want to add get_week_number and get_day_number
         int Id() const { return id_; }

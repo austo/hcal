@@ -24,7 +24,9 @@ using namespace boost::posix_time;
 #define QUERY_GT_EQ " >= "
 #define QUERY_N_EQ " <> "
 #define QUERY_EQ " = "
+#define QUERY_ORDER_BY " order by "
 
+typedef std::map<int, std::list<Event> >* emap_ptr;
 
 DataLayer::DataLayer(){
     const char* utc_offset_char = getenv(HCAL_UTC_OFFSET);
@@ -36,16 +38,8 @@ DataLayer::~DataLayer(){}
 v8::Handle<v8::Array>
 DataLayer::get_wrapped_events(time_t start, time_t end){
     v8::HandleScope scope;
-    v8::Handle<v8::Array> retval;
-    ptime p_start = from_time_t(start);
-    ptime p_end = from_time_t(end);
-    connection c(CONNSTRING);
-    work txn(c);
-    std::stringstream ss;
-    ss << QUERY_GET_EVENTS << QUERY_WHERE << COL_TIME_START << QUERY_GT_EQ
-       << txn.quote(to_simple_string(p_start)) << QUERY_AND << COL_TIME_END
-       << QUERY_LT_EQ << txn.quote(to_simple_string(p_end)) << ";";
-    result evts = execute_query(txn, ss.str());
+    v8::Handle<v8::Array> retval;    
+    result evts = get_events_for_timespan(start, end);
 
     if (evts.size() > 0){
         retval = build_wrapped_events(evts);
@@ -87,6 +81,53 @@ DataLayer::build_wrapped_events(result& evts){
         ++i;
     }
     return scope.Close(retval);
+}
+
+emap_ptr DataLayer::get_event_map(time_t start, time_t end){
+    emap_ptr retval = new map<int, list<Event> >();
+
+    result evts = get_events_for_timespan(start, end);
+
+    //TODO: complete
+
+
+    return retval;
+}
+
+void DataLayer::populate_emap(result& evts, emap_ptr emap)
+{
+    ptime epoch_start = from_time_t(0);
+    time_duration td;
+
+    int i = 0;
+    result::const_iterator row;
+    for (row = evts.begin(); row != evts.end(); ++row){
+
+        //get time_t for start and end times, adding back utc offset
+        ptime p_evt_start(time_from_string(row[COL_TIME_START].as<string>()));
+        ptime p_evt_end(time_from_string(row[COL_TIME_END].as<string>()));
+        p_evt_start += boost::posix_time::hours(utc_offset_);
+        p_evt_end += boost::posix_time::hours(utc_offset_);
+       // Event(int id, time_t start, time_t end, int room, std::string leader, std::string title)
+
+        td = p_evt_start - epoch_start;
+        time_t t_evt_start = td.total_seconds();
+        td = p_evt_end - epoch_start;
+        time_t t_evt_end = td.total_seconds();
+    }   
+}
+
+result DataLayer::get_events_for_timespan(time_t start, time_t end){
+    ptime p_start = from_time_t(start);
+    ptime p_end = from_time_t(end);
+    connection c(CONNSTRING);
+    work txn(c);
+    std::stringstream ss;
+    ss << QUERY_GET_EVENTS << QUERY_WHERE << COL_TIME_START << QUERY_GT_EQ
+       << txn.quote(to_simple_string(p_start)) << QUERY_AND << COL_TIME_END
+       << QUERY_LT_EQ << txn.quote(to_simple_string(p_end))
+       << QUERY_ORDER_BY << COL_TIME_START << ";";
+    return execute_query(txn, ss.str());
 }
 
 result DataLayer::execute_query(transaction_base& txn, std::string query){

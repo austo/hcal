@@ -15,7 +15,18 @@ using namespace std;
 Event::Event(int id, time_t start, time_t end, int room, std::string leader, std::string title){
     id_ = id;
     start_ = boost::posix_time::from_time_t(start) + boost::posix_time::hours(OFFSET);
-    end_ = boost::posix_time::from_time_t(end) + boost::posix_time::hours(OFFSET);;
+    end_ = boost::posix_time::from_time_t(end) + boost::posix_time::hours(OFFSET);
+    room_ = room;
+    leader_ = leader;
+    title_ = title;
+}
+
+Event::Event(int id, boost::posix_time::ptime start,
+    boost::posix_time::ptime end, int room, std::string leader, std::string title){
+
+    id_ = id;
+    start_ = start + boost::posix_time::hours(OFFSET);
+    end_ = end + boost::posix_time::hours(OFFSET);
     room_ = room;
     leader_ = leader;
     title_ = title;
