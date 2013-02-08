@@ -37,6 +37,47 @@ Handle<Value> CreateEvent(const Arguments& args) {
     return scope.Close(EventWrapper::NewInstance(args));
 }
 
+Handle<Value> InsertEvent(const Arguments& args) {
+    HandleScope scope;
+    if (args.Length() != 6) {
+        THROW("Wrong number of arguments");
+        return scope.Close(Undefined());
+    }    
+    if (args[0]->IsUndefined() || args[1]->IsUndefined() || args[2]->IsUndefined() || 
+        args[3]->IsUndefined() || args[4]->IsUndefined() || args[5]->IsUndefined()) {
+        THROW("All arguments must be defined.");
+        return scope.Close(Undefined());
+    }
+    Handle<Value> retval;
+    try{
+        time_t start = args[0]->IsUndefined() ? 0 : NODE_V8_UNIXTIME(args[0]);
+        time_t end = args[1]->IsUndefined() ? 0 : NODE_V8_UNIXTIME(args[1]);
+        int room_id = args[2]->IsUndefined() ? 0 : args[2]->NumberValue();
+        int leader_id = args[3]->IsUndefined() ? 0 : args[3]->NumberValue();
+        std::string desc;
+        if (!args[4]->IsUndefined()){
+            String::Utf8Value temp_desc(args[4]->ToString());
+            #ifdef __DEBUG__
+            printf("v8 - desc string: %s\n", *temp_desc);
+            #endif
+            desc = std::string(*temp_desc);        
+        }
+        else{
+            desc = std::string("No description");
+        }
+        bool recurring = args[5]->IsUndefined() ? false : args[5]->BooleanValue();
+
+        DataLayer dl = DataLayer();
+        retval = dl.insert_event(start, end, room_id, leader_id, desc, recurring);
+
+        return scope.Close(retval);
+    }
+    catch (std::exception& e){
+        std::cout << "v8 - exception: " << e.what() << std::endl;
+        return scope.Close(Undefined());
+    }
+}
+
 Handle<Value> CreateConfig(const Arguments& args) {
     HandleScope scope;
     return scope.Close(ConfigWrapper::NewInstance(args));
@@ -72,9 +113,8 @@ Handle<Value> TestEventArray(const Arguments& args){
             printf("v8 - TestJsArray array length: %d\n", len);
             printf("v8 - First JS start time is: %s\n", ctime(&st));
             printf("v8 - First JS end time is: %s\n", ctime(&et));
-            printf("v8 - First event duration: %ld\n", evt->Minutes());
-            std::cout << "v8 - Leader: " << evt->Leader() << std::endl;
-            std::cout << "v8 - Title: " << evt->Title() << std::endl;
+            printf("v8 - First event duration: %ld\n", evt->Duration());
+            std::cout << "v8 - Title: " << evt->Description() << std::endl;
 
             time_t rawtime;
             struct tm * timeinfo;
@@ -184,6 +224,9 @@ void InitAll(Handle<Object> target) {
     ConfigWrapper::Init();
     target->Set(String::NewSymbol("createEvent"),
         FunctionTemplate::New(CreateEvent)->GetFunction());
+
+    target->Set(String::NewSymbol("insertEvent"),
+        FunctionTemplate::New(InsertEvent)->GetFunction());
 
     target->Set(String::NewSymbol("createConfig"),
         FunctionTemplate::New(CreateConfig)->GetFunction());

@@ -366,10 +366,10 @@ EventWriter::write_events(HPDF_Page page, float cellHeight, float cellWidth,
 
             stringstream ss;
             if (stdur.minutes() == 0){
-                ss << hours <<  ":00 " << meridian << " - " << i->Title();
+                ss << hours <<  ":00 " << meridian << " - " << i->Description();
             }
             else{
-                ss << hours << ":" << stdur.minutes() << " " << meridian << " - " << i->Title();
+                ss << hours << ":" << stdur.minutes() << " " << meridian << " - " << i->Description();
             }
             string tstring = ss.str();
             const char* evtTitle = tstring.c_str();
