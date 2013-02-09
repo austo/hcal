@@ -8,7 +8,7 @@ var d4 = new Date(2013, 1, 23, 0, 30);
 var d5 = new Date(2013, 0, 13, 16);
 var d6 = new Date(2013, 0, 13, 18);
 
-// var a = hcal.createEvent(1, d1, d2, 96, "Bob", "Computers");
+var a = hcal.createEvent(1, d1, d2, 96, 1, "Computers");
 // var b = hcal.createEvent(2, d3, d4, 13, "Betsy", "Basketball");
 // var c = hcal.createEvent(2, d5, d6, 13, "Reginald", "Cartography");
 // var events = [a, b, c];
@@ -24,7 +24,11 @@ var d6 = new Date(2013, 0, 13, 18);
 // });
 console.log(d3 + '\n');
 console.log(d4);
-var evt = hcal.insertEvent(d3, d4, 4, 1, "Snowball Fight", true);
+hcal.insertEvent(d3, d4, 4, 1, "Snowball Fight", true, function(err, evt){
+    if (!err){
+        console.log(evt.description() + " - " + evt.end());
+    }
+});
 hcal.printCalendar(d1, d2, "month", function(fileName){
     console.log("Monthly calendar file: " + fileName);
 });

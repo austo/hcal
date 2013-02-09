@@ -27,6 +27,10 @@ class EventWrapper : public node::ObjectWrap {
     private:
         static v8::Persistent<v8::Function> constructor;
         static v8::Handle<v8::Value> New(const v8::Arguments& args);
+        static v8::Handle<v8::Value> GetId(const v8::Arguments& args);
+        static v8::Handle<v8::Value> GetStart(const v8::Arguments& args);
+        static v8::Handle<v8::Value> GetEnd(const v8::Arguments& args);
+        static v8::Handle<v8::Value> GetRoomId(const v8::Arguments& args);
         static v8::Handle<v8::Value> GetDuration(const v8::Arguments& args);
         static v8::Handle<v8::Value> GetDescription(const v8::Arguments& args);
         int id_;

@@ -39,8 +39,8 @@ Handle<Value> CreateEvent(const Arguments& args) {
 
 Handle<Value> InsertEvent(const Arguments& args) {
     HandleScope scope;
-    if (args.Length() != 6) {
-        THROW("Wrong number of arguments");
+    if (args.Length() != 7) {
+        THROW("Wrong number of arguments - hcal.insertEvent() must be called with 7 args.");
         return scope.Close(Undefined());
     }    
     if (args[0]->IsUndefined() || args[1]->IsUndefined() || args[2]->IsUndefined() || 
@@ -48,7 +48,14 @@ Handle<Value> InsertEvent(const Arguments& args) {
         THROW("All arguments must be defined.");
         return scope.Close(Undefined());
     }
+    if (args[6]->IsUndefined()){
+        THROW("Inserted event callback must be defined.");
+    }
+
     Handle<Value> retval;
+    Local<Function> cb = Local<Function>::Cast(args[6]);
+    const unsigned argc = 2;
+
     try{
         time_t start = args[0]->IsUndefined() ? 0 : NODE_V8_UNIXTIME(args[0]);
         time_t end = args[1]->IsUndefined() ? 0 : NODE_V8_UNIXTIME(args[1]);
@@ -70,12 +77,17 @@ Handle<Value> InsertEvent(const Arguments& args) {
         DataLayer dl = DataLayer();
         retval = dl.insert_event(start, end, room_id, leader_id, desc, recurring);
 
-        return scope.Close(retval);
+        Local<Value> argv[argc] = { Local<Value>::New(Undefined()), Local<Value>::New(retval) };
+        cb->Call(Context::GetCurrent()->Global(), argc, argv);
     }
     catch (std::exception& e){
-        std::cout << "v8 - exception: " << e.what() << std::endl;
-        return scope.Close(Undefined());
+        std::stringstream ss;
+        ss << "hcal.insertEvent threw exception: " << e.what();
+        std::string ex_str = ss.str();
+        Local<Value> argv[argc] = { Local<Value>::New(String::New(ex_str.c_str())), Local<Value>::New(Undefined()) };
+        cb->Call(Context::GetCurrent()->Global(), argc, argv);
     }
+    return scope.Close(Undefined());
 }
 
 Handle<Value> CreateConfig(const Arguments& args) {
@@ -120,12 +132,7 @@ Handle<Value> TestEventArray(const Arguments& args){
             struct tm * timeinfo;
 
             DataLayer dl = DataLayer();
-            retval = dl.get_wrapped_events(st, et);
-            // std::cout << evtWprs->begin()->Title() << std::endl;
-            // if (evtWprs){
-            //     //std::cout << (*evtWprs)[0].Title() << std::endl;
-            //     retval = Array::New(evtWprs->size());
-            // }
+            retval = dl.get_wrapped_events(st, et);            
 
             boost::posix_time::ptime p1(boost::posix_time::not_a_date_time);
             boost::posix_time::ptime p2;
@@ -147,23 +154,9 @@ Handle<Value> TestEventArray(const Arguments& args){
     else {
        WriteException(trycatch);
     }
-    //if (evtWprs){
-    return scope.Close(retval);
-    //}
-    //else{
-       // return scope.Close(String::New("failed"));
-    //}
+    return scope.Close(retval);   
 }
 
-/*  TODO: changes this to provide for a function with two args:
-    err, pdf
-    ideally, the pdf arg should be a filestream handle, which we would
-    then hand off to express...
-
-    1. check args (need to check events array...)
-    2. switch (else if) view arg
-    3. call correct EventWriter method
-*/    
 Handle<Value> BuildCalendar(const Arguments& args) {
     HandleScope scope;
     if (args[0]->IsArray()) {

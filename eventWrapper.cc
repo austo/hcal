@@ -17,6 +17,14 @@ void EventWrapper::Init() {
     tpl->InstanceTemplate()->SetInternalFieldCount(6);
     
     //Prototype
+    tpl->PrototypeTemplate()->Set(String::NewSymbol("id"),
+        FunctionTemplate::New(GetId)->GetFunction());
+    tpl->PrototypeTemplate()->Set(String::NewSymbol("start"),
+        FunctionTemplate::New(GetStart)->GetFunction());
+    tpl->PrototypeTemplate()->Set(String::NewSymbol("end"),
+        FunctionTemplate::New(GetEnd)->GetFunction());
+    tpl->PrototypeTemplate()->Set(String::NewSymbol("roomId"),
+        FunctionTemplate::New(GetRoomId)->GetFunction());
     tpl->PrototypeTemplate()->Set(String::NewSymbol("duration"),
         FunctionTemplate::New(GetDuration)->GetFunction());
     tpl->PrototypeTemplate()->Set(String::NewSymbol("description"),
@@ -46,44 +54,6 @@ Handle<Value> EventWrapper::New(const Arguments& args) {
     evt->room_id_ = args[3]->IsUndefined() ? 0 : args[3]->NumberValue();
     //leader_id_
     evt->leader_id_ = args[4]->IsUndefined() ? 0 : args[4]->NumberValue();
-
-
-    // //room_name_
-    // if (!args[4]->IsUndefined()){
-    //     String::Utf8Value temp_rm_name(args[4]->ToString());
-    //     #ifdef __DEBUG__
-    //     printf("v8 - room name: %s\n", *temp_rm_name);
-    //     #endif
-    //     evt->room_name_ = std::string(*temp_rm_name);
-    //     #ifdef __DEBUG__
-    //     std::cout << "v8 - " << evt->room_name_ << std::endl;
-    //     #endif
-    // }
-    // else{
-    //     evt->room_name_ = std::string("No leader");
-    //     #ifdef __DEBUG__
-    //     std::cout << "v8 - " << evt->room_name_ << std::endl;
-    //     #endif
-    // }
-
-    
-    // //leader_name_
-    // if (!args[6]->IsUndefined()){
-    //     String::Utf8Value temp_leader(args[6]->ToString());
-    //     #ifdef __DEBUG__
-    //     printf("v8 - leader name: %s\n", *temp_leader);
-    //     #endif
-    //     evt->leader_name_ = std::string(*temp_leader);
-    //     #ifdef __DEBUG__
-    //     std::cout << "v8 - " << evt->leader_name_ << std::endl;
-    //     #endif
-    // }
-    // else{
-    //     evt->leader_name_ = std::string("No leader");
-    //     #ifdef __DEBUG__
-    //     std::cout << "v8 - " << evt->leader_name_ << std::endl;
-    //     #endif
-    // }
 
     //Description
     if (!args[5]->IsUndefined()){
@@ -130,6 +100,30 @@ Handle<Value> EventWrapper::NewInstance(const Arguments& args) {
     Handle<Value> argv[argc] = { args[0], args[1], args[2], args[3], args[4], args[5] };
     Local<Object> instance = constructor->NewInstance(argc, argv);
     return scope.Close(instance);
+}
+
+Handle<Value> EventWrapper::GetId(const v8::Arguments& args){
+    HandleScope scope;
+    EventWrapper* evt = ObjectWrap::Unwrap<EventWrapper>(args.This());
+    return scope.Close(Number::New(evt->Id()));
+}
+
+Handle<Value> EventWrapper::GetStart(const v8::Arguments& args){
+    HandleScope scope;
+    EventWrapper* evt = ObjectWrap::Unwrap<EventWrapper>(args.This());
+    return scope.Close(NODE_UNIXTIME_V8(evt->Start()));
+}
+
+Handle<Value> EventWrapper::GetEnd(const v8::Arguments& args){
+    HandleScope scope;
+    EventWrapper* evt = ObjectWrap::Unwrap<EventWrapper>(args.This());
+    return scope.Close(NODE_UNIXTIME_V8(evt->End()));
+}
+
+Handle<Value> EventWrapper::GetRoomId(const v8::Arguments& args){
+    HandleScope scope;
+    EventWrapper* evt = ObjectWrap::Unwrap<EventWrapper>(args.This());
+    return scope.Close(Number::New(evt->RoomId()));
 }
 
 Handle<Value> EventWrapper::GetDuration(const Arguments& args) {

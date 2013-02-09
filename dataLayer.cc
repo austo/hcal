@@ -136,7 +136,6 @@ DataLayer::insert_event(time_t start, time_t end, int room_id, int leader_id, st
     ptime p_evt_end = from_time_t(end);
     p_evt_start -= utc_offset_td_;
     p_evt_end -= utc_offset_td_;
-    //cout << to_simple_string(p_evt_end) << " - " << utc_offset_td_ << endl;
     connection c(CONNSTRING);
     work txn(c);
     stringstream ss;
@@ -148,6 +147,10 @@ DataLayer::insert_event(time_t start, time_t end, int room_id, int leader_id, st
     txn.commit();
 
     int evt_id = res[0][0].as<int>();
+
+    //revert time back to js utc offset
+    p_evt_start += utc_offset_td_;
+    p_evt_end += utc_offset_td_;
     v8::Handle<v8::Value> retval = EventWrapper::get_wrapped_object(
             evt_id,
             get_time_t_from_ptime(p_evt_start),
