@@ -20,9 +20,11 @@ using namespace boost::posix_time;
 #define COMMA_SPACE ", "
 #define QUERY_GET_EVENTS "select id, description, time_start, time_end, \
     room_id, leader_id from events"
-#define QUERY_INSERT_EVENTS "select insert_event"
+#define QUERY_INSERT_EVENT "select insert_event("
+#define QUERY_UPDATE_EVENT "select update_event("
 #define QUERY_OPEN_PARENS "("
 #define QUERY_CLOSE_PARENS ")"
+#define QUERY_CLOSE_PARENS_END ");"
 #define QUERY_WHERE " where "
 #define QUERY_AND " and "
 #define QUERY_LT_EQ  " <= "
@@ -139,9 +141,9 @@ DataLayer::insert_event(time_t start, time_t end, int room_id, int leader_id, st
     connection c(CONNSTRING);
     work txn(c);
     stringstream ss;
-    ss << QUERY_INSERT_EVENTS << QUERY_OPEN_PARENS << txn.quote(desc) << COMMA_SPACE << txn.quote(to_simple_string(p_evt_start))
+    ss << QUERY_INSERT_EVENT << txn.quote(desc) << COMMA_SPACE << txn.quote(to_simple_string(p_evt_start))
        << COMMA_SPACE <<  txn.quote(to_simple_string(p_evt_end)) << COMMA_SPACE << txn.quote(room_id)
-       << COMMA_SPACE << txn.quote(leader_id) << COMMA_SPACE << txn.quote(recurring) << QUERY_CLOSE_PARENS << QUERY_END;
+       << COMMA_SPACE << txn.quote(leader_id) << COMMA_SPACE << txn.quote(recurring) << QUERY_CLOSE_PARENS_END;
     cout << ss.str() << endl;
     result res = execute_query(txn, ss.str());
     txn.commit();
@@ -161,6 +163,39 @@ DataLayer::insert_event(time_t start, time_t end, int room_id, int leader_id, st
     );
     return scope.Close(retval);
 }
+
+// v8::Handle<v8::Value>
+// DataLayer::update_event(time_t start, time_t end, int room_id, int leader_id, string desc, bool recurring){
+//     v8::HandleScope scope;
+//     ptime p_evt_start = from_time_t(start);
+//     ptime p_evt_end = from_time_t(end);
+//     p_evt_start -= utc_offset_td_;
+//     p_evt_end -= utc_offset_td_;
+//     connection c(CONNSTRING);
+//     work txn(c);
+//     stringstream ss;
+//     ss << QUERY_INSERT_EVENT << txn.quote(desc) << COMMA_SPACE << txn.quote(to_simple_string(p_evt_start))
+//        << COMMA_SPACE <<  txn.quote(to_simple_string(p_evt_end)) << COMMA_SPACE << txn.quote(room_id)
+//        << COMMA_SPACE << txn.quote(leader_id) << COMMA_SPACE << txn.quote(recurring) << QUERY_CLOSE_PARENS_END;
+//     cout << ss.str() << endl;
+//     result res = execute_query(txn, ss.str());
+//     txn.commit();
+
+//     int evt_id = res[0][0].as<int>();
+
+//     //revert time back to js utc offset
+//     p_evt_start += utc_offset_td_;
+//     p_evt_end += utc_offset_td_;
+//     v8::Handle<v8::Value> retval = EventWrapper::get_wrapped_object(
+//             evt_id,
+//             get_time_t_from_ptime(p_evt_start),
+//             get_time_t_from_ptime(p_evt_end),
+//             room_id,
+//             leader_id,
+//             desc
+//     );
+//     return scope.Close(retval);
+// }
 
 
 result DataLayer::execute_query(transaction_base& txn, string query){
