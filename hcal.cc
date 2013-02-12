@@ -196,8 +196,10 @@ Handle<Value> PrintCalendar(const Arguments& args) {
     Local<Function> cb = Local<Function>::Cast(args[3]);
     const unsigned argc = 1;
 
+    //TODO: need a fascade class here to hide implementation details (EventWriter)
     try{
-        if (strcmp(*viewStr, "month") == 0){
+        hcal::View v = hcal::get_view(viewStr);
+        if (v == hcal::month){
             hcal::MonthWriter month_wtr = hcal::MonthWriter(start, end);
             const char* fname = month_wtr.write_calendar();
             Local<Value> argv[argc] = { Local<Value>::New(String::New(fname)) };

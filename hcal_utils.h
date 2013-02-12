@@ -36,6 +36,7 @@ namespace hcal {
     void write_text(HPDF_Page, float, float, const char*);
     void write_page_title(HPDF_Page, HPDF_Font, const char*);
     void draw_line(HPDF_Page, float, float, float, float);
-    void write_weekday_cols(HPDF_Page, HPDF_Font, int, int, int, float);      
+    void write_weekday_cols(HPDF_Page, HPDF_Font, int, int, int, float);
+    View get_view(v8::String::AsciiValue&);  
 }
 #endif

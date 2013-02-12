@@ -2,6 +2,7 @@
 using namespace std;
 
 #define ERR_CREATE_PDF "MonthWriter: failed to create HPDF object."
+#define ERR_UREC_VIEW "EventWriter: Unrecognized calendar view."
 
 namespace hcal {
 
@@ -77,6 +78,22 @@ namespace hcal {
             float tw = HPDF_Page_TextWidth(page, weekdays()[i]);
             float textpos = (daymargin - (tw /2)) + (dayWidth * i);
             write_text(page, textpos, HPDF_Page_GetHeight(page) - (margin + 15), weekdays()[i]);        
+        }
+    }
+
+    View get_view(v8::String::AsciiValue& viewStr)
+    {
+        if (strcmp(*viewStr, "month") == 0){
+            return month;
+        }
+        else if (strcmp(*viewStr, "week") == 0){
+            return week;
+        }
+        else if (strcmp(*viewStr, "day") == 0){
+            return day;
+        }
+        else{
+            throw runtime_error(ERR_UREC_VIEW);
         }
     }
 }
