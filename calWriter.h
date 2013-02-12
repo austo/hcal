@@ -23,7 +23,7 @@ namespace hcal {
     class CalWriter {
 
     public:
-        virtual ~CalWriter() { if (eventMap_) delete eventMap_; };
+        virtual ~CalWriter(){}; //{ if (eventMap_) delete eventMap_; };
         virtual const char* write_calendar() = 0;
 
     protected:

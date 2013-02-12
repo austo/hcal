@@ -22,6 +22,7 @@
 #include "hcal.h"
 #include "eventWriter.h"
 #include "event.h"
+#include "monthWriter.h"
 
 v8::Handle<v8::Value> CreateEvent(const v8::Arguments&);
 

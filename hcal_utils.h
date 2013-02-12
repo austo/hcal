@@ -19,9 +19,16 @@
 
 namespace hcal {
 
-    static const char* weekdays[] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
-    static const char* months[] = {"January", "February", "March", "April", "May", "June",
-        "July", "August", "September", "October", "November", "December"}; 
+    inline const char** weekdays() {
+        static const char* retval[] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
+        return retval;
+    }
+
+    inline const char** months() {
+        static const char* retval[] = {"January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"};
+        return retval;
+    }
 
     void error_handler (HPDF_STATUS, HPDF_STATUS, void*);
     HPDF_Doc get_pdf();

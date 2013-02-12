@@ -197,13 +197,20 @@ Handle<Value> PrintCalendar(const Arguments& args) {
     const unsigned argc = 1;
 
     try{
-        EventWriter::View view = EventWriter::get_view(viewStr);
-        DataLayer dl = DataLayer();
-        std::map<int, std::list<Event> >* emap = dl.get_event_map(start, end);
-        EventWriter evtWtr = EventWriter(emap, view);
-        const char* fname = evtWtr.write_calendar();
-        Local<Value> argv[argc] = { Local<Value>::New(String::New(fname)) };
-        cb->Call(Context::GetCurrent()->Global(), argc, argv);
+        if (strcmp(*viewStr, "month") == 0){
+            hcal::MonthWriter month_wtr = hcal::MonthWriter(start, end);
+            const char* fname = month_wtr.write_calendar();
+            Local<Value> argv[argc] = { Local<Value>::New(String::New(fname)) };
+            cb->Call(Context::GetCurrent()->Global(), argc, argv);
+        }
+
+        // EventWriter::View view = EventWriter::get_view(viewStr);
+        // DataLayer dl = DataLayer();
+        // std::map<int, std::list<Event> >* emap = dl.get_event_map(start, end);
+        // EventWriter evtWtr = EventWriter(emap, view);
+        // const char* fname = evtWtr.write_calendar();
+        // Local<Value> argv[argc] = { Local<Value>::New(String::New(fname)) };
+        // cb->Call(Context::GetCurrent()->Global(), argc, argv);
     }
     catch(std::exception& e){
         THROW(e.what());

@@ -66,7 +66,7 @@ namespace hcal {
     const char*
     MonthWriter::write_calendar()
     {
-        const char* fname = "monthly_calendar.pdf";
+        const char* fname = "monthly_calendar_poly.pdf";
 
         HPDF_Doc pdf = get_pdf();
         HPDF_Font font = HPDF_GetFont(pdf, "Helvetica", NULL);
@@ -94,7 +94,7 @@ namespace hcal {
         using namespace boost::gregorian;
 
         stringstream titleStream;
-        titleStream << months[month - 1] << " " << year;
+        titleStream << months()[month - 1] << " " << year;
         string tstring = titleStream.str();
         const char* page_title = tstring.c_str();
 

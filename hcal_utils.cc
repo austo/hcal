@@ -73,10 +73,10 @@ namespace hcal {
 
         //weekdays
         float daymargin = margin + (dayWidth / 2);
-        for (i = 0; i < 7; i++){
-            float tw = HPDF_Page_TextWidth(page, weekdays[i]);
+        for (i = 0; i < 7; ++i){
+            float tw = HPDF_Page_TextWidth(page, weekdays()[i]);
             float textpos = (daymargin - (tw /2)) + (dayWidth * i);
-            write_text(page, textpos, HPDF_Page_GetHeight(page) - (margin + 15), weekdays[i]);        
+            write_text(page, textpos, HPDF_Page_GetHeight(page) - (margin + 15), weekdays()[i]);        
         }
     }
 }
