@@ -29,6 +29,9 @@ hcal.insertEvent(d3, d4, 4, 1, "Snowball Fight", true, function(err, evt){
         console.log(evt.description() + " - " + evt.end());
     }
 });
+// hcal.updateEvent(35, d5, d6, 5, 1, "New title", false, function(err, evt){
+//     console.log("updated event description: " + evt.description());
+// });
 hcal.printCalendar(d1, d2, "month", function(fileName){
     console.log("Monthly calendar file: " + fileName);
 });
