@@ -74,7 +74,7 @@ Handle<Value> InsertEvent(const Arguments& args) {
         }
         bool recurring = args[5]->IsUndefined() ? false : args[5]->BooleanValue();
 
-        DataLayer dl = DataLayer();
+        hcal::DataLayer dl = hcal::DataLayer();
         retval = dl.insert_event(start, end, room_id, leader_id, desc, recurring);
 
         Local<Value> argv[argc] = { Local<Value>::New(Undefined()), Local<Value>::New(retval) };
@@ -131,7 +131,7 @@ Handle<Value> TestEventArray(const Arguments& args){
             time_t rawtime;
             struct tm * timeinfo;
 
-            DataLayer dl = DataLayer();
+            hcal::DataLayer dl = hcal::DataLayer();
             retval = dl.get_wrapped_events(st, et);            
 
             boost::posix_time::ptime p1(boost::posix_time::not_a_date_time);
@@ -205,7 +205,7 @@ Handle<Value> PrintCalendar(const Arguments& args) {
         }
 
         // EventWriter::View view = EventWriter::get_view(viewStr);
-        // DataLayer dl = DataLayer();
+        // hcal::DataLayer dl = hcal::DataLayer();
         // std::map<int, std::list<Event> >* emap = dl.get_event_map(start, end);
         // EventWriter evtWtr = EventWriter(emap, view);
         // const char* fname = evtWtr.write_calendar();

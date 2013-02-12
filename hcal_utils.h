@@ -30,6 +30,7 @@ namespace hcal {
         return retval;
     }
 
+    enum View {day = 1, week, month, custom};
     void error_handler (HPDF_STATUS, HPDF_STATUS, void*);
     HPDF_Doc get_pdf();
     void write_text(HPDF_Page, float, float, const char*);

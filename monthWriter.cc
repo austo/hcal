@@ -78,7 +78,7 @@ namespace hcal {
                 mitr->second.sort();
                 boost::gregorian::date startDate(mitr->second.begin()->Start().date());
                 int stYear = (int)startDate.year();
-                write_monthly_calendar_page(pdf, font, mitr->first, stYear);
+                write_calendar_page(pdf, font, mitr->first, stYear);
             }          
         }
 
@@ -89,7 +89,7 @@ namespace hcal {
 
 
     void
-    MonthWriter::write_monthly_calendar_page(HPDF_Doc pdf, HPDF_Font font, int month, int year)
+    MonthWriter::write_calendar_page(HPDF_Doc pdf, HPDF_Font font, int month, int year)
     {
         using namespace boost::gregorian;
 
