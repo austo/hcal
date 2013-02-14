@@ -171,6 +171,7 @@ namespace hcal{
         return scope.Close(retval);
     }
 
+    //TODO: may need to change update function return value to int with discrete values for event not found and failure 
     bool
     DataLayer::update_event(int evt_id, time_t start, time_t end, int room_id, int leader_id, string desc, bool recurring){
         bool retval = false;
@@ -184,15 +185,16 @@ namespace hcal{
             stringstream ss;
             ss << QUERY_UPDATE_EVENT << txn.quote(evt_id) << COMMA_SPACE << txn.quote(room_id) << COMMA_SPACE << txn.quote(leader_id) << COMMA_SPACE
                << txn.quote(recurring) << COMMA_SPACE << txn.quote(desc) << COMMA_SPACE << txn.quote(to_simple_string(p_evt_start)) << COMMA_SPACE 
-               << txn.quote(to_simple_string(p_evt_end)) << COMMA_SPACE << QUERY_CLOSE_PARENS_END;
+               << txn.quote(to_simple_string(p_evt_end)) << QUERY_CLOSE_PARENS_END;
             cout << ss.str() << endl;
             result res = execute_query(txn, ss.str());
             txn.commit();
 
             retval = res[0][0].as<bool>();
+            cout << "v8 - update retval: " << retval << endl;
         }
         catch(exception& e){
-            //log
+            cout << e.what() << endl;
         }        
         return retval;
     }

@@ -90,6 +90,63 @@ Handle<Value> InsertEvent(const Arguments& args) {
     return scope.Close(Undefined());
 }
 
+Handle<Value> UpdateEvent(const Arguments& args) {
+    HandleScope scope;
+    if (args.Length() != 8) {
+        THROW("Wrong number of arguments - hcal.updateEvent() must be called with 8 args.");
+        return scope.Close(Undefined());
+    }    
+    if (args[0]->IsUndefined() || args[1]->IsUndefined() || args[2]->IsUndefined() || 
+        args[3]->IsUndefined() || args[4]->IsUndefined() || args[5]->IsUndefined() || args[6]->IsUndefined()) {
+        THROW("All arguments must be defined.");
+        return scope.Close(Undefined());
+    }
+    if (args[7]->IsUndefined()){
+        THROW("Updated event callback must be defined.");
+    }
+
+    Local<Function> cb = Local<Function>::Cast(args[7]);
+    const unsigned argc = 1;
+
+    try{
+        int evt_id = args[0]->NumberValue();
+        time_t start = NODE_V8_UNIXTIME(args[1]);
+        time_t end = NODE_V8_UNIXTIME(args[2]);
+        int room_id = args[3]->NumberValue();
+        int leader_id = args[4]->NumberValue();
+        std::string desc;
+        if (!args[5]->IsUndefined()){
+            String::Utf8Value temp_desc(args[5]->ToString());
+            #ifdef __DEBUG__
+            printf("v8 - desc string: %s\n", *temp_desc);
+            #endif
+            desc = std::string(*temp_desc);        
+        }
+        else{
+            desc = std::string("No description");
+        }
+        bool recurring = args[6]->IsUndefined() ? false : args[6]->BooleanValue();
+
+        hcal::DataLayer dl = hcal::DataLayer();        
+        if (dl.update_event(evt_id, start, end, room_id, leader_id, desc, recurring)){
+            Local<Value> argv[argc] = { Local<Value>::New(Undefined()) };
+            cb->Call(Context::GetCurrent()->Global(), argc, argv);
+        }
+        else{
+            Local<Value> argv[argc] = { Local<Value>::New(String::New("hcal: Failed to update event.")) };
+            cb->Call(Context::GetCurrent()->Global(), argc, argv);
+        }       
+    }
+    catch (std::exception& e){
+        std::stringstream ss;
+        ss << "hcal.updateEvent threw exception: " << e.what();
+        std::string ex_str = ss.str();
+        Local<Value> argv[argc] = { Local<Value>::New(String::New(ex_str.c_str())) };
+        cb->Call(Context::GetCurrent()->Global(), argc, argv);
+    }
+    return scope.Close(Undefined());
+}
+
 Handle<Value> CreateConfig(const Arguments& args) {
     HandleScope scope;
     return scope.Close(ConfigWrapper::NewInstance(args));
@@ -229,6 +286,9 @@ void InitAll(Handle<Object> target) {
 
     target->Set(String::NewSymbol("insertEvent"),
         FunctionTemplate::New(InsertEvent)->GetFunction());
+
+    target->Set(String::NewSymbol("updateEvent"),
+        FunctionTemplate::New(UpdateEvent)->GetFunction());
 
     target->Set(String::NewSymbol("createConfig"),
         FunctionTemplate::New(CreateConfig)->GetFunction());
