@@ -171,38 +171,31 @@ namespace hcal{
         return scope.Close(retval);
     }
 
-    // v8::Handle<v8::Value>
-    // DataLayer::update_event(time_t start, time_t end, int room_id, int leader_id, string desc, bool recurring){
-    //     v8::HandleScope scope;
-    //     ptime p_evt_start = from_time_t(start);
-    //     ptime p_evt_end = from_time_t(end);
-    //     p_evt_start -= utc_offset_td_;
-    //     p_evt_end -= utc_offset_td_;
-    //     connection c(CONNSTRING);
-    //     work txn(c);
-    //     stringstream ss;
-    //     ss << QUERY_INSERT_EVENT << txn.quote(desc) << COMMA_SPACE << txn.quote(to_simple_string(p_evt_start))
-    //        << COMMA_SPACE <<  txn.quote(to_simple_string(p_evt_end)) << COMMA_SPACE << txn.quote(room_id)
-    //        << COMMA_SPACE << txn.quote(leader_id) << COMMA_SPACE << txn.quote(recurring) << QUERY_CLOSE_PARENS_END;
-    //     cout << ss.str() << endl;
-    //     result res = execute_query(txn, ss.str());
-    //     txn.commit();
+    bool
+    DataLayer::update_event(int evt_id, time_t start, time_t end, int room_id, int leader_id, string desc, bool recurring){
+        bool retval = false;
+        try{
+            ptime p_evt_start = from_time_t(start);
+            ptime p_evt_end = from_time_t(end);
+            p_evt_start -= utc_offset_td_;
+            p_evt_end -= utc_offset_td_;
+            connection c(CONNSTRING);
+            work txn(c);
+            stringstream ss;
+            ss << QUERY_UPDATE_EVENT << txn.quote(evt_id) << COMMA_SPACE << txn.quote(room_id) << COMMA_SPACE << txn.quote(leader_id) << COMMA_SPACE
+               << txn.quote(recurring) << COMMA_SPACE << txn.quote(desc) << COMMA_SPACE << txn.quote(to_simple_string(p_evt_start)) << COMMA_SPACE 
+               << txn.quote(to_simple_string(p_evt_end)) << COMMA_SPACE << QUERY_CLOSE_PARENS_END;
+            cout << ss.str() << endl;
+            result res = execute_query(txn, ss.str());
+            txn.commit();
 
-    //     int evt_id = res[0][0].as<int>();
-
-    //     //revert time back to js utc offset
-    //     p_evt_start += utc_offset_td_;
-    //     p_evt_end += utc_offset_td_;
-    //     v8::Handle<v8::Value> retval = EventWrapper::get_wrapped_object(
-    //             evt_id,
-    //             get_time_t_from_ptime(p_evt_start),
-    //             get_time_t_from_ptime(p_evt_end),
-    //             room_id,
-    //             leader_id,
-    //             desc
-    //     );
-    //     return scope.Close(retval);
-    // }
+            retval = res[0][0].as<bool>();
+        }
+        catch(exception& e){
+            //log
+        }        
+        return retval;
+    }
 
 
     result DataLayer::execute_query(transaction_base& txn, string query){
