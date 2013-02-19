@@ -5,8 +5,7 @@
       "sources": [  "hcal.cc", "eventWrapper.cc",
                     "configWrapper.cc", "event.cc",
                     "hcal_utils.cc", "monthWriter.cc",
-                    "weekWriter.cc",
-                    "eventWriter.cc", "dataLayer.cc"
+                    "weekWriter.cc", "dataLayer.cc"
                   ],
       'conditions': [
           ['OS!="win"', {

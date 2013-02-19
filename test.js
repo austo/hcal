@@ -16,12 +16,6 @@ var a = hcal.createEvent(1, d1, d2, 96, 1, "Computers");
 // console.log(ret[3].description());
 // console.log("second event duration: " + b.duration() + " minutes");
 
-// hcal.buildCalendar(ret, "month", function(fileName){
-//     console.log("Monthly calendar file: " + fileName);    
-// });
-// hcal.buildCalendar(events, "week", function(fileName){
-//     console.log("Weekly calendar file: " + fileName);
-// });
 console.log(d3 + '\n');
 console.log(d4);
 hcal.insertEvent(d3, d4, 4, 1, "Snowball Fight", true, function(err, evt){
@@ -50,7 +44,7 @@ hcal.getEvents(d1, d3, function(err, evts){
     else{
         var len = evts.length, i = 0;
         for (; i < len; ++i){
-            console.log(evts[i].description());
+            console.log(evts[i].description() + " - " + evts[i].start());
         }
     }
 });

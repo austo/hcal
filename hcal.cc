@@ -260,28 +260,6 @@ Handle<Value> TestEventArray(const Arguments& args){
     return scope.Close(retval);   
 }
 
-Handle<Value> BuildCalendar(const Arguments& args) {
-    HandleScope scope;
-    if (args[0]->IsArray()) {
-        Array* arr = Array::Cast(*args[0]);
-        Local<Function> cb = Local<Function>::Cast(args[2]);
-        String::AsciiValue viewStr(args[1]->ToString());
-        const unsigned argc = 1;
-        try{
-            EventWriter::View view = EventWriter::get_view(viewStr);
-            EventWriter evtWtr = EventWriter(arr, view);
-            const char* fname = evtWtr.write_calendar();
-            Local<Value> argv[argc] = { Local<Value>::New(String::New(fname)) };
-            cb->Call(Context::GetCurrent()->Global(), argc, argv);
-        }
-        catch(std::exception& e){
-            THROW(e.what());
-        }    
-    }
-    return scope.Close(Undefined());
-}
-
-
 Handle<Value> PrintCalendar(const Arguments& args) {
     HandleScope scope;
 
@@ -299,7 +277,7 @@ Handle<Value> PrintCalendar(const Arguments& args) {
     Local<Function> cb = Local<Function>::Cast(args[3]);
     const unsigned argc = 1;
 
-    //TODO: need a fascade class here to hide implementation details (EventWriter)
+    //TODO: need a fascade class here to hide implementation details (CalWriter)
     try{
         hcal::View v = hcal::get_view(viewStr);
         if (v == hcal::month){
@@ -307,15 +285,7 @@ Handle<Value> PrintCalendar(const Arguments& args) {
             const char* fname = month_wtr.write_calendar();
             Local<Value> argv[argc] = { Local<Value>::New(String::New(fname)) };
             cb->Call(Context::GetCurrent()->Global(), argc, argv);
-        }
-
-        // EventWriter::View view = EventWriter::get_view(viewStr);
-        // hcal::DataLayer dl = hcal::DataLayer();
-        // std::map<int, std::list<Event> >* emap = dl.get_event_map(start, end);
-        // EventWriter evtWtr = EventWriter(emap, view);
-        // const char* fname = evtWtr.write_calendar();
-        // Local<Value> argv[argc] = { Local<Value>::New(String::New(fname)) };
-        // cb->Call(Context::GetCurrent()->Global(), argc, argv);
+        }       
     }
     catch(std::exception& e){
         THROW(e.what());
@@ -346,10 +316,7 @@ void InitAll(Handle<Object> target) {
         FunctionTemplate::New(Add)->GetFunction());
 
     target->Set(String::NewSymbol("testEventArray"),
-        FunctionTemplate::New(TestEventArray)->GetFunction());
-
-    target->Set(String::NewSymbol("buildCalendar"),
-      FunctionTemplate::New(BuildCalendar)->GetFunction());
+        FunctionTemplate::New(TestEventArray)->GetFunction());    
 
     target->Set(String::NewSymbol("printCalendar"),
       FunctionTemplate::New(PrintCalendar)->GetFunction());

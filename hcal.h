@@ -20,7 +20,6 @@
 #include "eventWrapper.h"
 #include "configWrapper.h"
 #include "hcal.h"
-#include "eventWriter.h"
 #include "event.h"
 #include "monthWriter.h"
 
@@ -37,8 +36,6 @@ v8::Handle<v8::Value> InsertEvent(const v8::Arguments&);
 v8::Handle<v8::Value> Add(const v8::Arguments&);
 
 v8::Handle<v8::Value> TestEventArray(const v8::Arguments&);
-
-v8::Handle<v8::Value> BuildCalendar(const v8::Arguments&);
 
 v8::Handle<v8::Value> PrintCalendar(const v8::Arguments&);
 
