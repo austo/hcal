@@ -170,8 +170,8 @@ namespace hcal {
         int c = 1;
         #endif
         try{
-            int dailyEvtCount = 0, currentDateNum = 0;
-            for (i = (*eventMap_)[monthOrdinal].begin(); i != (*eventMap_)[monthOrdinal].end(); ++i){
+            int dailyEvtCount = 0, currentDateNum = 0, lines = 0;
+            for (i = (*eventMap_)[monthOrdinal].begin(); i != (*eventMap_)[monthOrdinal].end(); ++i){               
                 #ifdef __DEBUG__
                 cout << "write event loop iteration " << c << endl;
                 c += 1;
@@ -186,7 +186,7 @@ namespace hcal {
                 int dateNum = (int)evtDate.day().as_number();
                 int rowNum = get_day_row(&rowArray, dateNum);
                 if (dateNum == currentDateNum){
-                    dailyEvtCount += 1;
+                    dailyEvtCount += lines;
                 }
                 else{
                     dailyEvtCount = 0;
@@ -220,7 +220,8 @@ namespace hcal {
                 #ifdef __DEBUG__
                 cout << "v8 - event title string: " << evtTitle << endl;
                 #endif
-                write_text(page, x_offset, y_offset, evtTitle);        
+                lines = write_wrapped_event_title(page, x_offset, y_offset, ss.str(), cellWidth - 5);
+                //write_text(page, x_offset, y_offset, evtTitle);        
             }
         }
         catch(exception& e){
@@ -260,5 +261,25 @@ namespace hcal {
             }
         }
         return 0;
+    }
+
+    int
+    MonthWriter::write_wrapped_event_title(HPDF_Page page,
+        float x_offset, float y_offset, const string str_text, float avail_width)
+    {
+        int lines = 0;
+        string temp, wrapped(str_text);
+        float tw = HPDF_Page_TextWidth(page, str_text.c_str());
+        
+        while(tw > avail_width){
+            unsigned last_space = wrapped.find_last_of(" ");
+            temp = wrapped.substr(0, last_space);
+            tw = HPDF_Page_TextWidth(page, temp.c_str());
+            wrapped.replace(last_space, 1, "\n");
+            ++lines;  
+        }
+    
+        write_text(page, x_offset, y_offset, wrapped.c_str());
+        return lines;
     }
 }
