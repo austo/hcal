@@ -22,11 +22,12 @@ namespace hcal{
         public:
             DataLayer();
             ~DataLayer();
+            enum UpdateStatus {success = 0, failure, no_event};
             v8::Handle<v8::Array> get_wrapped_events(time_t, time_t);
             //TODO: handle different views
             std::map<int, std::list<Event> >* get_event_map(time_t, time_t);
             v8::Handle<v8::Value> insert_event(time_t, time_t, int, int, std::string, bool);
-            bool update_event(int, time_t, time_t, int, int, std::string, bool);
+            UpdateStatus update_event(int, time_t, time_t, int, int, std::string, bool);
             static time_t get_time_t_from_ptime(boost::posix_time::ptime); 
 
         private:

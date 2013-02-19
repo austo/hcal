@@ -107,6 +107,7 @@ Handle<Value> UpdateEvent(const Arguments& args) {
 
     Local<Function> cb = Local<Function>::Cast(args[7]);
     const unsigned argc = 1;
+    Local<Value> argv[argc];
 
     try{
         int evt_id = args[0]->NumberValue();
@@ -127,21 +128,66 @@ Handle<Value> UpdateEvent(const Arguments& args) {
         }
         bool recurring = args[6]->IsUndefined() ? false : args[6]->BooleanValue();
 
-        hcal::DataLayer dl = hcal::DataLayer();        
-        if (dl.update_event(evt_id, start, end, room_id, leader_id, desc, recurring)){
-            Local<Value> argv[argc] = { Local<Value>::New(Undefined()) };
-            cb->Call(Context::GetCurrent()->Global(), argc, argv);
+        hcal::DataLayer dl = hcal::DataLayer();
+        hcal::DataLayer::UpdateStatus status = dl.update_event(evt_id, start, end, room_id, leader_id, desc, recurring);
+        switch (status){
+            case hcal::DataLayer::success:
+                argv[0] = Local<Value>::New(Undefined());
+                cb->Call(Context::GetCurrent()->Global(), argc, argv);
+                break;
+            case hcal::DataLayer::failure:
+                argv[0] = Local<Value>::New(String::New("hcal: Failed to update event."));
+                cb->Call(Context::GetCurrent()->Global(), argc, argv);
+                break;
+            case hcal::DataLayer::no_event:
+                argv[0] = Local<Value>::New(String::New("hcal: no event with requested ID."));
+                cb->Call(Context::GetCurrent()->Global(), argc, argv);
+                break;
         }
-        else{
-            Local<Value> argv[argc] = { Local<Value>::New(String::New("hcal: Failed to update event.")) };
-            cb->Call(Context::GetCurrent()->Global(), argc, argv);
-        }       
+         
     }
     catch (std::exception& e){
         std::stringstream ss;
         ss << "hcal.updateEvent threw exception: " << e.what();
         std::string ex_str = ss.str();
-        Local<Value> argv[argc] = { Local<Value>::New(String::New(ex_str.c_str())) };
+        argv[0] = Local<Value>::New(String::New(ex_str.c_str()));
+        cb->Call(Context::GetCurrent()->Global(), argc, argv);
+    }
+    return scope.Close(Undefined());
+}
+
+Handle<Value> GetEvents(const Arguments& args) {
+    HandleScope scope;
+    if (args.Length() != 3) {
+        THROW("Wrong number of arguments - hcal.getEvents() must be called with 3 args.");
+        return scope.Close(Undefined());
+    }    
+    if (args[0]->IsUndefined() || args[1]->IsUndefined() || args[2]->IsUndefined()) {
+        THROW("All arguments must be defined.");
+        return scope.Close(Undefined());
+    }    
+
+    Local<Function> cb = Local<Function>::Cast(args[2]);
+    const unsigned argc = 2;
+    Local<Value> argv[argc];
+
+    try{
+        time_t start = args[0]->IsUndefined() ? 0 : NODE_V8_UNIXTIME(args[0]);
+        time_t end = args[1]->IsUndefined() ? 0 : NODE_V8_UNIXTIME(args[1]);
+        
+        hcal::DataLayer dl = hcal::DataLayer();
+        Handle<Array> evts = dl.get_wrapped_events(start, end);
+
+        argv[0] = Local<Value>::New(Undefined());
+        argv[1] = Local<Value>::New(evts);
+        cb->Call(Context::GetCurrent()->Global(), argc, argv);
+    }
+    catch (std::exception& e){
+        std::stringstream ss;
+        ss << "hcal.getEvents threw exception: " << e.what();
+        std::string ex_str = ss.str();
+        argv[0] = Local<Value>::New(String::New(ex_str.c_str()));
+        argv[1] = Local<Value>::New(Undefined());
         cb->Call(Context::GetCurrent()->Global(), argc, argv);
     }
     return scope.Close(Undefined());
@@ -289,6 +335,9 @@ void InitAll(Handle<Object> target) {
 
     target->Set(String::NewSymbol("updateEvent"),
         FunctionTemplate::New(UpdateEvent)->GetFunction());
+
+    target->Set(String::NewSymbol("getEvents"),
+        FunctionTemplate::New(GetEvents)->GetFunction());
 
     target->Set(String::NewSymbol("createConfig"),
         FunctionTemplate::New(CreateConfig)->GetFunction());

@@ -172,9 +172,9 @@ namespace hcal{
     }
 
     //TODO: may need to change update function return value to int with discrete values for event not found and failure 
-    bool
+    DataLayer::UpdateStatus
     DataLayer::update_event(int evt_id, time_t start, time_t end, int room_id, int leader_id, string desc, bool recurring){
-        bool retval = false;
+        UpdateStatus retval = failure;
         try{
             ptime p_evt_start = from_time_t(start);
             ptime p_evt_end = from_time_t(end);
@@ -190,7 +190,7 @@ namespace hcal{
             result res = execute_query(txn, ss.str());
             txn.commit();
 
-            retval = res[0][0].as<bool>();
+            retval = (DataLayer::UpdateStatus)res[0][0].as<int>();            
             cout << "v8 - update retval: " << retval << endl;
         }
         catch(exception& e){

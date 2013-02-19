@@ -32,7 +32,7 @@ hcal.insertEvent(d3, d4, 4, 1, "Snowball Fight", true, function(err, evt){
 // hcal.updateEvent(35, d5, d6, 5, 1, "New title", false, function(err, evt){
 //     console.log("updated event description: " + evt.description());
 // });
-hcal.updateEvent(83, d5, d6, 5, 1, "New title", false, function(err){
+hcal.updateEvent(35, d5, d6, 5, 1, "New title", false, function(err){
     if (!err){
         console.log("event updated successfully.");
     }
@@ -42,6 +42,17 @@ hcal.updateEvent(83, d5, d6, 5, 1, "New title", false, function(err){
 });
 hcal.printCalendar(d1, d2, "month", function(fileName){
     console.log("Monthly calendar file: " + fileName);
+});
+hcal.getEvents(d1, d3, function(err, evts){
+    if (err){
+        console.log(err);
+    }
+    else{
+        var len = evts.length, i = 0;
+        for (; i < len; ++i){
+            console.log(evts[i].description());
+        }
+    }
 });
 //var cfg = hcal.createConfig(1, 5, 8, 20);
 //console.log(notRet);

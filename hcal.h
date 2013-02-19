@@ -28,6 +28,12 @@ v8::Handle<v8::Value> CreateEvent(const v8::Arguments&);
 
 v8::Handle<v8::Value> CreateConfig(const v8::Arguments&);
 
+v8::Handle<v8::Value> GetEvents(const v8::Arguments&);
+
+v8::Handle<v8::Value> UpdateEvent(const v8::Arguments&);
+
+v8::Handle<v8::Value> InsertEvent(const v8::Arguments&);
+
 v8::Handle<v8::Value> Add(const v8::Arguments&);
 
 v8::Handle<v8::Value> TestEventArray(const v8::Arguments&);
