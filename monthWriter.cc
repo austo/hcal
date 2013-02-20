@@ -1,3 +1,4 @@
+#define __DEBUG__
 #include "monthWriter.h"
 
 using namespace std;
@@ -170,7 +171,8 @@ namespace hcal {
         int c = 1;
         #endif
         try{
-            int dailyEvtCount = 0, currentDateNum = 0, lines = 0;
+            int dailyEvtCount = 0, currentDateNum = 0;
+            float y_offset;
             for (i = (*eventMap_)[monthOrdinal].begin(); i != (*eventMap_)[monthOrdinal].end(); ++i){               
                 #ifdef __DEBUG__
                 cout << "write event loop iteration " << c << endl;
@@ -185,17 +187,18 @@ namespace hcal {
                 int dayNum = (int)evtDate.day_of_week();
                 int dateNum = (int)evtDate.day().as_number();
                 int rowNum = get_day_row(&rowArray, dateNum);
+
                 if (dateNum == currentDateNum){
-                    dailyEvtCount += lines;
+                    ++dailyEvtCount;
                 }
                 else{
                     dailyEvtCount = 0;
                     currentDateNum = dateNum;
+                    y_offset = ((cellHeight * rowNum) + MARGIN) - (15 + (dailyEvtCount * evtHeight));
                 }
 
                 //Write start and event title in cellHeight/rows
                 float x_offset = (cellWidth * dayNum) + evtMargin;
-                float y_offset = ((cellHeight * rowNum) + MARGIN) - (15 + (dailyEvtCount * evtHeight));
 
                 boost::posix_time::time_duration stdur = i->Start().time_of_day();
                 long hours = stdur.hours();
@@ -220,7 +223,7 @@ namespace hcal {
                 #ifdef __DEBUG__
                 cout << "v8 - event title string: " << evtTitle << endl;
                 #endif
-                lines = write_wrapped_event_title(page, x_offset, y_offset, ss.str(), cellWidth - 5);
+                write_wrapped_event_title(page, x_offset, y_offset, ss.str(), evtHeight- 5, cellWidth - 5);
                 //write_text(page, x_offset, y_offset, evtTitle);        
             }
         }
@@ -263,23 +266,38 @@ namespace hcal {
         return 0;
     }
 
-    int
+    void
     MonthWriter::write_wrapped_event_title(HPDF_Page page,
-        float x_offset, float y_offset, const string str_text, float avail_width)
+        float x_offset, float& y_offset, const string str_text, float line_height, float avail_width)
     {
-        int lines = 0;
-        string temp, wrapped(str_text);
+        string temp;
         float tw = HPDF_Page_TextWidth(page, str_text.c_str());
-        
-        while(tw > avail_width){
-            unsigned last_space = wrapped.find_last_of(" ");
-            temp = wrapped.substr(0, last_space);
-            tw = HPDF_Page_TextWidth(page, temp.c_str());
-            wrapped.replace(last_space, 1, "\n");
-            ++lines;  
+
+        if (tw > avail_width){
+            istringstream iss(str_text);
+            vector<string> tokens;
+            copy(istream_iterator<string>(iss), istream_iterator<string>(), 
+                back_inserter<vector<string> >(tokens));
+
+            vector<string>::iterator vit = tokens.begin();
+            for (; vit != tokens.end(); ++vit){
+                temp += *vit;
+                temp += " ";
+                if (HPDF_Page_TextWidth(page, temp.c_str()) > avail_width){
+                    temp = temp.substr(0, temp.size() - 1);
+                    temp = temp.substr(0, temp.find_last_of(" "));
+                    write_text(page, x_offset, y_offset, temp.c_str());
+                    y_offset -= line_height;
+                    temp = string(*vit);
+                    temp += " ";
+                }
+            }
+            write_text(page, x_offset, y_offset, temp.c_str());
+            y_offset -= line_height;          
         }
-    
-        write_text(page, x_offset, y_offset, wrapped.c_str());
-        return lines;
+        else{
+            write_text(page, x_offset, y_offset, str_text.c_str());
+            y_offset -= line_height;
+        }
     }
 }

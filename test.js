@@ -26,7 +26,7 @@ hcal.insertEvent(d3, d4, 4, 1, "Snowball Fight", true, function(err, evt){
 // hcal.updateEvent(35, d5, d6, 5, 1, "New title", false, function(err, evt){
 //     console.log("updated event description: " + evt.description());
 // });
-hcal.updateEvent(35, d5, d6, 5, 1, "New title", false, function(err){
+hcal.updateEvent(83, d5, d6, 5, 1, "New title and I love being here...", false, function(err){
     if (!err){
         console.log("event updated successfully.");
     }

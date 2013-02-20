@@ -16,6 +16,8 @@
 #include <sstream>
 #include <iostream>
 #include <stdexcept>
+#include <algorithm>
+#include <iterator>
 #include "hcal_utils.h"
 
 namespace hcal {

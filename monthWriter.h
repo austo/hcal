@@ -21,7 +21,7 @@ namespace hcal {
         void write_events(HPDF_Page, float, float, int, int, int, int, int);
         static std::vector<int> build_row_array(int, int, int);
         static int get_day_row(std::vector<int>*, int);
-        int write_wrapped_event_title(HPDF_Page, float, float, const std::string, float);
+        void write_wrapped_event_title(HPDF_Page, float, float&, const std::string, float, float);
     };
 }
 
