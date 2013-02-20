@@ -34,6 +34,7 @@ namespace hcal {
     void error_handler (HPDF_STATUS, HPDF_STATUS, void*);
     HPDF_Doc get_pdf();
     void write_text(HPDF_Page, float, float, const char*);
+    void write_wrapped_text(HPDF_Page, float, float&, const std::string, float, float);
     void write_page_title(HPDF_Page, HPDF_Font, const char*);
     void draw_line(HPDF_Page, float, float, float, float);
     void write_weekday_cols(HPDF_Page, HPDF_Font, int, int, int, float);

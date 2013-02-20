@@ -171,7 +171,7 @@ namespace hcal {
         int c = 1;
         #endif
         try{
-            int dailyEvtCount = 0, currentDateNum = 0;
+            int currentDateNum = 0;
             float y_offset;
             for (i = (*eventMap_)[monthOrdinal].begin(); i != (*eventMap_)[monthOrdinal].end(); ++i){               
                 #ifdef __DEBUG__
@@ -189,12 +189,11 @@ namespace hcal {
                 int rowNum = get_day_row(&rowArray, dateNum);
 
                 if (dateNum == currentDateNum){
-                    ++dailyEvtCount;
+                    y_offset -= 5;
                 }
                 else{
-                    dailyEvtCount = 0;
                     currentDateNum = dateNum;
-                    y_offset = ((cellHeight * rowNum) + MARGIN) - (15 + (dailyEvtCount * evtHeight));
+                    y_offset = ((cellHeight * rowNum) + MARGIN) - 18;
                 }
 
                 //Write start and event title in cellHeight/rows
@@ -223,8 +222,11 @@ namespace hcal {
                 #ifdef __DEBUG__
                 cout << "v8 - event title string: " << evtTitle << endl;
                 #endif
-                write_wrapped_event_title(page, x_offset, y_offset, ss.str(), evtHeight- 5, cellWidth - 5);
-                //write_text(page, x_offset, y_offset, evtTitle);        
+                /*
+                    TODO: test here or before for y_offset lower limit.
+                    If limit is met, write elipsis message
+                */
+                write_wrapped_text(page, x_offset, y_offset, ss.str(), evtHeight- 5, cellWidth - 5);
             }
         }
         catch(exception& e){
@@ -264,40 +266,5 @@ namespace hcal {
             }
         }
         return 0;
-    }
-
-    void
-    MonthWriter::write_wrapped_event_title(HPDF_Page page,
-        float x_offset, float& y_offset, const string str_text, float line_height, float avail_width)
-    {
-        string temp;
-        float tw = HPDF_Page_TextWidth(page, str_text.c_str());
-
-        if (tw > avail_width){
-            istringstream iss(str_text);
-            vector<string> tokens;
-            copy(istream_iterator<string>(iss), istream_iterator<string>(), 
-                back_inserter<vector<string> >(tokens));
-
-            vector<string>::iterator vit = tokens.begin();
-            for (; vit != tokens.end(); ++vit){
-                temp += *vit;
-                temp += " ";
-                if (HPDF_Page_TextWidth(page, temp.c_str()) > avail_width){
-                    temp = temp.substr(0, temp.size() - 1);
-                    temp = temp.substr(0, temp.find_last_of(" "));
-                    write_text(page, x_offset, y_offset, temp.c_str());
-                    y_offset -= line_height;
-                    temp = string(*vit);
-                    temp += " ";
-                }
-            }
-            write_text(page, x_offset, y_offset, temp.c_str());
-            y_offset -= line_height;          
-        }
-        else{
-            write_text(page, x_offset, y_offset, str_text.c_str());
-            y_offset -= line_height;
-        }
-    }
+    }    
 }

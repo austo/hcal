@@ -81,6 +81,40 @@ namespace hcal {
         }
     }
 
+    void write_wrapped_text(HPDF_Page page,
+        float x_offset, float& y_offset, const string str_text, float line_height, float avail_width)
+    {
+        string temp;
+        float tw = HPDF_Page_TextWidth(page, str_text.c_str());
+
+        if (tw > avail_width){
+            istringstream iss(str_text);
+            vector<string> tokens;
+            copy(istream_iterator<string>(iss), istream_iterator<string>(), 
+                back_inserter<vector<string> >(tokens));
+
+            vector<string>::iterator vit = tokens.begin();
+            for (; vit != tokens.end(); ++vit){
+                temp += *vit;
+                temp += " ";
+                if (HPDF_Page_TextWidth(page, temp.c_str()) > avail_width){
+                    temp = temp.substr(0, temp.size() - 1);
+                    temp = temp.substr(0, temp.find_last_of(" "));
+                    write_text(page, x_offset, y_offset, temp.c_str());
+                    y_offset -= line_height;
+                    temp = string(*vit);
+                    temp += " ";
+                }
+            }
+            write_text(page, x_offset, y_offset, temp.c_str());
+            y_offset -= line_height;          
+        }
+        else{
+            write_text(page, x_offset, y_offset, str_text.c_str());
+            y_offset -= line_height;
+        }
+    }
+
     View get_view(v8::String::AsciiValue& viewStr)
     {
         if (strcmp(*viewStr, "month") == 0){
