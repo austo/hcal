@@ -34,6 +34,7 @@ namespace hcal {
     void error_handler (HPDF_STATUS, HPDF_STATUS, void*);
     HPDF_Doc get_pdf();
     void write_text(HPDF_Page, float, float, const char*);
+    void write_if_more_evts(int, HPDF_Page, float, float);
     void write_wrapped_text(HPDF_Page, float, float&, const std::string, float, float);
     std::vector<std::string> get_words(const std::string, const char*);
     void write_page_title(HPDF_Page, HPDF_Font, const char*);

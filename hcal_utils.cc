@@ -128,6 +128,16 @@ namespace hcal {
         return retval;
     }
 
+    void write_if_more_evts(int more_evts, HPDF_Page page, float x_offset, float y_offset){
+        if (more_evts){
+            y_offset -= 5;
+            stringstream mss;
+            mss << more_evts << " more events...";
+            string more_evts_str = mss.str();
+            write_text(page, x_offset, y_offset, more_evts_str.c_str());
+            cout << mss.str() << endl;
+        }
+    }
 
     View get_view(v8::String::AsciiValue& viewStr)
     {

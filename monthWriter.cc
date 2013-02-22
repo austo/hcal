@@ -171,8 +171,8 @@ namespace hcal {
         int c = 1;
         #endif
         try{
-            int currentDateNum = 0;
-            float y_offset;
+            int currentDateNum, more_evts = 0;
+            float x_offset, y_offset;
             for (i = (*eventMap_)[monthOrdinal].begin(); i != (*eventMap_)[monthOrdinal].end(); ++i){               
                 #ifdef __DEBUG__
                 cout << "write event loop iteration " << c << endl;
@@ -189,16 +189,23 @@ namespace hcal {
                 int rowNum = get_day_row(&rowArray, dateNum);
 
                 if (dateNum == currentDateNum){
+                    if (y_offset <= ((cellHeight * (rowNum - 1)) + MARGIN + evtHeight)){
+                        more_evts += 1;
+                        cout << "incrementing more_evts: " << more_evts << endl;
+                        continue;
+                    }
                     y_offset -= 5;
                 }
                 else{
+                    cout << "more_evts: " << more_evts << endl;
+                    write_if_more_evts(more_evts, page, x_offset, y_offset);
                     currentDateNum = dateNum;
+                    cout << "writing current datenum: " << dateNum << endl;
+                    more_evts = 0;
                     y_offset = ((cellHeight * rowNum) + MARGIN) - 18;
-                }
-
-                //Write start and event title in cellHeight/rows
-                float x_offset = (cellWidth * dayNum) + evtMargin;
-
+                    x_offset = (cellWidth * dayNum) + evtMargin;
+                }                  
+                
                 boost::posix_time::time_duration stdur = i->Start().time_of_day();
                 long hours = stdur.hours();
                 string meridian = "am";
@@ -221,13 +228,10 @@ namespace hcal {
                 const char* evtTitle = tstring.c_str();
                 #ifdef __DEBUG__
                 cout << "v8 - event title string: " << evtTitle << endl;
-                #endif
-                /*
-                    TODO: test here or before for y_offset lower limit.
-                    If limit is met, write elipsis message
-                */
-                write_wrapped_text(page, x_offset, y_offset, ss.str(), evtHeight- 5, cellWidth - 5);
+                #endif                
+                write_wrapped_text(page, x_offset, y_offset, ss.str(), evtHeight- 5, cellWidth - 5);                
             }
+            write_if_more_evts(more_evts, page, x_offset, y_offset);
         }
         catch(exception& e){
             cout << "  Exception: " << e.what() << endl;
