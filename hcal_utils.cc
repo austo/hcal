@@ -88,10 +88,8 @@ namespace hcal {
         float tw = HPDF_Page_TextWidth(page, str_text.c_str());
 
         if (tw > avail_width){
-            istringstream iss(str_text);
-            vector<string> tokens;
-            copy(istream_iterator<string>(iss), istream_iterator<string>(), 
-                back_inserter<vector<string> >(tokens));
+            const char* delim = " ";
+            vector<string> tokens = get_words(str_text, delim);            
 
             vector<string>::iterator vit = tokens.begin();
             for (; vit != tokens.end(); ++vit){
@@ -114,6 +112,22 @@ namespace hcal {
             y_offset -= line_height;
         }
     }
+
+    vector<string> get_words(const string str, const char* delim)
+    {
+        int len = str.size() + 1;
+        char temp[len], *wp;
+        strcpy(temp, str.c_str());
+        vector<string> retval;
+        char *p = strtok_r(temp, delim, &wp);
+        while(p){
+            string w_str(p);
+            retval.push_back(w_str);
+            p = strtok_r(NULL, delim, &wp);
+        }
+        return retval;
+    }
+
 
     View get_view(v8::String::AsciiValue& viewStr)
     {
