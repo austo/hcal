@@ -1,4 +1,4 @@
-#define __DEBUG__
+// #define __DEBUG__
 #include "monthWriter.h"
 
 using namespace std;
@@ -27,7 +27,7 @@ namespace hcal {
     MonthWriter::MonthWriter(time_t start, time_t end)
     {
         DataLayer dl = DataLayer();   
-        eventMap_ = dl.get_event_map(start, end);
+        eventMap_ = dl.get_event_map(start, end, month);
     }
 
     MonthWriter::~MonthWriter()
@@ -189,18 +189,16 @@ namespace hcal {
                 int rowNum = get_day_row(&rowArray, dateNum);
 
                 if (dateNum == currentDateNum){
-                    if (y_offset <= ((cellHeight * (rowNum - 1)) + MARGIN + evtHeight)){
+                    float lower_bound = rowNum > 0 ? (cellHeight * (rowNum - 1)) : 0 ;
+                    if (y_offset <= (lower_bound + MARGIN + evtHeight)){
                         more_evts += 1;
-                        cout << "incrementing more_evts: " << more_evts << endl;
                         continue;
                     }
                     y_offset -= 5;
                 }
                 else{
-                    cout << "more_evts: " << more_evts << endl;
                     write_if_more_evts(more_evts, page, x_offset, y_offset);
                     currentDateNum = dateNum;
-                    cout << "writing current datenum: " << dateNum << endl;
                     more_evts = 0;
                     y_offset = ((cellHeight * rowNum) + MARGIN) - 18;
                     x_offset = (cellWidth * dayNum) + evtMargin;

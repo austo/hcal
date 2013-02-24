@@ -280,12 +280,21 @@ Handle<Value> PrintCalendar(const Arguments& args) {
     //TODO: need a fascade class here to hide implementation details (CalWriter)
     try{
         hcal::View v = hcal::get_view(viewStr);
+        Local<Value> argv[argc];
+        const char* fname;
+
         if (v == hcal::month){
             hcal::MonthWriter month_wtr = hcal::MonthWriter(start, end);
-            const char* fname = month_wtr.write_calendar();
-            Local<Value> argv[argc] = { Local<Value>::New(String::New(fname)) };
+            fname = month_wtr.write_calendar();
+            argv[0] = Local<Value>::New(String::New(fname));
             cb->Call(Context::GetCurrent()->Global(), argc, argv);
-        }       
+        }
+        else if (v == hcal::week){
+            hcal::WeekWriter week_wtr = hcal::WeekWriter(start, end);
+            fname = week_wtr.write_calendar();
+            argv[0] = Local<Value>::New(String::New(fname));
+            cb->Call(Context::GetCurrent()->Global(), argc, argv);
+        }      
     }
     catch(std::exception& e){
         THROW(e.what());

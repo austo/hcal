@@ -88,20 +88,15 @@ namespace hcal{
         return scope.Close(retval);
     }
 
-    /*
-        TODO: this needs to handle different views, likely with function pointers
-        NOTE: it may be better to use a switch statement (unless calling code can 
-        gracefully supply a sorting function)
-    */
-
-    emap_ptr DataLayer::get_event_map(time_t start, time_t end){
+    
+    emap_ptr DataLayer::get_event_map(time_t start, time_t end, View v){
         emap_ptr retval = new map<int, list<Event> >();
         result evts = get_events_for_timespan(start, end);
-        populate_emap(evts, retval);
+        populate_emap(evts, retval, v);
         return retval;
     }
 
-    void DataLayer::populate_emap(result& evts, emap_ptr emap)
+    void DataLayer::populate_emap(result& evts, emap_ptr emap, View v)
     {
         result::const_iterator row;
         for (row = evts.begin(); row != evts.end(); ++row){
@@ -112,7 +107,17 @@ namespace hcal{
             p_evt_start += utc_offset_td_;
             p_evt_end += utc_offset_td_;
 
-            int index = (int)p_evt_start.date().month().as_number();;
+            int index;
+            switch(v){
+                case month:
+                    index = (int)p_evt_start.date().month().as_number();
+                    break;
+                case week:
+                    index = p_evt_start.date().week_number();
+                    break;
+                default:
+                    throw runtime_error("DataLayer: view not implemented.");
+            }
 
             Event evt(  row[COL_ID].as<int>(),
                         p_evt_start,

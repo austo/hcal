@@ -37,6 +37,9 @@ hcal.updateEvent(83, d5, d6, 5, 1, "New title and I love being here...", false, 
 hcal.printCalendar(d1, d2, "month", function(fileName){
     console.log("Monthly calendar file: " + fileName);
 });
+hcal.printCalendar(d1, d2, "week", function(fileName){
+    console.log("Weekly calendar file: " + fileName);
+});
 hcal.getEvents(d1, d3, function(err, evts){
     if (err){
         console.log(err);

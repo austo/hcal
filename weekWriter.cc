@@ -26,7 +26,7 @@ namespace hcal {
     WeekWriter::WeekWriter(time_t start, time_t end)
     {
         DataLayer dl = DataLayer();   
-        eventMap_ = dl.get_event_map(start, end);
+        eventMap_ = dl.get_event_map(start, end, week);
     }
 
     WeekWriter::~WeekWriter()
@@ -66,7 +66,7 @@ namespace hcal {
     const char*
     WeekWriter::write_calendar()
     {
-        const char* fname = "weekly_calendar.pdf";
+        const char* fname = "weekly_calendar_poly.pdf";
 
         HPDF_Doc pdf = get_pdf();
         HPDF_Font font = HPDF_GetFont(pdf, "Helvetica", NULL);
