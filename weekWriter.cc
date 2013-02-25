@@ -18,7 +18,8 @@ namespace hcal {
         }
         start_hour_ = 8;
         end_hour_ = 20;
-        slot_height_ = 0;   
+        slot_height_ = 0;
+        slot_width_ = 0;  
     }
 
     WeekWriter::WeekWriter()
@@ -26,7 +27,8 @@ namespace hcal {
         eventMap_ = new map< int, list<Event> >();
         start_hour_ = 8;
         end_hour_ = 20;
-        slot_height_ = 0;       
+        slot_height_ = 0;
+        slot_width_ = 0;      
     }
 
     WeekWriter::WeekWriter(time_t start, time_t end)
@@ -36,6 +38,7 @@ namespace hcal {
         start_hour_ = 8;
         end_hour_ = 20;
         slot_height_ = 0;
+        slot_width_ = 0;
     }
 
     WeekWriter::WeekWriter(time_t start, time_t end, int start_hour, int end_hour)
@@ -45,6 +48,7 @@ namespace hcal {
         start_hour_ = start_hour;
         end_hour_ = end_hour;
         slot_height_ = 0;
+        slot_width_ = 0;
     }
 
     WeekWriter::~WeekWriter()
@@ -116,7 +120,7 @@ namespace hcal {
 
 
     void
-    WeekWriter::write_calendar_page(HPDF_Doc pdf, HPDF_Font font, int weekOrdinal)
+    WeekWriter::write_calendar_page(HPDF_Doc pdf, HPDF_Font font, int week_ordinal)
     {
         using namespace boost::gregorian;
         
@@ -125,25 +129,24 @@ namespace hcal {
         HPDF_Page_SetSize(page, HPDF_PAGE_SIZE_LETTER, HPDF_PAGE_LANDSCAPE);
 
         //page usable area
-        int pageUsedWidth = HPDF_Page_GetWidth(page) - 100;
-        int pageUsedHeight = HPDF_Page_GetHeight(page) - 125;
+        int pg_used_width = HPDF_Page_GetWidth(page) - 100;
+        int pg_used_height = HPDF_Page_GetHeight(page) - 125;
 
-        list<Event>::const_iterator i = (*eventMap_)[weekOrdinal].begin();
-        date startDate(i->Start().date());
-        date_duration dd((int)startDate.day_of_week());
+        date start_date((*eventMap_)[week_ordinal].begin()->Start().date());
+        date_duration dd((int)start_date.day_of_week());
         date_duration wkdur(7);
-        date wkstart = startDate - dd;
-        date wkend = wkstart + wkdur;
+        date wk_start = start_date - dd;
+        date wk_end = wk_start + wkdur;
         stringstream ss;
-        ss << months()[(int)wkstart.month() - 1] << " " << wkstart.day() << " - " 
-            << months()[(int)wkend.month() - 1] << " " << wkend.day();
+        ss << months()[(int)wk_start.month() - 1] << " " << wk_start.day() << " - " 
+            << months()[(int)wk_end.month() - 1] << " " << wk_end.day();
         string tstring = ss.str();
         const char* page_title = tstring.c_str();
 
         write_page_title(page, font, page_title);
 
         //TODO: add configWrapper param
-        write_weekday_cols(page, font, pageUsedWidth, pageUsedHeight, 7, MARGIN);
+        write_weekday_cols(page, font, pg_used_width, pg_used_height, 7, MARGIN);
 
         /*
             TODO: this method should take a configWrapper obj
@@ -154,25 +157,12 @@ namespace hcal {
             NOTE: should get start_hour and num_hours earlier in lifecycle & make slot_height a member variable
             NOTE: CustomWriter will inherit from WeekWriter (or vice versa?)
         */
-        write_hour_rows(page, pageUsedWidth, pageUsedHeight);
+        write_hour_rows(page, pg_used_width, pg_used_height);
 
-        double dayWidth = ((double)pageUsedWidth / 7);
+        slot_width_ = slot_width_ ? slot_width_ : ((double)pg_used_width / 7);
         int evtMargin = MARGIN + 5;
-        date currentDate(startDate);
 
-        for (; i != (*eventMap_)[weekOrdinal].end(); ++i){
-            int dayNum = (int)i->Start().date().day_of_week();
-            float x_offset = (dayWidth * dayNum) + evtMargin;
-            /*
-                color in the slots based on room
-                need a reliable way of determing slot based on event time
-                    using:
-                        number of hours on calendar
-                        first hour
-                        may need a configuratuion object
-            */
-        }  
-
+        write_events(page, week_ordinal);
     }
 
     void
@@ -202,8 +192,12 @@ namespace hcal {
     }
 
     void
-    WeekWriter::write_events(HPDF_Page page, int current_year)
+    WeekWriter::write_events(HPDF_Page page, int week_ordinal)
     {
+        list<Event>::const_iterator i = (*eventMap_)[week_ordinal].begin();
+        for (; i != (*eventMap_)[week_ordinal].end(); ++i){
+            Event_Rect evt_rect = get_slot_position(i);
+        }
         /*
             TODO: implement
             1. what day and slot is event in?
@@ -214,38 +208,20 @@ namespace hcal {
     }
 
     WeekWriter::Event_Rect
-    WeekWriter::get_slot_position(Event* evt, const double day_width){
+    WeekWriter::get_slot_position(list<Event>::const_iterator& evt){
         using namespace boost::posix_time;
         
         int wk_day_num = (int)evt->Start().date().day_of_week();
-        double start_y = MARGIN + (wk_day_num * day_width);
-        double end_y = start_y + day_width;
+        double start_x = MARGIN + (wk_day_num * slot_width_);        
 
-        time_duration s_dur(evt->Start().time_of_day());
-        time_duration e_dur(evt->End().time_of_day());
-        time_duration evt_st_dur(s_dur - hours(start_hour_));
-        time_duration evt_end_dur(e_dur - hours(start_hour_));        
+        time_duration s_dur(evt->Start().time_of_day() - hours(start_hour_));
+        time_duration e_dur(evt->End().time_of_day() - hours(start_hour_));
+        int start_half_slots = s_dur.minutes() / 15;
+        int end_half_slots = e_dur.minutes() / 15;
+        double start_y = (double)start_half_slots * (slot_height_ / 2.0);
+        double y_offset = (double)(end_half_slots - start_half_slots) * (slot_height_ / 2.0);
 
-        int start_half_slots = evt_st_dur.minutes() / 15;
-        int end_half_slots = evt_end_dur.minutes() / 15;
-
-        double start_x = start_half_slots * (slot_height_ / 2.0);
-        double end_x = end_half_slots * (slot_height_ / 2.0);
-        Point ll_pt(start_x, start_y);
-        Point lr_pt(end_x, start_y);
-        Point ul_pt(start_x, end_y);
-        Point ur_pt(end_x, end_y);
-
-        Event_Rect retval(ll_pt, lr_pt, ul_pt, ur_pt);
-
-        //double ll = MARGIN + ()
-
-        //WeekWriter::Event_Rect retval(MARGIN + (day_width * wk_day_num) 0, 0, 0, 0);
-
-
-        //get event height, based on 15-min interval
-            // 1. get closest 15-min interval
-            // 2. get vertical and horizontal offset
+        Event_Rect retval(start_x, start_y, slot_width_, y_offset);        
 
         return retval;
     }    

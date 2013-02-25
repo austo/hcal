@@ -42,17 +42,26 @@ namespace hcal {
                 u_left = ul;
                 u_right = ur;
             }
+            Event_Rect(double start_x, double start_y, double offset_x, double offset_y){
+                double end_x = start_x + offset_x;
+                double end_y = start_y + offset_y;
+                l_left = Point(start_x, start_y);
+                l_right = Point(end_x, start_y);
+                u_left = Point(start_x, end_y);
+                u_right = Point(end_x, end_y);
+            }
         };
 
     private:
         int start_hour_;
         int end_hour_;
         double slot_height_;
+        double slot_width_;
         std::map< int, std::list<Event> >* get_evt_map(v8::Array* arr);
         void write_calendar_page(HPDF_Doc, HPDF_Font, int);
         void write_events(HPDF_Page, int);
         void write_hour_rows(HPDF_Page, int, int);
-        Event_Rect get_slot_position(Event*, const double);    
+        Event_Rect get_slot_position(std::list<Event>::const_iterator&);    
     };
 }
 
