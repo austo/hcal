@@ -156,7 +156,7 @@ namespace hcal {
         */
         write_hour_rows(page, pageUsedWidth, pageUsedHeight);
 
-        float dayWidth = ((float)pageUsedWidth / 7);
+        double dayWidth = ((double)pageUsedWidth / 7);
         int evtMargin = MARGIN + 5;
         date currentDate(startDate);
 
@@ -184,7 +184,7 @@ namespace hcal {
         slot_height_ = slot_height_ ? slot_height_ : (double)pg_used_height / (double)num_lines;        
         float line_y = MARGIN + slot_height_;
 
-        HPDF_Page_SetLineWidth(page, .15);
+        HPDF_Page_SetLineWidth(page, .10);
 
         for (int i = 0, hrln = 1; i < num_lines; ++i){
             if (i == hrln){
@@ -211,5 +211,42 @@ namespace hcal {
             3. color event slot
             4. write event title (w/ wrapped text) according to alloted width
         */
+    }
+
+    WeekWriter::Event_Rect
+    WeekWriter::get_slot_position(Event* evt, const double day_width){
+        using namespace boost::posix_time;
+        
+        int wk_day_num = (int)evt->Start().date().day_of_week();
+        double start_y = MARGIN + (wk_day_num * day_width);
+        double end_y = start_y + day_width;
+
+        time_duration s_dur(evt->Start().time_of_day());
+        time_duration e_dur(evt->End().time_of_day());
+        time_duration evt_st_dur(s_dur - hours(start_hour_));
+        time_duration evt_end_dur(e_dur - hours(start_hour_));        
+
+        int start_half_slots = evt_st_dur.minutes() / 15;
+        int end_half_slots = evt_end_dur.minutes() / 15;
+
+        double start_x = start_half_slots * (slot_height_ / 2.0);
+        double end_x = end_half_slots * (slot_height_ / 2.0);
+        Point ll_pt(start_x, start_y);
+        Point lr_pt(end_x, start_y);
+        Point ul_pt(start_x, end_y);
+        Point ur_pt(end_x, end_y);
+
+        Event_Rect retval(ll_pt, lr_pt, ul_pt, ur_pt);
+
+        //double ll = MARGIN + ()
+
+        //WeekWriter::Event_Rect retval(MARGIN + (day_width * wk_day_num) 0, 0, 0, 0);
+
+
+        //get event height, based on 15-min interval
+            // 1. get closest 15-min interval
+            // 2. get vertical and horizontal offset
+
+        return retval;
     }    
 }
