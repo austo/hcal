@@ -15,18 +15,36 @@ namespace hcal {
         eventMap_ = get_evt_map(arr);
         if (eventMap_ == 0){
             throw runtime_error(ERR_CTOR_EMAP);
-        }    
+        }
+        start_hour_ = 8;
+        end_hour_ = 20;
+        slot_height_ = 0;   
     }
 
     WeekWriter::WeekWriter()
     {
         eventMap_ = new map< int, list<Event> >();
+        start_hour_ = 8;
+        end_hour_ = 20;
+        slot_height_ = 0;       
     }
 
     WeekWriter::WeekWriter(time_t start, time_t end)
     {
         DataLayer dl = DataLayer();   
         eventMap_ = dl.get_event_map(start, end, week);
+        start_hour_ = 8;
+        end_hour_ = 20;
+        slot_height_ = 0;
+    }
+
+    WeekWriter::WeekWriter(time_t start, time_t end, int start_hour, int end_hour)
+    {
+        DataLayer dl = DataLayer();   
+        eventMap_ = dl.get_event_map(start, end, week);
+        start_hour_ = start_hour;
+        end_hour_ = end_hour;
+        slot_height_ = 0;
     }
 
     WeekWriter::~WeekWriter()
@@ -132,9 +150,11 @@ namespace hcal {
             If it's a regular week, we make a configWrapper in calling
             method and use it here
             (Only bother unpacking configWrapper obj if we've got a custom view)
+
+            NOTE: should get start_hour and num_hours earlier in lifecycle & make slot_height a member variable
+            NOTE: CustomWriter will inherit from WeekWriter (or vice versa?)
         */
-        double slotHeight;
-        write_hour_rows(page, 8, 12, pageUsedWidth, pageUsedHeight, slotHeight);
+        write_hour_rows(page, pageUsedWidth, pageUsedHeight);
 
         float dayWidth = ((float)pageUsedWidth / 7);
         int evtMargin = MARGIN + 5;
@@ -156,34 +176,40 @@ namespace hcal {
     }
 
     void
-    WeekWriter::write_hour_rows(HPDF_Page page, int startHour,
-        int numHours, int pageUsedWidth, int pageUsedHeight, double& slotHeight)
+    WeekWriter::write_hour_rows(HPDF_Page page, int pg_used_width, int pg_used_height)
     {
-        int numLines = numHours * 2;
-        slotHeight = (double)pageUsedHeight / (double)numLines;
-        float line_y = MARGIN + slotHeight;
+        int num_lines = (end_hour_ - start_hour_) * 2;
+
+        //initialize slot_height_ if we haven't already
+        slot_height_ = slot_height_ ? slot_height_ : (double)pg_used_height / (double)num_lines;        
+        float line_y = MARGIN + slot_height_;
 
         HPDF_Page_SetLineWidth(page, .15);
 
-        for (int i = 0, hrln = 1; i < numLines; ++i){
+        for (int i = 0, hrln = 1; i < num_lines; ++i){
             if (i == hrln){
                 HPDF_Page_SetLineWidth(page, .6);
-                draw_line(page, MARGIN, line_y, MARGIN + pageUsedWidth, line_y);
+                draw_line(page, MARGIN, line_y, MARGIN + pg_used_width, line_y);
                 HPDF_Page_SetLineWidth(page, .15);
                 hrln += 2;
             }
             else{
-               draw_line(page, MARGIN, line_y, MARGIN + pageUsedWidth, line_y); 
+               draw_line(page, MARGIN, line_y, MARGIN + pg_used_width, line_y); 
             }
 
-            line_y += slotHeight;
+            line_y += slot_height_;
         }
     }
 
     void
-    WeekWriter::write_events(HPDF_Page page, float cellHeight, float cellWidth,
-        int monthOrdinal, int year, int firstDayNum, int rows, int daysInMonth )
+    WeekWriter::write_events(HPDF_Page page, int current_year)
     {
-       //TODO: implement
+        /*
+            TODO: implement
+            1. what day and slot is event in?
+            2. determine if event should be full width (or how wide if not)
+            3. color event slot
+            4. write event title (w/ wrapped text) according to alloted width
+        */
     }    
 }

@@ -222,8 +222,6 @@ namespace hcal {
                 else{
                     ss << hours << ":" << stdur.minutes() << " " << meridian << " - " << i->Description();
                 }
-                string tstring = ss.str();
-                const char* evtTitle = tstring.c_str();
                 #ifdef __DEBUG__
                 cout << "v8 - event title string: " << evtTitle << endl;
                 #endif                

@@ -284,13 +284,13 @@ Handle<Value> PrintCalendar(const Arguments& args) {
         const char* fname;
 
         if (v == hcal::month){
-            hcal::MonthWriter month_wtr = hcal::MonthWriter(start, end);
+            hcal::MonthWriter month_wtr(start, end);
             fname = month_wtr.write_calendar();
             argv[0] = Local<Value>::New(String::New(fname));
             cb->Call(Context::GetCurrent()->Global(), argc, argv);
         }
         else if (v == hcal::week){
-            hcal::WeekWriter week_wtr = hcal::WeekWriter(start, end);
+            hcal::WeekWriter week_wtr(start, end);
             fname = week_wtr.write_calendar();
             argv[0] = Local<Value>::New(String::New(fname));
             cb->Call(Context::GetCurrent()->Global(), argc, argv);
