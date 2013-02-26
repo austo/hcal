@@ -36,6 +36,7 @@ namespace hcal {
             Point l_right;
             Point u_left;
             Point u_right;
+            std::string color_val;
             Event_Rect(Point ll, Point lr, Point ul, Point ur){
                 l_left = ll;
                 l_right = lr;

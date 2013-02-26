@@ -161,6 +161,10 @@ namespace hcal{
         txn.commit();
 
         int evt_id = res[0][0].as<int>();
+        //event already present
+        if (evt_id == -1){
+            throw runtime_error("DataLayer: event not inserted due to room and time conflict");
+        }
 
         //revert time back to js utc offset
         p_evt_start += utc_offset_td_;

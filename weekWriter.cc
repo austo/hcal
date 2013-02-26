@@ -194,9 +194,9 @@ namespace hcal {
     void
     WeekWriter::write_events(HPDF_Page page, int week_ordinal)
     {
-        list<Event>::const_iterator i = (*eventMap_)[week_ordinal].begin();
-        for (; i != (*eventMap_)[week_ordinal].end(); ++i){
-            Event_Rect evt_rect = get_slot_position(i);
+        list<Event>::const_iterator evt_itr = (*eventMap_)[week_ordinal].begin();
+        for (; evt_itr != (*eventMap_)[week_ordinal].end(); ++evt_itr){
+            Event_Rect evt_rect = get_slot_position(evt_itr);
         }
         /*
             TODO: implement
@@ -208,14 +208,14 @@ namespace hcal {
     }
 
     WeekWriter::Event_Rect
-    WeekWriter::get_slot_position(list<Event>::const_iterator& evt){
+    WeekWriter::get_slot_position(list<Event>::const_iterator& evt_itr){
         using namespace boost::posix_time;
         
-        int wk_day_num = (int)evt->Start().date().day_of_week();
+        int wk_day_num = (int)evt_itr->Start().date().day_of_week();
         double start_x = MARGIN + (wk_day_num * slot_width_);        
 
-        time_duration s_dur(evt->Start().time_of_day() - hours(start_hour_));
-        time_duration e_dur(evt->End().time_of_day() - hours(start_hour_));
+        time_duration s_dur(evt_itr->Start().time_of_day() - hours(start_hour_));
+        time_duration e_dur(evt_itr->End().time_of_day() - hours(start_hour_));
         int start_half_slots = s_dur.minutes() / 15;
         int end_half_slots = e_dur.minutes() / 15;
         double start_y = (double)start_half_slots * (slot_height_ / 2.0);

@@ -1,4 +1,4 @@
-var hcal = require('./build/Release/hcal');
+var hcal = require('./build/Debug/hcal');
 
 console.log('\n\n!#----------Test results----------#!\n');
 var d1 = new Date(2013, 0, 01, 08);
@@ -21,6 +21,9 @@ console.log(d4);
 hcal.insertEvent(d3, d4, 4, 1, "Snowball Fighter", true, function(err, evt){
     if (!err){
         console.log(evt.description() + " - " + evt.end());
+    }
+    else{
+        console.log(err);
     }
 });
 // hcal.updateEvent(35, d5, d6, 5, 1, "New title", false, function(err, evt){
