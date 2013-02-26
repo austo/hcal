@@ -163,7 +163,9 @@ namespace hcal{
         int evt_id = res[0][0].as<int>();
         //event already present
         if (evt_id == -1){
-            throw runtime_error("DataLayer: event not inserted due to room and time conflict");
+            stringstream err_ss;
+            err_ss << "There is already an event at " << to_simple_string(p_evt_start) << " in room " << room_id << ".";
+            throw dl_exception(err_ss.str());
         }
 
         //revert time back to js utc offset

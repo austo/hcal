@@ -18,6 +18,22 @@
 
 namespace hcal{
 
+    class dl_exception : public std::exception {
+    public:
+        dl_exception(){
+            message_ = std::string("Data integrity exception.");
+        }
+        dl_exception(std::string err_msg){
+            message_ = err_msg;
+        }
+        ~dl_exception() throw(){};
+        virtual const char* what() const throw(){
+            return this->message_.c_str();
+        }
+    private:
+        std::string message_;        
+    };
+
     class DataLayer {
 
         public:

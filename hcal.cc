@@ -80,6 +80,10 @@ Handle<Value> InsertEvent(const Arguments& args) {
         Local<Value> argv[argc] = { Local<Value>::New(Undefined()), Local<Value>::New(retval) };
         cb->Call(Context::GetCurrent()->Global(), argc, argv);
     }
+    catch (hcal::dl_exception& dl_e){        
+        Local<Value> argv[argc] = { Local<Value>::New(String::New(dl_e.what())), Local<Value>::New(Undefined()) };
+        cb->Call(Context::GetCurrent()->Global(), argc, argv);
+    }
     catch (std::exception& e){
         std::stringstream ss;
         ss << "hcal.insertEvent threw exception: " << e.what();

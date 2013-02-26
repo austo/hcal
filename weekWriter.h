@@ -4,7 +4,7 @@
 #include "calWriter.h"
 #include "dataLayer.h"
 
-namespace hcal {
+namespace hcal {    
 
     class WeekWriter : public CalWriter {
 
