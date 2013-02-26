@@ -10,6 +10,8 @@ namespace hcal{
     #define HCAL_UTC_OFFSET "HCAL_UTC_OFFSET"
 
     #define CONNSTRING "host=queequeg dbname=concerto user=appUser password=cAligul@"
+    #define DL_EX_PREFIX "DataLayer: " 
+
     #define COL_ID "id"
     #define COL_DESCRIPTION "description"
     #define COL_TIME_START "time_start"
@@ -161,10 +163,12 @@ namespace hcal{
         txn.commit();
 
         int evt_id = res[0][0].as<int>();
-        //event already present
+
+        //event already present, throw dl_exception
         if (evt_id == -1){
             stringstream err_ss;
-            err_ss << "There is already an event at " << to_simple_string(p_evt_start) << " in room " << room_id << ".";
+            err_ss << DL_EX_PREFIX
+                << "There is already an event at " << to_simple_string(p_evt_start) << " in room " << room_id << ".";
             throw dl_exception(err_ss.str());
         }
 

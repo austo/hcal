@@ -207,7 +207,7 @@ namespace hcal {
         */
     }
 
-    WeekWriter::Event_Rect
+    Event_Rect
     WeekWriter::get_slot_position(list<Event>::const_iterator& evt_itr){
         using namespace boost::posix_time;
         

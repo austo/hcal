@@ -4,20 +4,9 @@
 #include "calWriter.h"
 #include "dataLayer.h"
 
-namespace hcal {    
+namespace hcal {
 
-    class WeekWriter : public CalWriter {
-
-    public:
-        WeekWriter(v8::Array*);
-        WeekWriter(time_t start, time_t end);
-        WeekWriter(time_t start, time_t end, int, int);
-        WeekWriter();
-        ~WeekWriter();
-        const char* write_calendar();
-
-    protected:
-        class Point{
+    class Point{
         public:
             double x;
             double y;
@@ -30,7 +19,8 @@ namespace hcal {
                 y = 0.0;
             }
         };
-        class Event_Rect{
+
+    class Event_Rect{
         public:
             Point l_left;
             Point l_right;
@@ -41,7 +31,7 @@ namespace hcal {
                 l_left = ll;
                 l_right = lr;
                 u_left = ul;
-                u_right = ur;
+                u_right = ur;                
             }
             Event_Rect(double start_x, double start_y, double offset_x, double offset_y){
                 double end_x = start_x + offset_x;
@@ -51,7 +41,17 @@ namespace hcal {
                 u_left = Point(start_x, end_y);
                 u_right = Point(end_x, end_y);
             }
-        };
+        }; 
+
+    class WeekWriter : public CalWriter {
+
+    public:
+        WeekWriter(v8::Array*);
+        WeekWriter(time_t start, time_t end);
+        WeekWriter(time_t start, time_t end, int, int);
+        WeekWriter();
+        ~WeekWriter();
+        const char* write_calendar();        
 
     private:
         int start_hour_;
