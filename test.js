@@ -23,7 +23,7 @@ hcal.insertEvent(d3, d4, 4, 1, "Snowball Fighter", true, function(err, evt){
         console.log(evt.description() + " - " + evt.end());
     }
     else{
-        console.log(err);
+        console.log("insert event error: " + err);
     }
 });
 // hcal.updateEvent(35, d5, d6, 5, 1, "New title", false, function(err, evt){
