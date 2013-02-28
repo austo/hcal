@@ -222,7 +222,7 @@ namespace hcal {
         double y_offset = (double)(end_half_slots - start_half_slots) * (slot_height_ / 2.0);
 
         Event_Rect retval(start_x, start_y, slot_width_, y_offset);        
-
+        
         return retval;
     }    
 }

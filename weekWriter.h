@@ -3,6 +3,7 @@
 
 #include "calWriter.h"
 #include "dataLayer.h"
+#include "color.h"
 
 namespace hcal {
 
