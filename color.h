@@ -1,5 +1,6 @@
 #include <cstdio>
 #include <cstdlib>
+#include <cmath>
 #include <string>
 #include <cstring>
 #include <sstream>
@@ -46,10 +47,26 @@ namespace hcal {
         int rgb_green() const { return rgb_green_; }
         int rgb_blue() const { return rgb_blue_; }
 
+        float dec_red() const {
+            return get_decimal(rgb_red_);            
+        }
+
+        float dec_green() const {
+            return get_decimal(rgb_green_);            
+        }
+
+        float dec_blue() const {
+            return get_decimal(rgb_blue_);            
+        }
+
     private:
         int rgb_red_;
         int rgb_green_;
         int rgb_blue_;
-
+        static float get_decimal(int val){
+            float temp = (float) val / 255.0;
+            float rounded = floorf(temp * 10 + 0.5) / 10;
+            return rounded;
+        }
     };
 }
