@@ -153,4 +153,8 @@ namespace hcal {
             throw runtime_error(ERR_UREC_VIEW);
         }
     }
+
+    string to_lower(string data){
+        std::transform(data.begin(), data.end(), data.begin(), ::tolower);
+    }
 }
