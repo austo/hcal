@@ -3,12 +3,8 @@
 
 #include <cstdio>
 #include <cstdlib>
-#include <cmath>
 #include <string>
-#include <vector>
-#include <cstring>
 #include <sstream>
-#include <iostream>
 #include <exception>
 #include "hcal_utils.h"
 
@@ -82,15 +78,34 @@ namespace hcal {
             return get_decimal(rgb_blue_);            
         }
 
+        std::string hex_val() const {
+            return get_hex_value();
+        }
+
     private:
         int rgb_red_;
         int rgb_green_;
         int rgb_blue_;
+        std::string get_hex_value() const {
+            int n = 0;
+            std::stringstream ss;
+            n += append_hex_val(ss, rgb_red_);
+            n += append_hex_val(ss, rgb_green_);
+            n += append_hex_val(ss, rgb_blue_);            
+
+            if (n != 6){
+                std::stringstream err_ss;
+                err_ss << "Unable to write hexadecimal color string with size " << n << ".";
+                throw color_exception(err_ss.str());
+            }
+            return ss.str();
+        }
+
         static float get_decimal(int val){
             float temp = (float) val / 255.0;
             float rounded = floorf(temp * 10 + 0.5) / 10;
             return rounded;
-        }
+        }                
         static bool params_invalid(int r, int g, int b){
             return ((r < 0 || r > 255) || (g < 0 || g > 255) || (b < 0 || b > 255));
         }
@@ -110,6 +125,17 @@ namespace hcal {
                 }
             }
             return false;
+        }
+
+        static int append_hex_val(std::stringstream& ss, int rgb_val){
+            char buf[3];
+            int n = sprintf(buf, "%x", rgb_val);
+            if (n == 1){
+                ss << 0;
+                n += 1;
+            }
+            ss << buf;
+            return n;
         }
     };
 }

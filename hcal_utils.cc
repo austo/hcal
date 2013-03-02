@@ -154,9 +154,9 @@ namespace hcal {
         }
     }
 
-    string to_lower(string data){
-        std::transform(data.begin(), data.end(), data.begin(), ::tolower);
-    }
+    // string to_lower(string data){
+    //     std::transform(data.begin(), data.end(), data.begin(), ::tolower);
+    // }
 
     int compare_chars(const void *a, const void *b){
         return (int)(*(char*)a - *(char*)b);

@@ -221,8 +221,11 @@ namespace hcal {
         double start_y = (double)start_half_slots * (slot_height_ / 2.0);
         double y_offset = (double)(end_half_slots - start_half_slots) * (slot_height_ / 2.0);
 
-        Event_Rect retval(start_x, start_y, slot_width_, y_offset, "66F000");        
-        cout << retval.color.dec_green() << endl;       
+        string h_val("66F00F");
+        Event_Rect retval(start_x, start_y, slot_width_, y_offset, h_val);        
+        cout << retval.color.dec_blue() << endl;
+        string chv = retval.color.hex_val();
+        cout << "original hex value: " << h_val << "; computed hex value: " << chv << endl;   
         
         return retval;
     }    
