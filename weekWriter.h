@@ -27,7 +27,7 @@ namespace hcal {
             Point l_right;
             Point u_left;
             Point u_right;
-            std::string color_val;
+            Color color;
             Event_Rect(Point ll, Point lr, Point ul, Point ur){
                 l_left = ll;
                 l_right = lr;
@@ -42,6 +42,16 @@ namespace hcal {
                 u_left = Point(start_x, end_y);
                 u_right = Point(end_x, end_y);
             }
+            Event_Rect(double start_x, double start_y, double offset_x, double offset_y, std::string hex_color){
+                double end_x = start_x + offset_x;
+                double end_y = start_y + offset_y;
+                l_left = Point(start_x, start_y);
+                l_right = Point(end_x, start_y);
+                u_left = Point(start_x, end_y);
+                u_right = Point(end_x, end_y);
+                color = Color(hex_color);
+            }
+
         }; 
 
     class WeekWriter : public CalWriter {

@@ -18,7 +18,7 @@ var a = hcal.createEvent(1, d1, d2, 96, 1, "Computers");
 
 console.log(d3 + '\n');
 console.log(d4);
-hcal.insertEvent(d3, d4, 4, 1, "Snowball Fighter", true, function(err, evt){
+hcal.insertEvent(d3, d4, 5, 1, "Snowball Fighter", true, function(err, evt){
     if (!err){
         console.log(evt.description() + " - " + evt.end());
     }

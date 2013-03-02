@@ -1,13 +1,18 @@
+#ifndef GUARD__COLOR_H
+#define GUARD__COLOR_H
+
 #include <cstdio>
 #include <cstdlib>
 #include <cmath>
 #include <string>
+#include <vector>
 #include <cstring>
 #include <sstream>
 #include <iostream>
 #include <exception>
+#include "hcal_utils.h"
 
-namespace hcal {
+namespace hcal {    
 
     class color_exception : public std::exception {        
     public:
@@ -39,6 +44,9 @@ namespace hcal {
             if (hex.size() != 6){
                 throw color_exception("Hexadecimal color strings must be 6 characters.");                
             }
+            if (params_invalid(hex)){
+                throw color_exception("Hexadecimal color string contains invalid characters.");
+            }
             std::string red_str = hex.substr(0, 2), green_str = hex.substr(2, 2), blue_str = hex.substr(4, 2);            
             std::sscanf(red_str.c_str(), "%x", &rgb_red_);
             std::sscanf(green_str.c_str(), "%x", &rgb_green_);
@@ -51,6 +59,11 @@ namespace hcal {
             rgb_red_ = (int)(red * 255);
             rgb_green_ = (int)(green * 255);
             rgb_blue_ = (int)(blue * 255);
+        }
+        Color(){
+            rgb_red_ = 0;
+            rgb_green_ = 0;
+            rgb_blue_ = 0;
         }
 
         int rgb_red() const { return rgb_red_; }
@@ -73,11 +86,6 @@ namespace hcal {
         int rgb_red_;
         int rgb_green_;
         int rgb_blue_;
-        //static char hex_chars_[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
-        char* hex_chars() const {
-            char retval[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
-            return retval;
-        }
         static float get_decimal(int val){
             float temp = (float) val / 255.0;
             float rounded = floorf(temp * 10 + 0.5) / 10;
@@ -89,5 +97,20 @@ namespace hcal {
         static bool params_invalid(float r, float g, float b){
             return ((r < 0.0 || r > 1.0) || (g < 0.0 || g > 1.0) || (b < 0.0 || b > 1.0));
         }
+
+        static bool params_invalid(std::string hex_str){
+            //sorted array of all valid hex values
+            char hex_chars[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+                'A', 'B', 'C', 'D', 'E', 'F', 'a', 'b', 'c', 'd', 'e', 'f' };
+            char* ch;
+            for (unsigned i = 0; i < hex_str.size(); ++i){
+                ch = (char*) bsearch(&hex_str[i], hex_chars, 22, sizeof(char), compare_chars);
+                if (ch == NULL){
+                    return true;
+                }
+            }
+            return false;
+        }
     };
 }
+#endif
