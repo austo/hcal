@@ -13,6 +13,7 @@ namespace hcal{
     #define DL_EX_PREFIX "DataLayer: " 
 
     #define COL_ID "id"
+    #define COL_DISP_COLOR "display_color"
     #define COL_DESCRIPTION "description"
     #define COL_TIME_START "time_start"
     #define COL_TIME_END "time_end"
@@ -23,6 +24,7 @@ namespace hcal{
     #define COMMA_SPACE ", "
     #define QUERY_GET_EVENTS "select id, description, time_start, time_end, \
         room_id, leader_id from events"
+    #define QUERY_GET_ROOM_COLORS "select id, display_color from rooms;"
     #define QUERY_INSERT_EVENT "select insert_event("
     #define QUERY_UPDATE_EVENT "select update_event("
     #define QUERY_OPEN_PARENS "("
@@ -100,7 +102,9 @@ namespace hcal{
 
     void DataLayer::populate_emap(result& evts, emap_ptr emap, View v)
     {
+        int wk_offset;
         result::const_iterator row;
+        boost::gregorian::date first_sunday(boost::gregorian::not_a_date_time);
         for (row = evts.begin(); row != evts.end(); ++row){
 
             //get time_t for start and end times, adding back utc offset
@@ -114,9 +118,27 @@ namespace hcal{
                 case month:
                     index = (int)p_evt_start.date().month().as_number();
                     break;
-                case week:
-                    index = p_evt_start.date().week_number();
+                case week: {
+                    /*
+                        ISO dates won't work for our needs
+                        (hcal weeks start on Sunday and partial first week is counted),
+                        so use a little boost date arithmetic to get our week index
+                    */
+
+                    using namespace boost::gregorian;
+
+                    //get date on first pass; if first Sunday is not Jan 1, it designates start of week 2;
+                    if (first_sunday.is_not_a_date()){
+                        first_day_of_the_week_in_month first_sun(boost::date_time::Sunday, boost::date_time::Jan);
+                        first_sunday = first_sun.get_date(p_evt_start.date().year());
+                        wk_offset = (int)first_sunday.day() == 1 ? 1 : 2;
+                    }                    
+
+                    days days_since_new_year = p_evt_start.date() - first_sunday;
+                    int weeks_since_first_sunday = days_since_new_year.days() / 7;
+                    index = weeks_since_first_sunday + wk_offset;  
                     break;
+                }
                 default:
                     throw runtime_error("DataLayer: view not implemented.");
             }
@@ -145,6 +167,20 @@ namespace hcal{
         return execute_query(txn, ss.str());
     }
 
+    map<int, string> DataLayer::get_room_colors(){
+        map<int, string> retval = map<int, string>();
+        connection c(CONNSTRING);
+        work txn(c);
+        string query(QUERY_GET_ROOM_COLORS);
+        result rm_colors = execute_query(txn, query);
+
+        result::const_iterator row;
+        for (row = rm_colors.begin(); row != rm_colors.end(); ++row){
+            retval[row[COL_ID].as<int>()] = row[COL_DISP_COLOR].as<string>();
+        }
+        return retval;
+    }
+
     v8::Handle<v8::Value>
     DataLayer::insert_event(time_t start, time_t end, int room_id, int leader_id, string desc, bool recurring){
         v8::HandleScope scope;
@@ -169,6 +205,12 @@ namespace hcal{
             stringstream err_ss;
             err_ss << DL_EX_PREFIX
                 << "There is already an event at " << to_simple_string(p_evt_start) << " in room " << room_id << ".";
+            throw dl_exception(err_ss.str());
+        }
+        else if (evt_id == -2){
+            stringstream err_ss;
+            err_ss << DL_EX_PREFIX
+                << "There is already an event at " << to_simple_string(p_evt_start) << " with leader " << leader_id << ".";
             throw dl_exception(err_ss.str());
         }
 

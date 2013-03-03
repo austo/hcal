@@ -35,6 +35,7 @@ namespace hcal {
     {
         DataLayer dl = DataLayer();   
         eventMap_ = dl.get_event_map(start, end, week);
+        room_colors_ = dl.get_room_colors();
         start_hour_ = 8;
         end_hour_ = 20;
         slot_height_ = 0;
@@ -45,6 +46,7 @@ namespace hcal {
     {
         DataLayer dl = DataLayer();   
         eventMap_ = dl.get_event_map(start, end, week);
+        room_colors_ = dl.get_room_colors();
         start_hour_ = start_hour;
         end_hour_ = end_hour;
         slot_height_ = 0;
@@ -134,7 +136,7 @@ namespace hcal {
 
         date start_date((*eventMap_)[week_ordinal].begin()->Start().date());
         date_duration dd((int)start_date.day_of_week());
-        date_duration wkdur(7);
+        date_duration wkdur(6);
         date wk_start = start_date - dd;
         date wk_end = wk_start + wkdur;
         stringstream ss;
@@ -194,9 +196,13 @@ namespace hcal {
     void
     WeekWriter::write_events(HPDF_Page page, int week_ordinal)
     {
+        HPDF_Page_SetLineWidth(page, 2);
         list<Event>::const_iterator evt_itr = (*eventMap_)[week_ordinal].begin();
         for (; evt_itr != (*eventMap_)[week_ordinal].end(); ++evt_itr){
-            Event_Rect evt_rect = get_slot_position(evt_itr);
+            
+            Event_Rect evt_rect = get_event_rect(evt_itr);
+            //TODO: this should either be a class member or be called from within a utility function
+            draw_event_rect(page, evt_rect);
         }
         /*
             TODO: implement
@@ -207,25 +213,37 @@ namespace hcal {
         */
     }
 
+    /*
+        TODO:
+            Handle cases where event overflows available hours and/or event spans multiple days;
+            If event is not within the bounds of the day, don't print it;
+            Change member function name to print_event
+    */
     Event_Rect
-    WeekWriter::get_slot_position(list<Event>::const_iterator& evt_itr){
+    WeekWriter::get_event_rect(list<Event>::const_iterator& evt_itr){
         using namespace boost::posix_time;
         
-        int wk_day_num = (int)evt_itr->Start().date().day_of_week();
+        int wk_day_num = (int)evt_itr->Start().date().day_of_week(), rm_id = evt_itr->RoomId();
         double start_x = MARGIN + (wk_day_num * slot_width_);        
 
-        time_duration s_dur(evt_itr->Start().time_of_day() - hours(start_hour_));
-        time_duration e_dur(evt_itr->End().time_of_day() - hours(start_hour_));
-        int start_half_slots = s_dur.minutes() / 15;
-        int end_half_slots = e_dur.minutes() / 15;
-        double start_y = (double)start_half_slots * (slot_height_ / 2.0);
+        time_duration s_dur(evt_itr->Start().time_of_day()), e_dur(evt_itr->End().time_of_day());
+
+        /*
+            Get number of slots between start time and day's end
+            and end time and day's end.
+            Y offset will be (end slots - start slots)  
+        */
+        int start_hours_from_end = end_hour_ - s_dur.hours(),
+            end_hours_from_end = end_hour_ - e_dur.hours();
+        int start_half_slots = (start_hours_from_end * 4) - (s_dur.minutes() / 15),
+            end_half_slots = (end_hours_from_end * 4) + (e_dur.minutes() / 15);
+        
+        double start_y = MARGIN + (double)start_half_slots * (slot_height_ / 2.0);
         double y_offset = (double)(end_half_slots - start_half_slots) * (slot_height_ / 2.0);
 
-        string h_val("66F00F");
-        Event_Rect retval(start_x, start_y, slot_width_, y_offset, h_val);        
-        cout << retval.color.dec_blue() << endl;
+        Event_Rect retval(start_x, start_y, slot_width_, y_offset, room_colors_[rm_id]);        
         string chv = retval.color.hex_val();
-        cout << "original hex value: " << h_val << "; computed hex value: " << chv << endl;   
+        cout << "color hex value: " << chv << endl;   
         
         return retval;
     }    

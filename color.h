@@ -6,7 +6,6 @@
 #include <string>
 #include <sstream>
 #include <exception>
-#include "hcal_utils.h"
 
 namespace hcal {    
 
@@ -136,6 +135,10 @@ namespace hcal {
             }
             ss << buf;
             return n;
+        }
+
+        static int compare_chars(const void *a, const void *b){
+            return (int)(*(char*)a - *(char*)b);
         }
     };
 }

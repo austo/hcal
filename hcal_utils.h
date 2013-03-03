@@ -9,6 +9,7 @@
 #include <map>
 #include <list>
 #include "event.h"
+#include "eventRect.h"
 #include <cstdlib>
 #include <cstdio>
 #include <cstring>
@@ -42,6 +43,6 @@ namespace hcal {
     void draw_line(HPDF_Page, float, float, float, float);
     void write_weekday_cols(HPDF_Page, HPDF_Font, int, int, int, float);
     View get_view(v8::String::AsciiValue&);
-    int compare_chars(const void *, const void *);
+    void draw_event_rect(HPDF_Page, Event_Rect);
 }
 #endif

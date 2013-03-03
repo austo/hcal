@@ -45,7 +45,9 @@ namespace hcal{
             std::map<int, std::list<Event> >* get_event_map(time_t, time_t, View);
             v8::Handle<v8::Value> insert_event(time_t, time_t, int, int, std::string, bool);
             UpdateStatus update_event(int, time_t, time_t, int, int, std::string, bool);
+            std::map<int, std::string> get_room_colors();
             static time_t get_time_t_from_ptime(boost::posix_time::ptime); 
+
 
         private:
             pqxx::result get_events_for_timespan(time_t start, time_t end);

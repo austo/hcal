@@ -5,6 +5,7 @@
 #include <node.h>
 #include <ctime>
 #include <string>
+#include <map>
 
 class ConfigWrapper : public node::ObjectWrap {
     public:
@@ -30,7 +31,7 @@ class ConfigWrapper : public node::ObjectWrap {
         int sday_;
         int eday_;
         int shour_;
-        int ehour_;
+        int ehour_;        
 };
 
 #endif
