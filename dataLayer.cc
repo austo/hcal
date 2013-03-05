@@ -125,11 +125,15 @@ namespace hcal{
                     */
                     if (first_sunday.is_not_a_date() || p_evt_start.date().year() != current_year){
                         get_week_offset_for_current_year(p_evt_start, first_sunday, current_year, wk_offset, index);                        
+                    }
+                    else{
+                        index = 0;
                     }                                     
 
                     boost::gregorian::days days_since_new_year = p_evt_start.date() - first_sunday;
                     int weeks_since_first_sunday = days_since_new_year.days() / 7;
-                    index = index ? index : weeks_since_first_sunday + wk_offset;  
+                    index = index ? index : weeks_since_first_sunday + wk_offset; 
+                    cout << "v8 - wk index: " << index << endl; 
                     break;
                 }
                 default:
@@ -265,6 +269,7 @@ namespace hcal{
         return td.total_seconds();
     }
 
+    //TODO: cleanup this code, look for ineffencies
     void DataLayer::get_week_offset_for_current_year(ptime& p_evt_start, 
         boost::gregorian::date& first_sunday, int& current_year, int& wk_offset, int& index){
         using namespace boost::gregorian;
@@ -289,11 +294,15 @@ namespace hcal{
                 }
 
         */
+        int multi_yr_adj = first_sunday.is_not_a_date() ? 0 : 53;
 
         current_year = p_evt_start.date().year();
         first_day_of_the_week_in_month first_sun(boost::date_time::Sunday, boost::date_time::Jan);
         first_sunday = first_sun.get_date(current_year);
+        //Only change index if current event is within the first week
+        index = p_evt_start.date() < first_sunday ? index : 0;
         wk_offset = (int)first_sunday.day() == 1 ? 1 : 2;
+        wk_offset += multi_yr_adj;
     }              
     
 }

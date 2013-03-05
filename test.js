@@ -9,6 +9,7 @@ var d5 = new Date(2013, 0, 13, 16);
 var d6 = new Date(2013, 0, 13, 18);
 var d7 = new Date(2012, 11, 30, 10);
 var d8 = new Date(2012, 11, 30, 11);
+var d9 = new Date(2012, 11, 30);
 
 var a = hcal.createEvent(1, d1, d2, 96, 1, "Computers");
 // var b = hcal.createEvent(2, d3, d4, 13, "Betsy", "Basketball");
@@ -42,7 +43,7 @@ hcal.updateEvent(83, d5, d6, 5, 1, "New title and I love being here...", false, 
 hcal.printCalendar(d1, d2, "month", function(fileName){
     console.log("Monthly calendar file: " + fileName);
 });
-hcal.printCalendar(d1, d2, "week", function(fileName){
+hcal.printCalendar(d9, d2, "week", function(fileName){
     console.log("Weekly calendar file: " + fileName);
 });
 hcal.getEvents(d1, d3, function(err, evts){
