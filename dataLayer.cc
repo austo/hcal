@@ -102,7 +102,7 @@ namespace hcal{
 
     void DataLayer::populate_emap(result& evts, emap_ptr emap, View v)
     {
-        int wk_offset;
+        int wk_offset, current_year, index = 0;
         result::const_iterator row;
         boost::gregorian::date first_sunday(boost::gregorian::not_a_date_time);
         for (row = evts.begin(); row != evts.end(); ++row){
@@ -113,7 +113,6 @@ namespace hcal{
             p_evt_start += utc_offset_td_;
             p_evt_end += utc_offset_td_;
 
-            int index;
             switch(v){
                 case month:
                     index = (int)p_evt_start.date().month().as_number();
@@ -124,19 +123,13 @@ namespace hcal{
                         (hcal weeks start on Sunday and partial first week is counted),
                         so use a little boost date arithmetic to get our week index
                     */
+                    if (first_sunday.is_not_a_date() || p_evt_start.date().year() != current_year){
+                        get_week_offset_for_current_year(p_evt_start, first_sunday, current_year, wk_offset, index);                        
+                    }                                     
 
-                    using namespace boost::gregorian;
-
-                    //get date on first pass; if first Sunday is not Jan 1, it designates start of week 2;
-                    if (first_sunday.is_not_a_date()){
-                        first_day_of_the_week_in_month first_sun(boost::date_time::Sunday, boost::date_time::Jan);
-                        first_sunday = first_sun.get_date(p_evt_start.date().year());
-                        wk_offset = (int)first_sunday.day() == 1 ? 1 : 2;
-                    }                    
-
-                    days days_since_new_year = p_evt_start.date() - first_sunday;
+                    boost::gregorian::days days_since_new_year = p_evt_start.date() - first_sunday;
                     int weeks_since_first_sunday = days_since_new_year.days() / 7;
-                    index = weeks_since_first_sunday + wk_offset;  
+                    index = index ? index : weeks_since_first_sunday + wk_offset;  
                     break;
                 }
                 default:
@@ -271,4 +264,36 @@ namespace hcal{
         time_duration td = pt - epoch_start;
         return td.total_seconds();
     }
+
+    void DataLayer::get_week_offset_for_current_year(ptime& p_evt_start, 
+        boost::gregorian::date& first_sunday, int& current_year, int& wk_offset, int& index){
+        using namespace boost::gregorian;
+
+        /*
+            ISO dates won't work for our needs
+            (hcal weeks start on Sunday and partial first week is counted),
+            so use a little boost date arithmetic to get our week index
+        */
+
+        //get date on first pass; if first Sunday is not Jan 1, it designates start of week 2;
+        /*
+            TODO:
+                we'll need to handle events from different years in the same week display:
+                1. if p_evt_start.date()year() != current_year{
+                    get the first sunday & week info again
+                }
+                2. if index == 53 (or whatever the right number is){
+                    test should be if p_evt_start is before the first sunday of the newly initialized year,
+                    only if there's an event from the previous year in that same week
+                    build week with next year's first partial week
+                }
+
+        */
+
+        current_year = p_evt_start.date().year();
+        first_day_of_the_week_in_month first_sun(boost::date_time::Sunday, boost::date_time::Jan);
+        first_sunday = first_sun.get_date(current_year);
+        wk_offset = (int)first_sunday.day() == 1 ? 1 : 2;
+    }              
+    
 }

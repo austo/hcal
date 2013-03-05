@@ -53,6 +53,7 @@ namespace hcal{
             pqxx::result get_events_for_timespan(time_t start, time_t end);
             pqxx::result execute_query(pqxx::transaction_base&, std::string);
             void populate_emap(pqxx::result&, std::map<int, std::list<Event> >*, View);
+            void get_week_offset_for_current_year(boost::posix_time::ptime&, boost::gregorian::date&, int&, int&, int&);
             v8::Handle<v8::Array> build_wrapped_events(pqxx::result&);
             std::string get_env(const std::string&);
             boost::posix_time::time_duration utc_offset_td_;    
