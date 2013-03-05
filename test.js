@@ -1,15 +1,18 @@
 var hcal = require('./build/Debug/hcal');
 
 console.log('\n\n!#----------Test results----------#!\n');
-var d1 = new Date(2013, 0, 01, 08);
-var d2 = new Date(2013, 1, 28, 23);
-var d3 = new Date(2013, 1, 22, 23, 30);
-var d4 = new Date(2013, 1, 23, 0, 30);
-var d5 = new Date(2013, 0, 13, 16);
-var d6 = new Date(2013, 0, 13, 18);
-var d7 = new Date(2012, 11, 30, 10);
-var d8 = new Date(2012, 11, 30, 11);
-var d9 = new Date(2012, 11, 30);
+var d1 = new Date(2013, 0, 01, 08),
+    d2 = new Date(2013, 1, 28, 23),
+    d3 = new Date(2013, 1, 22, 23, 30),
+    d4 = new Date(2013, 1, 23, 0, 30),
+    d5 = new Date(2013, 0, 13, 16),
+    d6 = new Date(2013, 0, 13, 18),
+    d7 = new Date(2012, 11, 30, 10),
+    d8 = new Date(2012, 11, 30, 11),
+    d9 = new Date(2012, 11, 30),
+    d10 = new Date(2013, 0, 3, 10),
+    d11 = new Date(2013, 0, 3, 11);
+
 
 var a = hcal.createEvent(1, d1, d2, 96, 1, "Computers");
 // var b = hcal.createEvent(2, d3, d4, 13, "Betsy", "Basketball");
@@ -21,7 +24,7 @@ var a = hcal.createEvent(1, d1, d2, 96, 1, "Computers");
 
 console.log(d3 + '\n');
 console.log(d4);
-hcal.insertEvent(d7, d8, 5, 1, "New Year's Tea", true, function(err, evt){
+hcal.insertEvent(d10, d11, 5, 1, "Spider Grooming", true, function(err, evt){
     if (!err){
         console.log(evt.description() + " - " + evt.end());
     }

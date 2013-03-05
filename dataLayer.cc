@@ -274,35 +274,17 @@ namespace hcal{
         boost::gregorian::date& first_sunday, int& current_year, int& wk_offset, int& index){
         using namespace boost::gregorian;
 
-        /*
-            ISO dates won't work for our needs
-            (hcal weeks start on Sunday and partial first week is counted),
-            so use a little boost date arithmetic to get our week index
-        */
-
-        //get date on first pass; if first Sunday is not Jan 1, it designates start of week 2;
-        /*
-            TODO:
-                we'll need to handle events from different years in the same week display:
-                1. if p_evt_start.date()year() != current_year{
-                    get the first sunday & week info again
-                }
-                2. if index == 53 (or whatever the right number is){
-                    test should be if p_evt_start is before the first sunday of the newly initialized year,
-                    only if there's an event from the previous year in that same week
-                    build week with next year's first partial week
-                }
-
-        */
+        //add a year's worth of weeks if we're changing years (i.e. not first time)
         int multi_yr_adj = first_sunday.is_not_a_date() ? 0 : 53;
 
         current_year = p_evt_start.date().year();
         first_day_of_the_week_in_month first_sun(boost::date_time::Sunday, boost::date_time::Jan);
         first_sunday = first_sun.get_date(current_year);
-        //Only change index if current event is within the first week
+
+        /*leave index unchanged if current event is within
+          first week of new year (calling code checks for index = 0) */
         index = p_evt_start.date() < first_sunday ? index : 0;
-        wk_offset = (int)first_sunday.day() == 1 ? 1 : 2;
-        wk_offset += multi_yr_adj;
-    }              
-    
+        int tmp_offset = (int)first_sunday.day() == 1 ? 1 : 2; //handle 2+ year spans
+        wk_offset += (multi_yr_adj + tmp_offset);
+    }    
 }
