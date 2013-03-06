@@ -217,7 +217,8 @@ namespace hcal {
         TODO:
             Handle cases where event overflows available hours and/or event spans multiple days;
             If event is not within the bounds of the day, don't print it;
-            Change member function name to print_event
+            Change member function name to print_event.
+            Need a function int get_overlapping_events(list<Event>::const_iterator& evt_itr)
     */
     Event_Rect
     WeekWriter::get_event_rect(list<Event>::const_iterator& evt_itr){
@@ -245,5 +246,17 @@ namespace hcal {
         string chv = retval.color.hex_val();
         
         return retval;
-    }    
+    }
+
+    int WeekWriter::get_overlapping_events(list<Event>::const_iterator evt_itr) {
+        /*
+            NOTE: Pass in iterator by value
+            1. get start and end dates from current iterator position
+            2. while successive event start time is less than current event end time
+                increment retval;
+        */
+
+        int retval = 1;
+        return retval;
+    }
 }
