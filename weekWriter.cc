@@ -243,7 +243,6 @@ namespace hcal {
 
         Event_Rect retval(start_x, start_y, slot_width_, y_offset, room_colors_[rm_id]);        
         string chv = retval.color.hex_val();
-        cout << "color hex value: " << chv << endl;   
         
         return retval;
     }    

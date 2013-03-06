@@ -102,7 +102,7 @@ namespace hcal{
 
     void DataLayer::populate_emap(result& evts, emap_ptr emap, View v)
     {
-        int wk_offset, current_year, index = 0;
+        int current_year, wk_offset = 0, index = 0;
         result::const_iterator row;
         boost::gregorian::date first_sunday(boost::gregorian::not_a_date_time);
         for (row = evts.begin(); row != evts.end(); ++row){
@@ -133,7 +133,7 @@ namespace hcal{
                     boost::gregorian::days days_since_new_year = p_evt_start.date() - first_sunday;
                     int weeks_since_first_sunday = days_since_new_year.days() / 7;
                     index = index ? index : weeks_since_first_sunday + wk_offset; 
-                    cout << "v8 - wk index: " << index << endl; 
+                    cout << "v8 - wk index: " << index << " wk_offset: " << wk_offset << endl; 
                     break;
                 }
                 default:
