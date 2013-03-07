@@ -24,12 +24,13 @@ class Event {
         int RoomId() const { return room_id_; }
         std::string LeaderName() const { return leader_name_; }
         std::string Description() const { return description_; }
-        bool operator< (const Event &other) const {
+        bool operator< (const Event& other) const {
             if (Start() == other.Start()){
-                return RoomId() < other.RoomId();
+                return End() < other.End();
             }
             return Start() < other.Start();
         }
+        bool intersects(const Event& other);
 
     private:
         int id_;

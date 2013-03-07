@@ -196,11 +196,12 @@ namespace hcal {
     void
     WeekWriter::write_events(HPDF_Page page, int week_ordinal)
     {
+        int concurrent_evts = 0, remaining_evts = 0;
         HPDF_Page_SetLineWidth(page, 2);
         list<Event>::const_iterator evt_itr = (*eventMap_)[week_ordinal].begin();
         for (; evt_itr != (*eventMap_)[week_ordinal].end(); ++evt_itr){
             
-            Event_Rect evt_rect = get_event_rect(evt_itr);
+            Event_Rect evt_rect = get_event_rect(evt_itr, concurrent_evts, remaining_evts);
             //TODO: this should either be a class member or be called from within a utility function
             draw_event_rect(page, evt_rect);
         }
@@ -221,9 +222,11 @@ namespace hcal {
             Need a function int get_overlapping_events(list<Event>::const_iterator& evt_itr)
     */
     Event_Rect
-    WeekWriter::get_event_rect(list<Event>::const_iterator& evt_itr){
+    WeekWriter::get_event_rect(list<Event>::const_iterator& evt_itr, const int& concurrent_evts, int& remaining_evts){
         using namespace boost::posix_time;
         
+        //get width of event_rect based on slot_width_ / number of concurrent events
+        //get start x coordinates of event_rect based on start_x + (evt_width * remaining_evts)
         int wk_day_num = (int)evt_itr->Start().date().day_of_week(), rm_id = evt_itr->RoomId();
         double start_x = MARGIN + (wk_day_num * slot_width_);        
 
@@ -249,14 +252,26 @@ namespace hcal {
     }
 
     int WeekWriter::get_overlapping_events(list<Event>::const_iterator evt_itr) {
+        using namespace boost::posix_time;
         /*
             NOTE: Pass in iterator by value
             1. get start and end dates from current iterator position
             2. while successive event start time is less than current event end time
                 increment retval;
         */
-
-        int retval = 1;
+        int retval = 0;
+        time_period target_span(evt_itr->Start(), evt_itr->End());
+        ++evt_itr;
+        time_period next_span(evt_itr->Start(), evt_itr->End());
+        while (target_span.intersects(next_span)){
+            ++retval;
+            //lengthen target_span if new event goes later
+            if (next_span.end() > target_span.end()){
+                target_span = time_period(target_span.begin(), next_span.end());
+            }
+            ++evt_itr;
+            next_span = time_period(evt_itr->Start(), evt_itr->End());
+        }
         return retval;
     }
 }

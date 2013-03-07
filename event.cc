@@ -50,3 +50,8 @@ Event::Event(EventWrapper* evt){
     //leader_ = evt->Leader();
     description_ = evt->Description();
 }
+
+bool Event::intersects(const Event& other){
+    boost::posix_time::time_period this_time(start_, end_), that_time(other.Start(), other.End());
+    return this_time.intersects(that_time);
+}
