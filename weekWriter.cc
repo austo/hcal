@@ -196,14 +196,26 @@ namespace hcal {
     void
     WeekWriter::write_events(HPDF_Page page, int week_ordinal)
     {
-        int concurrent_evts = 0, remaining_evts = 0;
+        int num_conc_evts = 0, conc_evt_instance;
         HPDF_Page_SetLineWidth(page, 2);
         list<Event>::const_iterator evt_itr = (*eventMap_)[week_ordinal].begin();
         for (; evt_itr != (*eventMap_)[week_ordinal].end(); ++evt_itr){
-            
-            Event_Rect evt_rect = get_event_rect(evt_itr, concurrent_evts, remaining_evts);
+            cout << "v8 - evt title: " << evt_itr->Description() << "; start time: " << evt_itr->Start() << endl;
+            //decrement events if not zero
+            if (!num_conc_evts){
+                //cout << "v8 - getting conc events... " << endl;
+                num_conc_evts = get_overlapping_events(evt_itr);
+                cout << "v8 - num conc events: " << num_conc_evts << endl;
+                conc_evt_instance = 0;
+            }            
+            Event_Rect evt_rect = get_event_rect(evt_itr, num_conc_evts, conc_evt_instance);
+
             //TODO: this should either be a class member or be called from within a utility function
             draw_event_rect(page, evt_rect);
+
+            if (conc_evt_instance == num_conc_evts){
+                num_conc_evts = 0;
+            }
         }
         /*
             TODO: implement
@@ -222,13 +234,17 @@ namespace hcal {
             Need a function int get_overlapping_events(list<Event>::const_iterator& evt_itr)
     */
     Event_Rect
-    WeekWriter::get_event_rect(list<Event>::const_iterator& evt_itr, const int& concurrent_evts, int& remaining_evts){
+    WeekWriter::get_event_rect(list<Event>::const_iterator& evt_itr, const int& num_conc_evts, int& conc_evt_instance){
         using namespace boost::posix_time;
+
+        double conc_evt_x_offset = (num_conc_evts > 0) ?
+            ((slot_width_ / (num_conc_evts + 1)) * (conc_evt_instance + 1)): 0.0;
+        //cout << "v8 - evt title: " << evt_itr->Description() << "; conc_evt_x_offset: " << conc_evt_x_offset << endl;
         
         //get width of event_rect based on slot_width_ / number of concurrent events
         //get start x coordinates of event_rect based on start_x + (evt_width * remaining_evts)
         int wk_day_num = (int)evt_itr->Start().date().day_of_week(), rm_id = evt_itr->RoomId();
-        double start_x = MARGIN + (wk_day_num * slot_width_);        
+        double start_x = MARGIN + (wk_day_num * slot_width_) + conc_evt_x_offset;        
 
         time_duration s_dur(evt_itr->Start().time_of_day()), e_dur(evt_itr->End().time_of_day());
 
@@ -245,8 +261,13 @@ namespace hcal {
         double start_y = MARGIN + (double)start_half_slots * (slot_height_ / 2.0);
         double y_offset = (double)(end_half_slots - start_half_slots) * (slot_height_ / 2.0);
 
-        Event_Rect retval(start_x, start_y, slot_width_, y_offset, room_colors_[rm_id]);        
+        Event_Rect retval(start_x, start_y, (slot_width_ / (num_conc_evts + 1)), y_offset, room_colors_[rm_id]);        
         string chv = retval.color.hex_val();
+
+        //only increment if there are concurrent events (calling code checks for conc_evt_instance == num_conc_evts)
+        if (num_conc_evts){
+            ++conc_evt_instance;
+        }
         
         return retval;
     }
@@ -265,10 +286,8 @@ namespace hcal {
         time_period next_span(evt_itr->Start(), evt_itr->End());
         while (target_span.intersects(next_span)){
             ++retval;
-            //lengthen target_span if new event goes later
-            if (next_span.end() > target_span.end()){
-                target_span = time_period(target_span.begin(), next_span.end());
-            }
+            //lengthen target_span if new event goes later            
+            target_span = target_span.span(next_span);            
             ++evt_itr;
             next_span = time_period(evt_itr->Start(), evt_itr->End());
         }

@@ -24,7 +24,7 @@ var a = hcal.createEvent(1, d1, d2, 96, 1, "Computers");
 
 console.log(d3 + '\n');
 console.log(d4);
-hcal.insertEvent(d10, d11, 5, 1, "Spider Grooming", true, function(err, evt){
+hcal.insertEvent(d10, d11, 4, 2, "Reptile Crochet", true, function(err, evt){
     if (!err){
         console.log(evt.description() + " - " + evt.end());
     }

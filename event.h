@@ -26,6 +26,9 @@ class Event {
         std::string Description() const { return description_; }
         bool operator< (const Event& other) const {
             if (Start() == other.Start()){
+                if (End() == other.End()){
+                    return RoomId() < other.RoomId();
+                }
                 return End() < other.End();
             }
             return Start() < other.Start();

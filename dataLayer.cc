@@ -275,8 +275,17 @@ namespace hcal{
         using namespace boost::gregorian;
 
         //add a year's worth of weeks if we're changing years (i.e. not first time)
-        int multi_yr_adj = first_sunday.is_not_a_date() ? 0 : 53;
-
+        int multi_yr_adj;
+        if (first_sunday.is_not_a_date()){
+            multi_yr_adj = 0;
+        }
+        else if (p_evt_start.date() < first_sunday){
+            multi_yr_adj = 0;
+        }
+        else{
+            multi_yr_adj = 53;
+        }
+        
         current_year = p_evt_start.date().year();
         first_day_of_the_week_in_month first_sun(boost::date_time::Sunday, boost::date_time::Jan);
         first_sunday = first_sun.get_date(current_year);
