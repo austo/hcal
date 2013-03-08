@@ -123,7 +123,7 @@ namespace hcal{
                         (hcal weeks start on Sunday and partial first week is counted),
                         so use a little boost date arithmetic to get our week index
                     */
-                    if (first_sunday.is_not_a_date() || p_evt_start.date().year() != current_year){
+                    if (first_sunday.is_not_a_date() || p_evt_start.date().year() != current_year || p_evt_start.date() < first_sunday){
                         get_week_offset_for_current_year(p_evt_start, first_sunday, current_year, wk_offset, index);                        
                     }
                     else{

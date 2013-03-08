@@ -203,7 +203,6 @@ namespace hcal {
             cout << "v8 - evt title: " << evt_itr->Description() << "; start time: " << evt_itr->Start() << endl;
             //decrement events if not zero
             if (!num_conc_evts){
-                //cout << "v8 - getting conc events... " << endl;
                 num_conc_evts = get_overlapping_events(evt_itr);
                 cout << "v8 - num conc events: " << num_conc_evts << endl;
                 conc_evt_instance = 0;
@@ -213,7 +212,7 @@ namespace hcal {
             //TODO: this should either be a class member or be called from within a utility function
             draw_event_rect(page, evt_rect);
 
-            if (conc_evt_instance == num_conc_evts){
+            if (conc_evt_instance == num_conc_evts + 1){
                 num_conc_evts = 0;
             }
         }
@@ -238,11 +237,8 @@ namespace hcal {
         using namespace boost::posix_time;
 
         double conc_evt_x_offset = (num_conc_evts > 0) ?
-            ((slot_width_ / (num_conc_evts + 1)) * (conc_evt_instance + 1)): 0.0;
-        //cout << "v8 - evt title: " << evt_itr->Description() << "; conc_evt_x_offset: " << conc_evt_x_offset << endl;
+            ((slot_width_ / (num_conc_evts + 1)) * (conc_evt_instance)) : 0.0;
         
-        //get width of event_rect based on slot_width_ / number of concurrent events
-        //get start x coordinates of event_rect based on start_x + (evt_width * remaining_evts)
         int wk_day_num = (int)evt_itr->Start().date().day_of_week(), rm_id = evt_itr->RoomId();
         double start_x = MARGIN + (wk_day_num * slot_width_) + conc_evt_x_offset;        
 
@@ -264,7 +260,7 @@ namespace hcal {
         Event_Rect retval(start_x, start_y, (slot_width_ / (num_conc_evts + 1)), y_offset, room_colors_[rm_id]);        
         string chv = retval.color.hex_val();
 
-        //only increment if there are concurrent events (calling code checks for conc_evt_instance == num_conc_evts)
+        //only increment if there are concurrent events (calling code checks for conc_evt_instance == num_conc_evts + 1)
         if (num_conc_evts){
             ++conc_evt_instance;
         }
