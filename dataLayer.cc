@@ -9,7 +9,7 @@ namespace hcal{
     #define UTC_OFFSET 5 //TODO: improve using real boost timezones
     #define HCAL_UTC_OFFSET "HCAL_UTC_OFFSET"
 
-    #define CONNSTRING "host=queequeg dbname=concerto user=appUser password=cAligul@"
+    #define CONNSTRING "host=192.168.1.136 dbname=concerto user=appUser password=cAligul@"
     #define DL_EX_PREFIX "DataLayer: " 
 
     #define COL_ID "id"
@@ -25,6 +25,7 @@ namespace hcal{
     #define QUERY_GET_EVENTS "select id, description, time_start, time_end, \
         room_id, leader_id from events"
     #define QUERY_GET_ROOM_COLORS "select id, display_color from rooms;"
+    #define QUERY_GET_ROOMS "select id, name as room_name, display_color from rooms order by id;"
     #define QUERY_INSERT_EVENT "select insert_event("
     #define QUERY_UPDATE_EVENT "select update_event("
     #define QUERY_OPEN_PARENS "("
@@ -174,6 +175,21 @@ namespace hcal{
         result::const_iterator row;
         for (row = rm_colors.begin(); row != rm_colors.end(); ++row){
             retval[row[COL_ID].as<int>()] = row[COL_DISP_COLOR].as<string>();
+        }
+        return retval;
+    }
+
+    map<int, Room> DataLayer::get_rooms(){
+        map<int, Room> retval = map<int, Room>();
+        connection c(CONNSTRING);
+        work txn(c);
+        string query(QUERY_GET_ROOMS);
+        result rooms_result = execute_query(txn, query);
+
+        result::const_iterator row;
+        for (row = rooms_result.begin(); row != rooms_result.end(); ++row){
+            retval[row[COL_ID].as<int>()] = 
+                Room(row[COL_ID].as<int>(), row[COL_ROOM_NAME].as<string>(), row[COL_DISP_COLOR].as<string>());
         }
         return retval;
     }

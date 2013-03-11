@@ -35,7 +35,7 @@ namespace hcal {
     {
         DataLayer dl = DataLayer();   
         eventMap_ = dl.get_event_map(start, end, week);
-        room_colors_ = dl.get_room_colors();
+        rooms_ = dl.get_rooms();
         start_hour_ = 8;
         end_hour_ = 20;
         slot_height_ = 0;
@@ -46,7 +46,7 @@ namespace hcal {
     {
         DataLayer dl = DataLayer();   
         eventMap_ = dl.get_event_map(start, end, week);
-        room_colors_ = dl.get_room_colors();
+        rooms_ = dl.get_rooms();
         start_hour_ = start_hour;
         end_hour_ = end_hour;
         slot_height_ = 0;
@@ -159,7 +159,7 @@ namespace hcal {
             NOTE: should get start_hour and num_hours earlier in lifecycle & make slot_height a member variable
             NOTE: CustomWriter will inherit from WeekWriter (or vice versa?)
         */
-        write_hour_rows(page, pg_used_width, pg_used_height);
+        write_hour_rows(page, font, pg_used_width, pg_used_height);
 
         slot_width_ = slot_width_ ? slot_width_ : ((double)pg_used_width / 7);
         int evtMargin = MARGIN + 5;
@@ -168,7 +168,7 @@ namespace hcal {
     }
 
     void
-    WeekWriter::write_hour_rows(HPDF_Page page, int pg_used_width, int pg_used_height)
+    WeekWriter::write_hour_rows(HPDF_Page page, HPDF_Font font, int pg_used_width, int pg_used_height)
     {
         int num_lines = (end_hour_ - start_hour_) * 2;
 
@@ -176,11 +176,23 @@ namespace hcal {
         slot_height_ = slot_height_ ? slot_height_ : (double)pg_used_height / (double)num_lines;        
         float line_y = MARGIN + slot_height_;
 
-        HPDF_Page_SetLineWidth(page, .10);
+        HPDF_Page_SetLineWidth(page, .10);        
+        HPDF_Page_SetFontAndSize(page, font, 8);
+        double hr_num_x = MARGIN - 27;
+        char buf[6];
+        //write last number at lower margin
+        write_hour_to_buf(buf, end_hour_, true);
+        write_text(page, hr_num_x, MARGIN, buf);
 
-        for (int i = 0, hrln = 1; i < num_lines; ++i){
+        for (int i = 0, hrln = 1, disp_hour = end_hour_ - 1; i < num_lines; ++i){
             if (i == hrln){
                 HPDF_Page_SetLineWidth(page, .6);
+
+                bool write_meridian = (disp_hour == start_hour_ || disp_hour == 12);
+                write_hour_to_buf(buf, disp_hour, write_meridian);
+                write_text(page, hr_num_x, line_y - 2, buf);
+                --disp_hour;
+
                 draw_line(page, MARGIN, line_y, MARGIN + pg_used_width, line_y);
                 HPDF_Page_SetLineWidth(page, .15);
                 hrln += 2;
@@ -229,12 +241,16 @@ namespace hcal {
         TODO:
             Handle cases where event overflows available hours and/or event spans multiple days;
             If event is not within the bounds of the day, don't print it;
+
             Change member function name to print_event.
             Need a function int get_overlapping_events(list<Event>::const_iterator& evt_itr)
     */
     Event_Rect
     WeekWriter::get_event_rect(list<Event>::const_iterator& evt_itr, const int& num_conc_evts, int& conc_evt_instance){
         using namespace boost::posix_time;
+
+        //TODO: test out of bounds here or in another method
+        //TODO: handle multi-day events so as not to force narrow all other events - add multi-day flag to Event?
 
         double conc_evt_x_offset = (num_conc_evts > 0) ?
             ((slot_width_ / (num_conc_evts + 1)) * (conc_evt_instance)) : 0.0;
@@ -257,7 +273,7 @@ namespace hcal {
         double start_y = MARGIN + (double)start_half_slots * (slot_height_ / 2.0);
         double y_offset = (double)(end_half_slots - start_half_slots) * (slot_height_ / 2.0);
 
-        Event_Rect retval(start_x, start_y, (slot_width_ / (num_conc_evts + 1)), y_offset, room_colors_[rm_id]);        
+        Event_Rect retval(start_x, start_y, (slot_width_ / (num_conc_evts + 1)), y_offset, rooms_[rm_id].color);        
         string chv = retval.color.hex_val();
 
         //only increment if there are concurrent events (calling code checks for conc_evt_instance == num_conc_evts + 1)

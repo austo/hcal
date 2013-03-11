@@ -13,6 +13,7 @@
 #include "throw_exception.hpp"
 #include "eventWrapper.h"
 #include "event.h"
+#include "room.h"
 #include "hcal_utils.h"
 #include "posix_time/posix_time.hpp"
 
@@ -46,6 +47,7 @@ namespace hcal{
             v8::Handle<v8::Value> insert_event(time_t, time_t, int, int, std::string, bool);
             UpdateStatus update_event(int, time_t, time_t, int, int, std::string, bool);
             std::map<int, std::string> get_room_colors();
+            std::map<int, Room> get_rooms();
             static time_t get_time_t_from_ptime(boost::posix_time::ptime); 
 
 

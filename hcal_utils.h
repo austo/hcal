@@ -44,5 +44,7 @@ namespace hcal {
     void write_weekday_cols(HPDF_Page, HPDF_Font, int, int, int, float);
     View get_view(v8::String::AsciiValue&);
     void draw_event_rect(HPDF_Page, Event_Rect);
+    void write_hour_to_buf(char*, int, bool);
+
 }
 #endif

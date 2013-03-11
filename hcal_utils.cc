@@ -164,5 +164,64 @@ namespace hcal {
         else{
             throw runtime_error(ERR_UREC_VIEW);
         }
-    }     
+    }
+
+    //TODO: consolidate
+    void write_hour_to_buf(char* buf, int hr, bool write_meridian){
+        //assume military time
+        if (hr > 12){
+            hr -= 12;
+            if (write_meridian){
+                if (hr < 10){
+                    sprintf(buf, " %d pm", hr);
+                }
+                else{
+                    sprintf(buf, "%d pm", hr);
+                }
+            }
+            else{
+                if (hr < 10){
+                    sprintf(buf, " %d", hr);
+                }
+                else{
+                    sprintf(buf, " %d", hr);
+                }
+            }
+        }
+        else if (hr == 12){
+            if (write_meridian){
+                sprintf(buf, "%d pm", hr);
+            }
+            else{
+                sprintf(buf, "%d", hr);
+            }
+        }
+        else if (hr == 0){
+            hr = 12;
+            if (write_meridian){
+                sprintf(buf, "%d am", hr);                
+            }
+            else{
+                sprintf(buf, "%d", hr);
+            }
+        }
+        else{
+            if (write_meridian){
+                if (hr < 10){
+                    sprintf(buf, " %d am", hr);
+                }
+                else{
+                    sprintf(buf, "%d am", hr);
+                }
+            }
+            else{
+                if (hr < 10){
+                    sprintf(buf, " %d", hr);
+                }
+                else{
+                    sprintf(buf, "%d", hr);
+                }
+            }
+        }
+    }
 }
