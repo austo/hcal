@@ -156,7 +156,7 @@ namespace hcal {
         write_page_title(page, font, page_title);
 
         //TODO: add configWrapper param
-        write_weekday_cols(page, font, pg_used_width, pg_used_height, 7, MARGIN);
+        write_weekday_cols(page, font, pg_used_width_, pg_used_height_, 7, MARGIN);
 
         /*
             TODO: this method should take a configWrapper obj
@@ -169,7 +169,7 @@ namespace hcal {
         */
         write_hour_rows(page, font);
 
-        slot_width_ = slot_width_ ? slot_width_ : ((double)pg_used_width / 7);
+        slot_width_ = slot_width_ ? slot_width_ : ((double)pg_used_width_ / 7);
         int evtMargin = MARGIN + 5;
 
         write_events(page, week_ordinal);
@@ -265,10 +265,18 @@ namespace hcal {
         double start_y = 0;
         if (s_dur.hours() < start_hour_){
             if (e_dur.hours() < start_hour_){ 
-                return Event_Rect(out_of_bounds); 
+                return Event_Rect(); 
             }
             //start hour is invisible, change coordinates top of grid
-            start_y = 
+            start_y = MARGIN + (double)pg_used_height_;
+        }
+        bool end_at_margin = false;
+        if (e_dur.hours() >= end_hour_ || e_dur.hours() <= start_hour_){
+            if(s_dur.hours() > end_hour_ ){
+                return Event_Rect();
+            }
+            //end hour is invisible, change coordinates to bottom of grid
+            end_at_margin = true;
         }
 
         double conc_evt_x_offset = (num_conc_evts > 0) ?
@@ -287,8 +295,8 @@ namespace hcal {
         int start_half_slots = (start_hours_from_end * 4) - (s_dur.minutes() / 15),
             end_half_slots = (end_hours_from_end * 4) + (e_dur.minutes() / 15);
         
-        double start_y = start_y ? start_y : MARGIN + (double)start_half_slots * (slot_height_ / 2.0);
-        double y_offset = (double)(end_half_slots - start_half_slots) * (slot_height_ / 2.0);
+        start_y = start_y ? start_y : MARGIN + (double)start_half_slots * (slot_height_ / 2.0);
+        double y_offset = end_at_margin ? start_y - MARGIN : (double)(end_half_slots - start_half_slots) * (slot_height_ / 2.0);
 
         Event_Rect retval(start_x, start_y, (slot_width_ / (num_conc_evts + 1)), y_offset, rooms_[rm_id].color);        
         string chv = retval.color.hex_val();

@@ -20,7 +20,12 @@ namespace hcal {
         HPDF_Page_Stroke (page);
     }
 
-    void draw_event_rect(HPDF_Page page, Event_Rect evt_rect){
+    void draw_event_rect(HPDF_Page page, Event_Rect& evt_rect)
+    {
+        if (evt_rect.is_out_of_bounds()){
+            return;
+        }
+
         HPDF_Page_SetRGBStroke (page, evt_rect.color.dec_red(), evt_rect.color.dec_green(), evt_rect.color.dec_blue());
         HPDF_Page_SetLineJoin (page, HPDF_ROUND_JOIN);
         HPDF_Page_MoveTo (page, evt_rect.l_left.x, evt_rect.l_left.y);

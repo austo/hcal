@@ -71,6 +71,5 @@ namespace hcal{
             return l_left.out_of_bounds() && l_right.out_of_bounds() && u_right.out_of_bounds() && u_left.out_of_bounds();
         }
     };
-    Event_Rect out_of_bounds();
 }
 #endif
