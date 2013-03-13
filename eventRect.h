@@ -67,10 +67,10 @@ namespace hcal{
             u_left = Point(-1, -1);
             u_right = Point(-1, -1);
         }
-        bool out_of_bounds(){
+        bool is_out_of_bounds(){
             return l_left.out_of_bounds() && l_right.out_of_bounds() && u_right.out_of_bounds() && u_left.out_of_bounds();
         }
-
-    }; 
+    };
+    Event_Rect out_of_bounds();
 }
 #endif

@@ -19,7 +19,9 @@ namespace hcal {
         start_hour_ = 8;
         end_hour_ = 20;
         slot_height_ = 0;
-        slot_width_ = 0;  
+        slot_width_ = 0;
+        pg_used_width_ = 0;
+        pg_used_height_ = 0; 
     }
 
     WeekWriter::WeekWriter()
@@ -28,7 +30,9 @@ namespace hcal {
         start_hour_ = 8;
         end_hour_ = 20;
         slot_height_ = 0;
-        slot_width_ = 0;      
+        slot_width_ = 0;
+        pg_used_width_ = 0;
+        pg_used_height_ = 0;       
     }
 
     WeekWriter::WeekWriter(time_t start, time_t end)
@@ -40,6 +44,8 @@ namespace hcal {
         end_hour_ = 20;
         slot_height_ = 0;
         slot_width_ = 0;
+        pg_used_width_ = 0;
+        pg_used_height_ = 0; 
     }
 
     WeekWriter::WeekWriter(time_t start, time_t end, int start_hour, int end_hour)
@@ -51,6 +57,8 @@ namespace hcal {
         end_hour_ = end_hour;
         slot_height_ = 0;
         slot_width_ = 0;
+        pg_used_width_ = 0;
+        pg_used_height_ = 0; 
     }
 
     WeekWriter::~WeekWriter()
@@ -131,8 +139,8 @@ namespace hcal {
         HPDF_Page_SetSize(page, HPDF_PAGE_SIZE_LETTER, HPDF_PAGE_LANDSCAPE);
 
         //page usable area
-        int pg_used_width = HPDF_Page_GetWidth(page) - 100;
-        int pg_used_height = HPDF_Page_GetHeight(page) - 125;
+        pg_used_width_ = pg_used_width_ ? pg_used_width_ : HPDF_Page_GetWidth(page) - (2 * MARGIN);
+        pg_used_height_ = pg_used_height_ ? pg_used_height_ : HPDF_Page_GetHeight(page) - (2 * MARGIN + (MARGIN / 2));
 
         date start_date((*eventMap_)[week_ordinal].begin()->Start().date());
         date_duration dd((int)start_date.day_of_week());
@@ -159,7 +167,7 @@ namespace hcal {
             NOTE: should get start_hour and num_hours earlier in lifecycle & make slot_height a member variable
             NOTE: CustomWriter will inherit from WeekWriter (or vice versa?)
         */
-        write_hour_rows(page, font, pg_used_width, pg_used_height);
+        write_hour_rows(page, font);
 
         slot_width_ = slot_width_ ? slot_width_ : ((double)pg_used_width / 7);
         int evtMargin = MARGIN + 5;
@@ -168,12 +176,12 @@ namespace hcal {
     }
 
     void
-    WeekWriter::write_hour_rows(HPDF_Page page, HPDF_Font font, int pg_used_width, int pg_used_height)
+    WeekWriter::write_hour_rows(HPDF_Page page, HPDF_Font font)
     {
         int num_lines = (end_hour_ - start_hour_) * 2;
 
         //initialize slot_height_ if we haven't already
-        slot_height_ = slot_height_ ? slot_height_ : (double)pg_used_height / (double)num_lines;        
+        slot_height_ = slot_height_ ? slot_height_ : (double)pg_used_height_ / (double)num_lines;        
         float line_y = MARGIN + slot_height_;
 
         HPDF_Page_SetLineWidth(page, .10);        
@@ -193,12 +201,12 @@ namespace hcal {
                 write_text(page, hr_num_x, line_y - 2, buf);
                 --disp_hour;
 
-                draw_line(page, MARGIN, line_y, MARGIN + pg_used_width, line_y);
+                draw_line(page, MARGIN, line_y, MARGIN + pg_used_width_, line_y);
                 HPDF_Page_SetLineWidth(page, .15);
                 hrln += 2;
             }
             else{
-               draw_line(page, MARGIN, line_y, MARGIN + pg_used_width, line_y); 
+               draw_line(page, MARGIN, line_y, MARGIN + pg_used_width_, line_y); 
             }
 
             line_y += slot_height_;
@@ -252,13 +260,22 @@ namespace hcal {
         //TODO: test out of bounds here or in another method
         //TODO: handle multi-day events so as not to force narrow all other events - add multi-day flag to Event?
 
+        time_duration s_dur(evt_itr->Start().time_of_day()), e_dur(evt_itr->End().time_of_day());
+
+        double start_y = 0;
+        if (s_dur.hours() < start_hour_){
+            if (e_dur.hours() < start_hour_){ 
+                return Event_Rect(out_of_bounds); 
+            }
+            //start hour is invisible, change coordinates top of grid
+            start_y = 
+        }
+
         double conc_evt_x_offset = (num_conc_evts > 0) ?
             ((slot_width_ / (num_conc_evts + 1)) * (conc_evt_instance)) : 0.0;
         
         int wk_day_num = (int)evt_itr->Start().date().day_of_week(), rm_id = evt_itr->RoomId();
-        double start_x = MARGIN + (wk_day_num * slot_width_) + conc_evt_x_offset;        
-
-        time_duration s_dur(evt_itr->Start().time_of_day()), e_dur(evt_itr->End().time_of_day());
+        double start_x = MARGIN + (wk_day_num * slot_width_) + conc_evt_x_offset;
 
         /*
             Get number of slots between start time and day's end
@@ -270,7 +287,7 @@ namespace hcal {
         int start_half_slots = (start_hours_from_end * 4) - (s_dur.minutes() / 15),
             end_half_slots = (end_hours_from_end * 4) + (e_dur.minutes() / 15);
         
-        double start_y = MARGIN + (double)start_half_slots * (slot_height_ / 2.0);
+        double start_y = start_y ? start_y : MARGIN + (double)start_half_slots * (slot_height_ / 2.0);
         double y_offset = (double)(end_half_slots - start_half_slots) * (slot_height_ / 2.0);
 
         Event_Rect retval(start_x, start_y, (slot_width_ / (num_conc_evts + 1)), y_offset, rooms_[rm_id].color);        
