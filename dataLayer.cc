@@ -28,6 +28,8 @@ namespace hcal{
     #define QUERY_GET_ROOMS "select id, name as room_name, display_color from rooms order by id;"
     #define QUERY_INSERT_EVENT "select insert_event("
     #define QUERY_UPDATE_EVENT "select update_event("
+    #define QUERY_DELETE_EVENT "select delete_event("
+    #define QUERY_DELETED_FALSE "deleted = false"
     #define QUERY_OPEN_PARENS "("
     #define QUERY_CLOSE_PARENS ")"
     #define QUERY_CLOSE_PARENS_END ");"
@@ -158,9 +160,9 @@ namespace hcal{
         connection c(CONNSTRING);
         work txn(c);
         std::stringstream ss;
-        ss << QUERY_GET_EVENTS << QUERY_WHERE << COL_TIME_START << QUERY_GT_EQ
-           << txn.quote(to_simple_string(p_start)) << QUERY_AND << COL_TIME_END
-           << QUERY_LT_EQ << txn.quote(to_simple_string(p_end))
+        ss << QUERY_GET_EVENTS << QUERY_WHERE << QUERY_DELETED_FALSE << QUERY_AND
+           << COL_TIME_START << QUERY_GT_EQ << txn.quote(to_simple_string(p_start)) 
+           << QUERY_AND << COL_TIME_END << QUERY_LT_EQ << txn.quote(to_simple_string(p_end))
            << QUERY_ORDER_BY << COL_TIME_START << QUERY_END;
         return execute_query(txn, ss.str());
     }
@@ -260,13 +262,37 @@ namespace hcal{
             result res = execute_query(txn, ss.str());
             txn.commit();
 
-            retval = (DataLayer::UpdateStatus)res[0][0].as<int>();            
+            retval = (DataLayer::UpdateStatus)res[0][0].as<int>();
+            #ifdef __DEBUG__           
             cout << "v8 - update retval: " << retval << endl;
+            #endif
         }
         catch(exception& e){
             cout << e.what() << endl;
         }        
         return retval;
+    }
+
+    //TODO: simply return update status
+    DataLayer::UpdateStatus
+    DataLayer::delete_event(int evt_id){
+        UpdateStatus retval = failure;
+        try{
+            connection c(CONNSTRING);
+            work txn(c);
+            stringstream ss;
+            ss << QUERY_DELETE_EVENT << txn.quote(evt_id) << QUERY_CLOSE_PARENS;
+            result res = execute_query(txn, ss.str());
+            txn.commit();
+
+            retval = (DataLayer::UpdateStatus)res[0][0].as<int>();
+            #ifdef __DEBUG__
+            cout << "v8 - delete event retval: " << retval << endl;
+            #endif
+        }
+        catch(exception& e){ //may want to analyze result and throw dl_exception
+            cout << e.what() << endl;
+        }
     }
 
 

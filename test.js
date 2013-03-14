@@ -21,9 +21,11 @@ var a = hcal.createEvent(1, d1, d2, 96, 1, "Computers");
 // var ret = hcal.testEventArray(events);
 // console.log(ret[3].description());
 // console.log("second event duration: " + b.duration() + " minutes");
-
 console.log(d3 + '\n');
 console.log(d4);
+
+//invoke gc liberally during testing to expose memory leaks
+gc();
 hcal.insertEvent(d10, d11, 4, 2, "Reptile Crochet", true, function(err, evt){
     if (!err){
         console.log(evt.description() + " - " + evt.end());
@@ -32,6 +34,7 @@ hcal.insertEvent(d10, d11, 4, 2, "Reptile Crochet", true, function(err, evt){
         console.log("insert event error: " + err);
     }
 });
+gc();
 // hcal.updateEvent(35, d5, d6, 5, 1, "New title", false, function(err, evt){
 //     console.log("updated event description: " + evt.description());
 // });
@@ -43,12 +46,15 @@ hcal.updateEvent(83, d5, d6, 5, 1, "New title and I love being here...", false, 
         console.log(err);
     }   
 });
+gc();
 hcal.printCalendar(d1, d2, "month", function(fileName){
     console.log("Monthly calendar file: " + fileName);
 });
+gc();
 hcal.printCalendar(d9, d2, "week", function(fileName){
     console.log("Weekly calendar file: " + fileName);
 });
+gc();
 hcal.getEvents(d1, d3, function(err, evts){
     if (err){
         console.log(err);
@@ -60,5 +66,6 @@ hcal.getEvents(d1, d3, function(err, evts){
         }
     }
 });
+gc();
 //var cfg = hcal.createConfig(1, 5, 8, 20);
 //console.log(notRet);
