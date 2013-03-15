@@ -160,6 +160,49 @@ Handle<Value> UpdateEvent(const Arguments& args) {
     return scope.Close(Undefined());
 }
 
+Handle<Value> DeleteEvent(const Arguments& args){
+    HandleScope scope;
+    if (args.Length() != 2){
+        THROW("Wrong number of arguments = hcal.deleteEvent() must be called with 2 args.");
+        return scope.Close(Undefined());
+    }
+    if (args[1]->IsUndefined()){
+        THROW("Deleted event callback must be defined.");
+    }
+
+    Local<Function> cb = Local<Function>::Cast(args[1]);
+    const unsigned argc = 1;
+    Local<Value> argv[argc];
+    
+    try{
+        int evt_id = args[0]->NumberValue();
+        hcal::DataLayer dl = hcal::DataLayer();
+        hcal::DataLayer::UpdateStatus status = dl.delete_event(evt_id);
+        switch (status){
+            case hcal::DataLayer::success:
+                argv[0] = Local<Value>::New(Undefined());
+                cb->Call(Context::GetCurrent()->Global(), argc, argv);
+                break;
+            case hcal::DataLayer::failure:
+                argv[0] = Local<Value>::New(String::New("hcal: Failed to update event."));
+                cb->Call(Context::GetCurrent()->Global(), argc, argv);
+                break;
+            case hcal::DataLayer::no_event:
+                argv[0] = Local<Value>::New(String::New("hcal: no event with requested ID."));
+                cb->Call(Context::GetCurrent()->Global(), argc, argv);
+                break;
+        }         
+    }
+    catch (std::exception& e){
+        std::stringstream ss;
+        ss << "hcal.deleteEvent threw exception: " << e.what();
+        std::string ex_str = ss.str();
+        argv[0] = Local<Value>::New(String::New(ex_str.c_str()));
+        cb->Call(Context::GetCurrent()->Global(), argc, argv);
+    }
+    return scope.Close(Undefined());
+}
+
 Handle<Value> GetEvents(const Arguments& args) {
     HandleScope scope;
     if (args.Length() != 3) {
@@ -318,6 +361,9 @@ void InitAll(Handle<Object> target) {
 
     target->Set(String::NewSymbol("updateEvent"),
         FunctionTemplate::New(UpdateEvent)->GetFunction());
+
+    target->Set(String::NewSymbol("deleteEvent"),
+        FunctionTemplate::New(DeleteEvent)->GetFunction());
 
     target->Set(String::NewSymbol("getEvents"),
         FunctionTemplate::New(GetEvents)->GetFunction());

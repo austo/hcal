@@ -289,11 +289,11 @@ namespace hcal{
             #ifdef __DEBUG__
             cout << "v8 - delete event retval: " << retval << endl;
             #endif
-            return retval;
         }
         catch(exception& e){ //may want to analyze result and throw dl_exception
             cout << e.what() << endl;
         }
+        return retval;
     }
 
 
