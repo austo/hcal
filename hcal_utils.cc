@@ -171,6 +171,20 @@ namespace hcal {
         }
     }
 
+    boost::posix_time::time_duration
+    get_time_offset_from_pg_timestamp(const string& timestamp_str){
+        unsigned last_dash = timestamp_str.find_last_of("-+");
+        if (timestamp_str.at(last_dash + 1) == '0'){
+            last_dash += 2;
+        }
+        else{
+            last_dash += 1;
+        }
+        string offset_str = timestamp_str.substr(last_dash);
+        int offset = atoi(offset_str.c_str());
+        return boost::posix_time::hours(offset);
+    }
+
     //TODO: consolidate
     void write_hour_to_buf(char* buf, int hr, bool write_meridian){
         //assume military time

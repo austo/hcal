@@ -10,8 +10,9 @@ var d1 = new Date(2013, 0, 01, 08),
     d7 = new Date(2012, 11, 30, 10),
     d8 = new Date(2012, 11, 30, 11),
     d9 = new Date(2012, 11, 30),
-    d10 = new Date(2013, 0, 3, 10),
-    d11 = new Date(2013, 0, 3, 11);
+    d10 = new Date(2013, 2, 3, 10),
+    d11 = new Date(2013, 2, 3, 11),
+    d12 = new Date(2013, 5, 1);
 
 
 var a = hcal.createEvent(1, d1, d2, 96, 1, "Computers");
@@ -21,12 +22,12 @@ var a = hcal.createEvent(1, d1, d2, 96, 1, "Computers");
 // var ret = hcal.testEventArray(events);
 // console.log(ret[3].description());
 // console.log("second event duration: " + b.duration() + " minutes");
-console.log(d3 + '\n');
-console.log(d4);
+//console.log(d3 + '\n');
+//console.log(d4);
 
 //invoke gc liberally during testing to expose memory leaks
 global.gc();
-hcal.insertEvent(d10, d11, 4, 2, "Reptile Crochet", true, function(err, evt){
+hcal.insertEvent(d10, d11, 4, 2, "Hexadecimal Tax Accounting", true, function(err, evt){
     if (!err){
         console.log(evt.description() + " - " + evt.end());
     }
@@ -47,15 +48,15 @@ hcal.updateEvent(83, d5, d6, 5, 1, "New title and I love being here...", false, 
     }   
 });
 global.gc();
-hcal.printCalendar(d1, d2, "month", function(fileName){
+hcal.printCalendar(d1, d12, "month", function(fileName){
     console.log("Monthly calendar file: " + fileName);
 });
 global.gc();
-hcal.printCalendar(d9, d2, "week", function(fileName){
+hcal.printCalendar(d9, d12, "week", function(fileName){
     console.log("Weekly calendar file: " + fileName);
 });
 global.gc();
-hcal.getEvents(d1, d3, function(err, evts){
+hcal.getEvents(d1, d12, function(err, evts){
     if (err){
         console.log(err);
     }

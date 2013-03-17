@@ -8,7 +8,7 @@ namespace hcal{
 
     #define UTC_OFFSET 5 //TODO: improve using real boost timezones
     #define HCAL_UTC_OFFSET "HCAL_UTC_OFFSET"
-
+    #define HCAL_TIME_REGION "\'America/New_York\'"
     #define CONNSTRING "host=192.168.1.136 dbname=concerto user=appUser password=cAligul@"
     #define DL_EX_PREFIX "DataLayer: " 
 
@@ -22,8 +22,9 @@ namespace hcal{
     #define COL_LEADER "leader"
     #define COL_LEADER_ID "leader_id"
     #define COMMA_SPACE ", "
-    #define QUERY_GET_EVENTS "select id, description, time_start, time_end, \
-        room_id, leader_id from events"
+    #define QUERY_GET_EVENTS "select id, description, time_start, \
+        time_end, room_id, leader_id from events"
+    #define QUERY_GET_EVENTS_FUNC "select * from get_events_for_timespan("
     #define QUERY_GET_ROOM_COLORS "select id, display_color from rooms;"
     #define QUERY_GET_ROOMS "select id, name as room_name, display_color from rooms order by id;"
     #define QUERY_INSERT_EVENT "select insert_event("
@@ -46,8 +47,9 @@ namespace hcal{
 
     DataLayer::DataLayer(){
         const char* utc_offset_char = getenv(HCAL_UTC_OFFSET);
-        int utc_offset = utc_offset_char ? atoi(utc_offset_char) : 0;
-        utc_offset_td_ = boost::posix_time::hours(utc_offset);
+        time_region_ = string(utc_offset_char);
+        //int utc_offset = utc_offset_char ? atoi(utc_offset_char) : 0;
+        //utc_offset_td_ = boost::posix_time::hours(utc_offset);
     }
 
     DataLayer::~DataLayer(){}
@@ -68,16 +70,14 @@ namespace hcal{
     DataLayer::build_wrapped_events(result& evts){
         v8::HandleScope scope;
         v8::Handle<v8::Array> retval = v8::Array::New(evts.size());    
-        
+
         int i = 0;
         result::const_iterator row;
         for (row = evts.begin(); row != evts.end(); ++row){
 
-            //get time_t for start and end times, adding back utc offset
             ptime p_evt_start(time_from_string(row[COL_TIME_START].as<string>()));
             ptime p_evt_end(time_from_string(row[COL_TIME_END].as<string>()));
-            p_evt_start += utc_offset_td_;
-            p_evt_end += utc_offset_td_;
+            
             time_t t_evt_start = get_time_t_from_ptime(p_evt_start);
             time_t t_evt_end = get_time_t_from_ptime(p_evt_end);     
 
@@ -105,16 +105,26 @@ namespace hcal{
 
     void DataLayer::populate_emap(result& evts, emap_ptr emap, View v)
     {
+        //local adjuster with zero-hour offset to account for daylight savings time;
+        typedef boost::date_time::local_adjustor<ptime, 0, us_dst> local_adj;
+
         int current_year, wk_offset = 0, index = 0;
         result::const_iterator row;
         boost::gregorian::date first_sunday(boost::gregorian::not_a_date_time);
         for (row = evts.begin(); row != evts.end(); ++row){
 
-            //get time_t for start and end times, adding back utc offset
+            /*
+                addition of utc offset is handled in database -
+                this is equivalent to construction from time_t with zero offset,
+                i.e. "make a local time on this computer from a given utc time"
+            */
             ptime p_evt_start(time_from_string(row[COL_TIME_START].as<string>()));
             ptime p_evt_end(time_from_string(row[COL_TIME_END].as<string>()));
-            p_evt_start += utc_offset_td_;
-            p_evt_end += utc_offset_td_;
+
+            //adjust for DST
+            p_evt_start = local_adj::utc_to_local(p_evt_start);
+            p_evt_end = local_adj::utc_to_local(p_evt_end);
+                 
 
             switch(v){
                 case month:
@@ -160,10 +170,10 @@ namespace hcal{
         connection c(CONNSTRING);
         work txn(c);
         std::stringstream ss;
-        ss << QUERY_GET_EVENTS << QUERY_WHERE << QUERY_DELETED_FALSE << QUERY_AND
-           << COL_TIME_START << QUERY_GT_EQ << txn.quote(to_simple_string(p_start)) 
-           << QUERY_AND << COL_TIME_END << QUERY_LT_EQ << txn.quote(to_simple_string(p_end))
-           << QUERY_ORDER_BY << COL_TIME_START << QUERY_END;
+        ss << QUERY_GET_EVENTS_FUNC << txn.quote(to_simple_string(p_start))
+           << COMMA_SPACE << txn.quote(to_simple_string(p_end)) << COMMA_SPACE
+           << time_region_ << QUERY_CLOSE_PARENS_END;
+        
         return execute_query(txn, ss.str());
     }
 
@@ -201,13 +211,13 @@ namespace hcal{
         v8::HandleScope scope;
         ptime p_evt_start = from_time_t(start);
         ptime p_evt_end = from_time_t(end);
-        p_evt_start -= utc_offset_td_;
-        p_evt_end -= utc_offset_td_;
+        //p_evt_start -= utc_offset_td_;
+        //p_evt_end -= utc_offset_td_;
         connection c(CONNSTRING);
         work txn(c);
         stringstream ss;
-        ss << QUERY_INSERT_EVENT << txn.quote(desc) << COMMA_SPACE << txn.quote(to_simple_string(p_evt_start))
-           << COMMA_SPACE <<  txn.quote(to_simple_string(p_evt_end)) << COMMA_SPACE << txn.quote(room_id)
+        ss << QUERY_INSERT_EVENT << txn.quote(desc) << COMMA_SPACE << txn.quote(to_simple_string(p_evt_start) + "+00")
+           << COMMA_SPACE <<  txn.quote(to_simple_string(p_evt_end) + "+00" ) << COMMA_SPACE << txn.quote(room_id)
            << COMMA_SPACE << txn.quote(leader_id) << COMMA_SPACE << txn.quote(recurring) << QUERY_CLOSE_PARENS_END;
         cout << ss.str() << endl;
         result res = execute_query(txn, ss.str());
@@ -230,8 +240,8 @@ namespace hcal{
         }
 
         //revert time back to js utc offset
-        p_evt_start += utc_offset_td_;
-        p_evt_end += utc_offset_td_;
+        //p_evt_start += utc_offset_td_;
+        //p_evt_end += utc_offset_td_;
         v8::Handle<v8::Value> retval = EventWrapper::get_wrapped_object(
                 evt_id,
                 get_time_t_from_ptime(p_evt_start),
@@ -250,8 +260,8 @@ namespace hcal{
         try{
             ptime p_evt_start = from_time_t(start);
             ptime p_evt_end = from_time_t(end);
-            p_evt_start -= utc_offset_td_;
-            p_evt_end -= utc_offset_td_;
+            //p_evt_start -= utc_offset_td_;
+            //p_evt_end -= utc_offset_td_;
             connection c(CONNSTRING);
             work txn(c);
             stringstream ss;

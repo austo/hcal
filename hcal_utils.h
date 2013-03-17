@@ -45,6 +45,6 @@ namespace hcal {
     View get_view(v8::String::AsciiValue&);
     void draw_event_rect(HPDF_Page, Event_Rect&);
     void write_hour_to_buf(char*, int, bool);
-
+    boost::posix_time::time_duration get_time_offset_from_pg_timestamp(const std::string&);
 }
 #endif
