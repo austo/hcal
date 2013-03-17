@@ -22,6 +22,7 @@ namespace hcal {
         slot_width_ = 0;
         pg_used_width_ = 0;
         pg_used_height_ = 0; 
+        venue_ = 0;
     }
 
     WeekWriter::WeekWriter()
@@ -32,33 +33,36 @@ namespace hcal {
         slot_height_ = 0;
         slot_width_ = 0;
         pg_used_width_ = 0;
-        pg_used_height_ = 0;       
+        pg_used_height_ = 0;  
+        venue_ = 0;     
     }
 
-    WeekWriter::WeekWriter(time_t start, time_t end)
+    WeekWriter::WeekWriter(time_t start, time_t end, int venue)
     {
         DataLayer dl = DataLayer();   
-        eventMap_ = dl.get_event_map(start, end, week);
+        eventMap_ = dl.get_event_map(start, end, week, venue);
         rooms_ = dl.get_rooms();
         start_hour_ = 8;
         end_hour_ = 20;
         slot_height_ = 0;
         slot_width_ = 0;
         pg_used_width_ = 0;
-        pg_used_height_ = 0; 
+        pg_used_height_ = 0;
+        venue_ = venue; 
     }
 
-    WeekWriter::WeekWriter(time_t start, time_t end, int start_hour, int end_hour)
+    WeekWriter::WeekWriter(time_t start, time_t end, int start_hour, int end_hour, int venue)
     {
         DataLayer dl = DataLayer();   
-        eventMap_ = dl.get_event_map(start, end, week);
+        eventMap_ = dl.get_event_map(start, end, week, venue);
         rooms_ = dl.get_rooms();
         start_hour_ = start_hour;
         end_hour_ = end_hour;
         slot_height_ = 0;
         slot_width_ = 0;
         pg_used_width_ = 0;
-        pg_used_height_ = 0; 
+        pg_used_height_ = 0;
+        venue_ = venue;
     }
 
     WeekWriter::~WeekWriter()

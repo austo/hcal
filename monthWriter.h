@@ -10,7 +10,7 @@ namespace hcal {
 
     public:
         MonthWriter(v8::Array*);
-        MonthWriter(time_t start, time_t end);
+        MonthWriter(time_t start, time_t end, int);
         MonthWriter();
         ~MonthWriter();
         const char* write_calendar();

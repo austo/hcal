@@ -205,25 +205,26 @@ Handle<Value> DeleteEvent(const Arguments& args){
 
 Handle<Value> GetEvents(const Arguments& args) {
     HandleScope scope;
-    if (args.Length() != 3) {
+    if (args.Length() != 4) {
         THROW("Wrong number of arguments - hcal.getEvents() must be called with 3 args.");
         return scope.Close(Undefined());
     }    
-    if (args[0]->IsUndefined() || args[1]->IsUndefined() || args[2]->IsUndefined()) {
+    if (args[0]->IsUndefined() || args[1]->IsUndefined() || args[2]->IsUndefined() || args[3]->IsUndefined()) {
         THROW("All arguments must be defined.");
         return scope.Close(Undefined());
     }    
 
-    Local<Function> cb = Local<Function>::Cast(args[2]);
+    Local<Function> cb = Local<Function>::Cast(args[3]);
     const unsigned argc = 2;
     Local<Value> argv[argc];
 
     try{
         time_t start = args[0]->IsUndefined() ? 0 : NODE_V8_UNIXTIME(args[0]);
         time_t end = args[1]->IsUndefined() ? 0 : NODE_V8_UNIXTIME(args[1]);
+        int venue = args[2]->IsUndefined() ? 0 : args[2]->NumberValue();
         
         hcal::DataLayer dl = hcal::DataLayer();
-        Handle<Array> evts = dl.get_wrapped_events(start, end);
+        Handle<Array> evts = dl.get_wrapped_events(start, end, venue);
 
         argv[0] = Local<Value>::New(Undefined());
         argv[1] = Local<Value>::New(evts);
@@ -282,7 +283,7 @@ Handle<Value> TestEventArray(const Arguments& args){
             struct tm * timeinfo;
 
             hcal::DataLayer dl = hcal::DataLayer();
-            retval = dl.get_wrapped_events(st, et);            
+            retval = dl.get_wrapped_events(st, et, 0);            
 
             boost::posix_time::ptime p1(boost::posix_time::not_a_date_time);
             boost::posix_time::ptime p2;
@@ -310,18 +311,20 @@ Handle<Value> TestEventArray(const Arguments& args){
 Handle<Value> PrintCalendar(const Arguments& args) {
     HandleScope scope;
 
-    if (args.Length() != 4) {
+    if (args.Length() != 5) {
         ThrowException(Exception::TypeError(String::New("Wrong number of arguments")));
         return scope.Close(Undefined());
     }    
-    if (args[0]->IsUndefined() || args[1]->IsUndefined() || args[2]->IsUndefined() || args[3]->IsUndefined()){
+    if (args[0]->IsUndefined() || args[1]->IsUndefined() || args[2]->IsUndefined() || 
+        args[3]->IsUndefined() || args[4]->IsUndefined()){
         THROW("All arguments must be defined.");
         return scope.Close(Undefined());
     }
     time_t start = NODE_V8_UNIXTIME(args[0]);
     time_t end =  NODE_V8_UNIXTIME(args[1]);
     String::AsciiValue viewStr(args[2]->ToString());
-    Local<Function> cb = Local<Function>::Cast(args[3]);
+    int venue = args[3]->NumberValue();
+    Local<Function> cb = Local<Function>::Cast(args[4]);
     const unsigned argc = 1;
 
     //TODO: need a fascade class here to hide implementation details (CalWriter)
@@ -331,13 +334,13 @@ Handle<Value> PrintCalendar(const Arguments& args) {
         const char* fname;
 
         if (v == hcal::month){
-            hcal::MonthWriter month_wtr(start, end);
+            hcal::MonthWriter month_wtr(start, end, venue);
             fname = month_wtr.write_calendar();
             argv[0] = Local<Value>::New(String::New(fname));
             cb->Call(Context::GetCurrent()->Global(), argc, argv);
         }
         else if (v == hcal::week){
-            hcal::WeekWriter week_wtr(start, end);
+            hcal::WeekWriter week_wtr(start, end, venue);
             fname = week_wtr.write_calendar();
             argv[0] = Local<Value>::New(String::New(fname));
             cb->Call(Context::GetCurrent()->Global(), argc, argv);

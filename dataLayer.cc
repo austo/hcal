@@ -57,10 +57,10 @@ namespace hcal{
     DataLayer::~DataLayer(){}
 
     v8::Handle<v8::Array>
-    DataLayer::get_wrapped_events(time_t start, time_t end){
+    DataLayer::get_wrapped_events(time_t start, time_t end, int venue){
         v8::HandleScope scope;
         v8::Handle<v8::Array> retval;    
-        result evts = get_events_for_timespan(start, end);
+        result evts = get_events_for_timespan(start, end, venue);
 
         if (evts.size() > 0){
             retval = build_wrapped_events(evts);
@@ -101,6 +101,13 @@ namespace hcal{
     emap_ptr DataLayer::get_event_map(time_t start, time_t end, View v){
         emap_ptr retval = new map<int, list<Event> >();
         result evts = get_events_for_timespan(start, end);
+        populate_emap(evts, retval, v);
+        return retval;
+    }
+
+    emap_ptr DataLayer::get_event_map(time_t start, time_t end, View v, int venue){
+        emap_ptr retval = new map<int, list<Event> >();
+        result evts = get_events_for_timespan(start, end, venue);
         populate_emap(evts, retval, v);
         return retval;
     }
@@ -175,6 +182,19 @@ namespace hcal{
         ss << QUERY_GET_EVENTS_FUNC << txn.quote(to_simple_string(p_start))
            << COMMA_SPACE << txn.quote(to_simple_string(p_end)) << COMMA_SPACE
            << time_region_ << QUERY_CLOSE_PARENS_END;
+        
+        return execute_query(txn, ss.str());
+    }
+
+    result DataLayer::get_events_for_timespan(time_t start, time_t end, int venue){
+        ptime p_start = from_time_t(start);
+        ptime p_end = from_time_t(end);
+        connection c(CONNSTRING);
+        work txn(c);
+        std::stringstream ss;
+        ss << QUERY_GET_EVENTS_FUNC << txn.quote(to_simple_string(p_start))
+           << COMMA_SPACE << txn.quote(to_simple_string(p_end)) << COMMA_SPACE
+           << venue << QUERY_CLOSE_PARENS_END;
         
         return execute_query(txn, ss.str());
     }

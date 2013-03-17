@@ -48,15 +48,15 @@ hcal.updateEvent(83, d5, d6, 5, 1, "New title and I love being here...", false, 
     }   
 });
 global.gc();
-hcal.printCalendar(d1, d12, "month", function(fileName){
+hcal.printCalendar(d1, d12, "month", 1, function(fileName){
     console.log("Monthly calendar file: " + fileName);
 });
 global.gc();
-hcal.printCalendar(d9, d12, "week", function(fileName){
+hcal.printCalendar(d9, d12, "week", 1, function(fileName){
     console.log("Weekly calendar file: " + fileName);
 });
 global.gc();
-hcal.getEvents(d1, d12, function(err, evts){
+hcal.getEvents(d1, d12, 1, function(err, evts){
     if (err){
         console.log(err);
     }

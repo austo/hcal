@@ -44,9 +44,11 @@ namespace hcal{
             DataLayer();
             ~DataLayer();
             enum UpdateStatus {success = 0, failure, no_event};
-            v8::Handle<v8::Array> get_wrapped_events(time_t, time_t);
+            v8::Handle<v8::Array> get_wrapped_events(time_t, time_t, int);
             //TODO: handle different views
+            //TODO: add get_venues (returns map<int, string>)
             std::map<int, std::list<Event> >* get_event_map(time_t, time_t, View);
+            std::map<int, std::list<Event> >* get_event_map(time_t, time_t, View, int);
             v8::Handle<v8::Value> insert_event(time_t, time_t, int, int, std::string, bool);
             UpdateStatus update_event(int, time_t, time_t, int, int, std::string, bool);
             UpdateStatus delete_event(int);
@@ -56,7 +58,8 @@ namespace hcal{
 
 
         private:
-            pqxx::result get_events_for_timespan(time_t start, time_t end);
+            pqxx::result get_events_for_timespan(time_t, time_t);
+            pqxx::result get_events_for_timespan(time_t, time_t, int);
             pqxx::result execute_query(pqxx::transaction_base&, std::string);
             void populate_emap(pqxx::result&, std::map<int, std::list<Event> >*, View);
             static void get_week_offset_for_current_year(boost::posix_time::ptime&, boost::gregorian::date&, int&, int&, int&);

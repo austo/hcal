@@ -16,18 +16,21 @@ namespace hcal {
         eventMap_ = get_evt_map(arr);
         if (eventMap_ == 0){
             throw runtime_error(ERR_CTOR_EMAP);
-        }    
+        }
+        venue_ = 0;  
     }
 
     MonthWriter::MonthWriter()
     {
         eventMap_ = new map< int, list<Event> >();
+        venue_ = 0;
     }
 
-    MonthWriter::MonthWriter(time_t start, time_t end)
+    MonthWriter::MonthWriter(time_t start, time_t end, int venue)
     {
         DataLayer dl = DataLayer();   
-        eventMap_ = dl.get_event_map(start, end, month);
+        eventMap_ = dl.get_event_map(start, end, month, venue);
+        venue_ = venue;
     }
 
     MonthWriter::~MonthWriter()

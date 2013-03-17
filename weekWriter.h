@@ -12,8 +12,8 @@ namespace hcal {
 
     public:
         WeekWriter(v8::Array*);
-        WeekWriter(time_t start, time_t end);
-        WeekWriter(time_t start, time_t end, int, int);
+        WeekWriter(time_t start, time_t end, int);
+        WeekWriter(time_t start, time_t end, int, int, int);
         WeekWriter();
         ~WeekWriter();
         const char* write_calendar();        
