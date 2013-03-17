@@ -47,6 +47,7 @@ namespace hcal{
 
     DataLayer::DataLayer(){
         const char* utc_offset_char = getenv(HCAL_UTC_OFFSET);
+        cout << "v8 - DataLayer UTC_OFFSET: " << utc_offset_char << endl;
         time_region_ = string(utc_offset_char);
         //int utc_offset = utc_offset_char ? atoi(utc_offset_char) : 0;
         //utc_offset_td_ = boost::posix_time::hours(utc_offset);
@@ -311,10 +312,6 @@ namespace hcal{
       return txn.exec(query);
     }
 
-    string get_env(const string& e_var) {
-        const char* val = getenv(e_var.c_str());
-        return val ? val : "";    
-    }
 
     time_t DataLayer::get_time_t_from_ptime(ptime pt){
         ptime epoch_start = from_time_t(0);

@@ -61,8 +61,6 @@ namespace hcal{
             void populate_emap(pqxx::result&, std::map<int, std::list<Event> >*, View);
             static void get_week_offset_for_current_year(boost::posix_time::ptime&, boost::gregorian::date&, int&, int&, int&);
             v8::Handle<v8::Array> build_wrapped_events(pqxx::result&);
-            std::string get_env(const std::string&);
-            //boost::posix_time::time_duration utc_offset_td_;    
             std::string time_region_;
     };
 }
