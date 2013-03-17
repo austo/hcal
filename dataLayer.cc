@@ -46,11 +46,12 @@ namespace hcal{
     typedef std::map<int, std::list<Event> >* emap_ptr;
 
     DataLayer::DataLayer(){
+        //TODO: may want to update this to pull time string from db
         const char* utc_offset_char = getenv(HCAL_UTC_OFFSET);
-        cout << "v8 - DataLayer UTC_OFFSET: " << utc_offset_char << endl;
+        if (utc_offset_char == NULL){
+            throw dl_exception("DataLayer: HCAL_UTC_OFFSET not set.");
+        }
         time_region_ = string(utc_offset_char);
-        //int utc_offset = utc_offset_char ? atoi(utc_offset_char) : 0;
-        //utc_offset_td_ = boost::posix_time::hours(utc_offset);
     }
 
     DataLayer::~DataLayer(){}
