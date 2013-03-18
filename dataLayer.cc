@@ -288,8 +288,8 @@ namespace hcal{
             work txn(c);
             stringstream ss;
             ss << QUERY_UPDATE_EVENT << txn.quote(evt_id) << COMMA_SPACE << txn.quote(room_id) << COMMA_SPACE << txn.quote(leader_id) << COMMA_SPACE
-               << txn.quote(recurring) << COMMA_SPACE << txn.quote(desc) << COMMA_SPACE << txn.quote(to_simple_string(p_evt_start)) << COMMA_SPACE 
-               << txn.quote(to_simple_string(p_evt_end)) << QUERY_CLOSE_PARENS_END;
+               << txn.quote(recurring) << COMMA_SPACE << txn.quote(desc) << COMMA_SPACE << txn.quote(to_simple_string(p_evt_start) + "+00") << COMMA_SPACE 
+               << txn.quote(to_simple_string(p_evt_end) + "+00") << QUERY_CLOSE_PARENS_END;
             cout << ss.str() << endl;
             result res = execute_query(txn, ss.str());
             txn.commit();
