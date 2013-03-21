@@ -217,6 +217,15 @@ namespace hcal {
         }
     }
 
+    void WeekWriter::write_room_color_key(HPDF_Page page, HPDF_Font font){
+        /*
+            only use colors on page?
+            what happens if there are 20 rooms - multiple rows?
+            determine how wide key will be (text width plus box offset width)
+            draw box and fill with room color
+        */
+    }
+
     void
     WeekWriter::write_events(HPDF_Page page, int week_ordinal)
     {

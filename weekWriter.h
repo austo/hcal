@@ -30,6 +30,7 @@ namespace hcal {
         void write_calendar_page(HPDF_Doc, HPDF_Font, int);
         void write_events(HPDF_Page, int);
         void write_hour_rows(HPDF_Page, HPDF_Font);
+        void write_room_color_key(HPDF_Page, HPDF_Font);
         Event_Rect get_event_rect(std::list<Event>::const_iterator&, const int&, int&);
         static int get_overlapping_events(std::list<Event>::const_iterator);
     };
