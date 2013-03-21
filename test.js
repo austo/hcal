@@ -12,7 +12,8 @@ var d1 = new Date(2013, 0, 01, 08),
     d9 = new Date(2012, 11, 30),
     d10 = new Date(2013, 2, 3, 10),
     d11 = new Date(2013, 2, 3, 11),
-    d12 = new Date(2013, 5, 1);
+    d12 = new Date(2013, 5, 1),
+    d13 = new Date(2013, 2, 3, 12);
 
 
 var a = hcal.createEvent(1, d1, d2, 96, 1, "Computers");
@@ -27,7 +28,9 @@ var a = hcal.createEvent(1, d1, d2, 96, 1, "Computers");
 
 //invoke gc liberally during testing to expose memory leaks
 global.gc();
-hcal.insertEvent(d10, d11, 4, 2, "Hexadecimal Tax Accounting", true, function(err, evt){
+
+//start, end, room_id, leader_id, description, recurring, callback
+hcal.insertEvent(d10, d11, 5, 3, "Cozy Tea", true, function(err, evt){
     if (!err){
         console.log(evt.description() + " - " + evt.end());
     }

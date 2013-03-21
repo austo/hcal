@@ -46,7 +46,7 @@ namespace hcal{
     typedef std::map<int, std::list<Event> >* emap_ptr;
 
     DataLayer::DataLayer(){
-        //TODO: may want to update this to pull time string from db
+        //TODO: may want to store local server offset here (pull from database)
         const char* utc_offset_char = getenv(HCAL_UTC_OFFSET);
         if (utc_offset_char == NULL){
             throw dl_exception("DataLayer: HCAL_UTC_OFFSET not set.");

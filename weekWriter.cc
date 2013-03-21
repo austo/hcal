@@ -176,7 +176,7 @@ namespace hcal {
         slot_width_ = slot_width_ ? slot_width_ : ((double)pg_used_width_ / 7);
         int evtMargin = MARGIN + 5;
 
-        write_events(page, week_ordinal);
+        write_events(page, font, week_ordinal);
     }
 
     void
@@ -227,10 +227,11 @@ namespace hcal {
     }
 
     void
-    WeekWriter::write_events(HPDF_Page page, int week_ordinal)
+    WeekWriter::write_events(HPDF_Page page, HPDF_Font font, int week_ordinal)
     {
         int num_conc_evts = 0, conc_evt_instance;
-        HPDF_Page_SetLineWidth(page, 2);
+        HPDF_Page_SetLineWidth(page, 1);
+        HPDF_Page_SetFontAndSize(page, font, 5); //TODO: make dependent on number of events
         list<Event>::const_iterator evt_itr = (*eventMap_)[week_ordinal].begin();
         for (; evt_itr != (*eventMap_)[week_ordinal].end(); ++evt_itr){
             cout << "v8 - evt title: " << evt_itr->Description() << "; start time: " << evt_itr->Start() << endl;
@@ -244,6 +245,14 @@ namespace hcal {
 
             //TODO: this should either be a class member or be called from within a utility function
             draw_event_rect(page, evt_rect);
+
+            // HPDF_INT asc = HPDF_Font_GetAscent(font);
+            // HPDF_INT dsc = HPDF_Font_GetDescent(font);
+            float ln_height = 5, avail_width = evt_rect.l_right.x - evt_rect.l_left.x,
+                x_offset = (float)(evt_rect.l_left.x + 1), y_offset = (float)(evt_rect.l_left.y - 5);
+
+            HPDF_Page_SetRGBFill(page, 0, 0, 0);
+            write_wrapped_text(page, x_offset, y_offset, evt_itr->Description(), ln_height, avail_width);
 
             if (conc_evt_instance == num_conc_evts + 1){
                 num_conc_evts = 0;

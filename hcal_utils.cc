@@ -25,15 +25,16 @@ namespace hcal {
         if (evt_rect.is_out_of_bounds()){
             return;
         }
-
-        HPDF_Page_SetRGBStroke (page, evt_rect.color.dec_red(), evt_rect.color.dec_green(), evt_rect.color.dec_blue());
+        //HPDF_Page_SetLineWidth (page, 1);
+        HPDF_Page_SetRGBStroke (page, 0, 0, 0);
+        HPDF_Page_SetRGBFill (page, evt_rect.color.dec_red(), evt_rect.color.dec_green(), evt_rect.color.dec_blue());
         HPDF_Page_SetLineJoin (page, HPDF_ROUND_JOIN);
         HPDF_Page_MoveTo (page, evt_rect.l_left.x, evt_rect.l_left.y);
         HPDF_Page_LineTo (page, evt_rect.l_right.x, evt_rect.l_right.y);
         HPDF_Page_LineTo (page, evt_rect.u_right.x, evt_rect.u_right.y);
         HPDF_Page_LineTo (page, evt_rect.u_left.x, evt_rect.u_left.y);
         HPDF_Page_LineTo (page, evt_rect.l_left.x, evt_rect.l_left.y);        
-        HPDF_Page_Stroke (page);
+        HPDF_Page_FillStroke (page);
         //HPDF_Page_FillStroke (page);
     }
 
