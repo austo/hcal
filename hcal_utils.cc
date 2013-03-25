@@ -4,6 +4,8 @@ using namespace std;
 #define ERR_CREATE_PDF "MonthWriter: failed to create HPDF object."
 #define ERR_UREC_VIEW "EventWriter: Unrecognized calendar view."
 
+#define BUFSIZE 1000
+
 namespace hcal {
 
     void error_handler (HPDF_STATUS error_no, HPDF_STATUS detail_no, void *user_data)
@@ -108,20 +110,55 @@ namespace hcal {
         if (tw > avail_width){
             const char* delim = " ";
             vector<string> tokens = get_words(str_text, delim);            
-
             vector<string>::iterator vit = tokens.begin();
             for (; vit != tokens.end(); ++vit){
+
                 temp += *vit;
                 temp += " ";
                 if (HPDF_Page_TextWidth(page, temp.c_str()) > avail_width){
+                    //get input up to trailing space, then find preceeding space and cut
                     temp = temp.substr(0, temp.size() - 1);
-                    temp = temp.substr(0, temp.find_last_of(" "));
-                    write_text(page, x_offset, y_offset, temp.c_str());
-                    y_offset -= line_height;
-                    temp = string(*vit);
-                    temp += " ";
+                    size_t last_space = temp.find_last_of(" ");
+
+                    if (last_space != string::npos){
+                        temp = temp.substr(0, temp.find_last_of(" "));
+                    }
+                    else{
+                        temp = ""; //first word
+                    }
+                    float rem = (float)(avail_width - HPDF_Page_TextWidth(page, temp.c_str())),
+                        thresh = avail_width / 2.5;
+
+                    if (rem > thresh || rem < 0){
+                        cout << "thresh greater than rem." << endl;
+                        unsigned line_len = (rem < 0) ? HPDF_Page_MeasureText(page, vit->c_str(), avail_width, HPDF_FALSE, NULL) :
+                            HPDF_Page_MeasureText(page, vit->c_str(), thresh, HPDF_FALSE, NULL);
+                        cout << "line_len: " << line_len << endl;
+                        //HyphenDict* dict = hnj_hyphen_load("en_US.dic");
+                        cout << "after dict loaded." << endl;
+                        //hyphenate_word(dict, vit->c_str(), line_len);
+                        pair<string, string> hyphenated_words = hyphenate_word(hyphen_dict(), vit->c_str(), line_len);
+                        if (temp.size() > 0){
+                            temp += " ";
+                        }
+                        temp += hyphenated_words.first;
+
+                        write_text(page, x_offset, y_offset, temp.c_str());
+                        //decrement line and continue after space
+                        y_offset -= line_height;
+                        temp = string(hyphenated_words.second);
+                        temp += " ";
+                    }
+                    else{
+                        write_text(page, x_offset, y_offset, temp.c_str());
+                        //decrement line and continue after space
+                        y_offset -= line_height;
+                        temp = string(*vit);
+                        temp += " ";
+                    }
                 }
             }
+            //print trailing string if line break or whole string if no break
             write_text(page, x_offset, y_offset, temp.c_str());
             y_offset -= line_height;          
         }
@@ -131,12 +168,113 @@ namespace hcal {
         }
     }
 
+    /*
+        splits a word into two strings,
+        the first of which is the longest hyphenation pattern that will fit in line_len.
+        appends hyphen to end of first string 
+    */
+
+
+    pair<string, string> hyphenate_word(HyphenDict* dict, const char* word, unsigned line_len){
+
+        pair<string, string> retval;
+        char hword[BUFSIZE * 2];
+        char *hyphens;
+        char ** rep = NULL;
+        int * pos = NULL;
+        int * cut = NULL;
+       
+        hword[0] = '\0';
+
+        int wlen = strlen(word);
+        hyphens = (char *)malloc(wlen + 5);
+
+        if (hnj_hyphen_hyphenate2(dict, word, wlen, hyphens, hword, &rep, &pos, &cut) != 0){
+            free(hyphens);
+            cout << "I'm throwing an exception." << endl;
+            throw runtime_error("hcal_utils: unable to hyphenate word...");
+        }
+        string first = "", second = "", hstr = string(hword);
+        const char* delim = "=";
+        bool begin_second = false;
+
+        vector<string> hvec = get_words(hstr, delim);
+        vector<string>::const_iterator vitr = hvec.begin();
+        first += *vitr;
+        cout << *vitr << endl;
+        ++vitr;
+        if (vitr != hvec.end()){
+            for (; vitr != hvec.end(); ++vitr){
+                cout << *vitr << endl;
+                if (begin_second){
+                    second += *vitr;
+                    continue;
+                }
+                if ((first.size() + vitr->size()) > line_len - 2){
+                    first += "-";
+                    cout << "first: " << first << endl;
+                    second += *vitr;
+                    begin_second = true;
+                }
+                else{
+                    first += *vitr;
+                }
+            }
+        }            
+        retval = make_pair(first, second);
+        free(hyphens);
+        return retval;
+    }
+
+    // void hyphenate_word(HyphenDict* dict, const char* word, unsigned max_line){
+
+    //     // int hnj_hyphen_hyphenate2 (HyphenDict *dict,
+    //     //  const char *word, int word_size, char * hyphens,
+    //     //  char *hyphenated_word, char *** rep, int ** pos, int ** cut);
+    //     char hword[BUFSIZE * 2];
+    //     char *hyphens;
+    //     char ** rep = NULL;
+    //     int * pos = NULL;
+    //     int * cut = NULL;
+       
+    //     hword[0] = '\0';
+
+    //     int wlen = strlen(word);
+    //     hyphens = (char *)malloc(wlen + 5);
+
+    //     if (hnj_hyphen_hyphenate2(dict, word, wlen, hyphens, hword, &rep, &pos, &cut) != 0){
+    //         free(hyphens);
+    //         throw runtime_error("unable to hyphenate word...");
+    //     }
+    //     else{
+    //         string temp, hstr = string(hword);
+    //         const char* delim = "=";
+    //         int line_start = 0;
+
+    //         vector<string> hvec = get_words(hstr, delim);
+    //         vector<string>::const_iterator vitr = hvec.begin();
+    //         for (; vitr != hvec.end(); ++vitr){
+    //             size_t last_return = temp.find_last_of("\n");
+    //             if (last_return != string::npos){
+    //                 line_start = (int)last_return;
+    //             }
+
+    //             if ((temp.size() + vitr->size()) - line_start > max_line){
+    //                 temp += "-\n";
+    //             }
+    //             temp += *vitr;   
+    //         }
+    //         cout << temp << endl;       
+    //     }
+    // }
+
     vector<string> get_words(const string str, const char* delim)
     {
         int len = str.size() + 1;
         char temp[len], *wp;
         strcpy(temp, str.c_str());
         vector<string> retval;
+        //signature: char *strtok_r(char *str, const char *delim, char **saveptr);
         char *p = strtok_r(temp, delim, &wp);
         while(p){
             string w_str(p);

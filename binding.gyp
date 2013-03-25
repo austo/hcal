@@ -12,7 +12,7 @@
             'cflags': [ '-Wall', '-fexceptions' ],
             'cflags_cc!': [ '-fno-exceptions' ],
             'link_settings': {
-              'libraries': [ '-lhpdf', '-lboost_date_time', '-lboost_exception', '-lpqxx', '-lpq' ]
+              'libraries': [ '-lhpdf', '-lboost_date_time', '-lboost_exception', '-lpqxx', '-lpq', '-lhyphen' ]
             },
             'include_dirs': [ '/usr/local/boost_1_52_0/boost/date_time',
                               '/usr/local/boost_1_52_0/boost',

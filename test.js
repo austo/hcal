@@ -16,15 +16,15 @@ var d1 = new Date(2013, 0, 01, 08),
     d13 = new Date(2013, 2, 3, 12);
 
 
-var a = hcal.createEvent(1, d1, d2, 96, 1, "Computers");
-// var b = hcal.createEvent(2, d3, d4, 13, "Betsy", "Basketball");
-// var c = hcal.createEvent(2, d5, d6, 13, "Reginald", "Cartography");
-// var events = [a, b, c];
-// var ret = hcal.testEventArray(events);
-// console.log(ret[3].description());
-// console.log("second event duration: " + b.duration() + " minutes");
-//console.log(d3 + '\n');
-//console.log(d4);
+// var a = hcal.createEvent(1, d1, d2, 96, 1, "Computers");
+// // var b = hcal.createEvent(2, d3, d4, 13, "Betsy", "Basketball");
+// // var c = hcal.createEvent(2, d5, d6, 13, "Reginald", "Cartography");
+// // var events = [a, b, c];
+// // var ret = hcal.testEventArray(events);
+// // console.log(ret[3].description());
+// // console.log("second event duration: " + b.duration() + " minutes");
+// //console.log(d3 + '\n');
+// //console.log(d4);
 
 //invoke gc liberally during testing to expose memory leaks
 global.gc();
@@ -71,5 +71,5 @@ hcal.getEvents(d1, d12, 1, function(err, evts){
     }
 });
 global.gc();
-//var cfg = hcal.createConfig(1, 5, 8, 20);
-//console.log(notRet);
+// //var cfg = hcal.createConfig(1, 5, 8, 20);
+// //console.log(notRet);

@@ -5,6 +5,7 @@
 #include "posix_time/posix_time.hpp"
 #include "gregorian/gregorian.hpp"
 #include <hpdf.h>
+#include <hyphen.h>
 #include <vector>
 #include <map>
 #include <list>
@@ -18,6 +19,7 @@
 #include <iostream>
 #include <stdexcept>
 #include <algorithm>
+#include <utility>
 
 namespace hcal {
 
@@ -32,12 +34,19 @@ namespace hcal {
         return retval;
     }
 
+    inline HyphenDict* hyphen_dict() { //TODO: is this the most efficient way to keep in memory?
+        static HyphenDict* dict = hnj_hyphen_load("en_US.dic");
+        return dict;
+    }
+
     enum View {day = 1, week, month, custom};
     void error_handler (HPDF_STATUS, HPDF_STATUS, void*);
     HPDF_Doc get_pdf();
     void write_text(HPDF_Page, float, float, const char*);
     void write_if_more_evts(int, HPDF_Page, float, float);
     void write_wrapped_text(HPDF_Page, float, float&, const std::string, float, float);
+    std::pair<std::string, std::string> hyphenate_word(HyphenDict*, const char*, unsigned);
+    //void hyphenate_word(HyphenDict*, const char*, unsigned);
     std::vector<std::string> get_words(const std::string, const char*);
     void write_page_title(HPDF_Page, HPDF_Font, const char*);
     void draw_line(HPDF_Page, float, float, float, float);

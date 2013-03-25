@@ -231,7 +231,7 @@ namespace hcal {
     {
         int num_conc_evts = 0, conc_evt_instance;
         HPDF_Page_SetLineWidth(page, 1);
-        HPDF_Page_SetFontAndSize(page, font, 5); //TODO: make dependent on number of events
+        HPDF_Page_SetFontAndSize(page, font, 7); //TODO: make dependent on number of events
         list<Event>::const_iterator evt_itr = (*eventMap_)[week_ordinal].begin();
         for (; evt_itr != (*eventMap_)[week_ordinal].end(); ++evt_itr){
             cout << "v8 - evt title: " << evt_itr->Description() << "; start time: " << evt_itr->Start() << endl;
@@ -248,8 +248,8 @@ namespace hcal {
 
             // HPDF_INT asc = HPDF_Font_GetAscent(font);
             // HPDF_INT dsc = HPDF_Font_GetDescent(font);
-            float ln_height = 5, avail_width = evt_rect.l_right.x - evt_rect.l_left.x,
-                x_offset = (float)(evt_rect.l_left.x + 1), y_offset = (float)(evt_rect.l_left.y - 5);
+            float ln_height = 7, avail_width = evt_rect.l_right.x - evt_rect.l_left.x,
+                x_offset = (float)(evt_rect.l_left.x + 1), y_offset = (float)(evt_rect.l_left.y - ln_height);
 
             HPDF_Page_SetRGBFill(page, 0, 0, 0);
             write_wrapped_text(page, x_offset, y_offset, evt_itr->Description(), ln_height, avail_width);
