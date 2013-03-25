@@ -1,4 +1,6 @@
-var hcal = require('./build/Debug/hcal');
+var hcal = require('./build/Debug/hcal'),
+    os = require('os');
+
 
 console.log('\n\n!#----------Test results----------#!\n');
 var d1 = new Date(2013, 0, 01, 08),
@@ -71,5 +73,6 @@ hcal.getEvents(d1, d12, 1, function(err, evts){
     }
 });
 global.gc();
+console.log(os.cpus());
 // //var cfg = hcal.createConfig(1, 5, 8, 20);
 // //console.log(notRet);
