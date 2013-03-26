@@ -4,6 +4,7 @@
 #include <node.h>
 #include "posix_time/posix_time.hpp"
 #include "gregorian/gregorian.hpp"
+#include "algorithm/string.hpp"
 #include <hpdf.h>
 #include <hyphen.h>
 #include <vector>
@@ -36,6 +37,9 @@ namespace hcal {
 
     inline HyphenDict* hyphen_dict() { //TODO: is this the most efficient way to keep in memory?
         static HyphenDict* dict = hnj_hyphen_load("en_US.dic");
+        if (dict == NULL){
+            throw std::runtime_error("hcal_utils: unable to load hyphenation dictionary.");
+        }
         return dict;
     }
 
