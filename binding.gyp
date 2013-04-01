@@ -9,7 +9,7 @@
                   ],
       'conditions': [
           ['OS!="win"', {
-            'cflags': [ '-Wall', '-fexceptions' ],
+            'cflags': [ '-Wall', '-fexceptions', '-g' ],
             'cflags_cc!': [ '-fno-exceptions' ],
             'link_settings': {
               'libraries': [ '-lhpdf', '-lboost_date_time', '-lboost_exception', '-lpqxx', '-lpq', '-lhyphen' ]

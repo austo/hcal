@@ -62,9 +62,11 @@ namespace hcal{
         v8::Handle<v8::Array> retval;    
         result evts = get_events_for_timespan(start, end, venue);
 
-        if (evts.size() > 0){
-            retval = build_wrapped_events(evts);
-        }
+        //if (evts.size() > 0){
+        retval = build_wrapped_events(evts);
+        //}
+
+        //return retval;
         return scope.Close(retval);
     }
 
@@ -92,8 +94,10 @@ namespace hcal{
                 row[COL_DESCRIPTION].as<string>()
             );
             retval->Set(i, evtHdl);
+            cout << "v8 - " << row[COL_DESCRIPTION].as<string>() << endl;
             ++i;
         }
+        //return retval;
         return scope.Close(retval);
     }
 

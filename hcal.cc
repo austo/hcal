@@ -8,6 +8,7 @@
 #define THROW(msg) return ThrowException(Exception::Error(String::New(msg)));
 
 using namespace v8;
+//Persistent<Object> module_handle;
 
 //extracts a C string from a V8 Utf8Value.
 const char* ToCString(const String::Utf8Value& value) {
@@ -205,6 +206,7 @@ Handle<Value> DeleteEvent(const Arguments& args){
 
 Handle<Value> GetEvents(const Arguments& args) {
     HandleScope scope;
+
     if (args.Length() != 4) {
         THROW("Wrong number of arguments - hcal.getEvents() must be called with 3 args.");
         return scope.Close(Undefined());
@@ -212,8 +214,11 @@ Handle<Value> GetEvents(const Arguments& args) {
     if (args[0]->IsUndefined() || args[1]->IsUndefined() || args[2]->IsUndefined() || args[3]->IsUndefined()) {
         THROW("All arguments must be defined.");
         return scope.Close(Undefined());
-    }    
+    } 
 
+
+    // Handle<Function> fn_fun = Handle<Function>::Cast(args[3]);
+    // Persistent<Function> cb = Persistent<Function>::New(fn_fun);
     Local<Function> cb = Local<Function>::Cast(args[3]);
     const unsigned argc = 2;
     Local<Value> argv[argc];
@@ -228,6 +233,7 @@ Handle<Value> GetEvents(const Arguments& args) {
 
         argv[0] = Local<Value>::New(Undefined());
         argv[1] = Local<Value>::New(evts);
+        std::cout << "v8 - calling getEvents callback." << std::endl;
         cb->Call(Context::GetCurrent()->Global(), argc, argv);
     }
     catch (std::exception& e){
@@ -237,6 +243,8 @@ Handle<Value> GetEvents(const Arguments& args) {
         argv[0] = Local<Value>::New(String::New(ex_str.c_str()));
         argv[1] = Local<Value>::New(Undefined());
         cb->Call(Context::GetCurrent()->Global(), argc, argv);
+
+        //cb->Call(context->Global(), argc, argv);
     }
     return scope.Close(Undefined());
 }
