@@ -1,6 +1,5 @@
-#ifndef GUARD__HCAL_H
-#define GUARD__HCAL_H
-#define BUILDING_NODE_EXTENSION
+#ifndef HCAL_H
+#define HCAL_H
 
 #include <node.h>
 #include <iostream>

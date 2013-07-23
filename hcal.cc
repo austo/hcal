@@ -1,4 +1,3 @@
-#define BUILDING_NODE_EXTENSION
 #define __DEBUG__
 
 #include "hcal.h"

@@ -1,5 +1,5 @@
-#ifndef GUARD__EVENT_RECT_H
-#define GUARD__EVENT_RECT_H
+#ifndef EVENT_RECT_H
+#define EVENT_RECT_H
 
 #include "color.h"
 

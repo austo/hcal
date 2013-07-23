@@ -1,5 +1,5 @@
-#ifndef GUARD__ROOM_H
-#define GUARD__ROOM_H
+#ifndef ROOM_H
+#define ROOM_H
 
 #include <string>
 #include "color.h"

@@ -1,5 +1,5 @@
-#ifndef GUARD__WEEKWRITER_H
-#define GUARD__WEEKWRITER_H
+#ifndef WEEKWRITER_H
+#define WEEKWRITER_H
 
 #include "calWriter.h"
 #include "dataLayer.h"

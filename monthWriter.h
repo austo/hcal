@@ -1,5 +1,5 @@
-#ifndef GUARD__MONTHWRITER_H
-#define GUARD__MONTHWRITER_H
+#ifndef MONTHWRITER_H
+#define MONTHWRITER_H
 
 #include "calWriter.h"
 #include "dataLayer.h"

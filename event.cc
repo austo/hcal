@@ -1,4 +1,3 @@
-#define BUILDING_NODE_EXTENSION
 #ifndef OFFSET
     #define OFFSET -5 //TODO: improve using real boost timezones
 #endif

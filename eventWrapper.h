@@ -1,6 +1,5 @@
-#ifndef GUARD__EVENTWRAPPER_H
-#define GUARD__EVENTWRAPPER_H
-#define BUILDING_NODE_EXTENSION
+#ifndef EVENTWRAPPER_H
+#define EVENTWRAPPER_H
 
 #include <node.h>
 #include <ctime>

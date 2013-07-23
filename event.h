@@ -1,6 +1,5 @@
-#ifndef GUARD__INNEREVENT_H
-#define GUARD__INNEREVENT_H
-#define BUILDING_NODE_EXTENSION
+#ifndef INNEREVENT_H
+#define INNEREVENT_H
 
 #ifndef OFFSET
     #define OFFSET -5 //TODO: improve using real boost timezones

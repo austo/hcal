@@ -1,5 +1,5 @@
-#ifndef GUARD__HCAL_UTILS_H
-#define GUARD__HCAL_UTILS_H
+#ifndef HCAL_UTILS_H
+#define HCAL_UTILS_H
 
 #include <node.h>
 #include "posix_time/posix_time.hpp"
