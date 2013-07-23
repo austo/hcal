@@ -1,5 +1,5 @@
-#ifndef GUARD__DATALAYER_H
-#define GUARD__DATALAYER_H
+#ifndef DATALAYER_H
+#define DATALAYER_H
 
 #include <sstream>
 #include <string>
@@ -22,50 +22,81 @@
 
 namespace hcal{
 
-    class dl_exception : public std::exception {
+  class dl_exception : public std::exception {
+  public:
+    dl_exception(){
+      message_ = std::string("Data integrity exception.");
+    }
+    dl_exception(std::string err_msg){
+      message_ = err_msg;
+    }
+    ~dl_exception() throw(){};
+    virtual const char* what() const throw(){
+      return this->message_.c_str();
+    }
+  private:
+    std::string message_;        
+  };
+
+  class DataLayer {
+
     public:
-        dl_exception(){
-            message_ = std::string("Data integrity exception.");
-        }
-        dl_exception(std::string err_msg){
-            message_ = err_msg;
-        }
-        ~dl_exception() throw(){};
-        virtual const char* what() const throw(){
-            return this->message_.c_str();
-        }
+      DataLayer();
+      ~DataLayer();
+      enum UpdateStatus {success = 0, failure, no_event};
+
+      v8::Handle<v8::Array>
+      get_wrapped_events(time_t, time_t, int);
+      //TODO: handle different views
+      //TODO: add get_venues (returns map<int, string>)
+      std::map<int, std::list<Event> >*
+      get_event_map(time_t, time_t, View);
+
+      std::map<int, std::list<Event> >*
+      get_event_map(time_t, time_t, View, int);
+
+      v8::Handle<v8::Value>
+      insert_event(time_t, time_t, int, int, std::string, bool);
+
+      UpdateStatus
+      update_event(int, time_t, time_t, int, int, std::string, bool);
+
+      UpdateStatus
+      delete_event(int);
+
+      std::map<int, std::string>
+      get_room_colors();
+
+      std::map<int, Room>
+      get_rooms();
+
+      static time_t
+      get_time_t_from_ptime(boost::posix_time::ptime); 
+
+
     private:
-        std::string message_;        
-    };
+      pqxx::result
+      get_events_for_timespan(time_t, time_t);
 
-    class DataLayer {
+      pqxx::result
+      get_events_for_timespan(time_t, time_t, int);
 
-        public:
-            DataLayer();
-            ~DataLayer();
-            enum UpdateStatus {success = 0, failure, no_event};
-            v8::Handle<v8::Array> get_wrapped_events(time_t, time_t, int);
-            //TODO: handle different views
-            //TODO: add get_venues (returns map<int, string>)
-            std::map<int, std::list<Event> >* get_event_map(time_t, time_t, View);
-            std::map<int, std::list<Event> >* get_event_map(time_t, time_t, View, int);
-            v8::Handle<v8::Value> insert_event(time_t, time_t, int, int, std::string, bool);
-            UpdateStatus update_event(int, time_t, time_t, int, int, std::string, bool);
-            UpdateStatus delete_event(int);
-            std::map<int, std::string> get_room_colors();
-            std::map<int, Room> get_rooms();
-            static time_t get_time_t_from_ptime(boost::posix_time::ptime); 
+      pqxx::result
+      execute_query(pqxx::transaction_base&, std::string);
 
+      void
+      populate_emap(pqxx::result&, std::map<int, std::list<Event> >*, View);
 
-        private:
-            pqxx::result get_events_for_timespan(time_t, time_t);
-            pqxx::result get_events_for_timespan(time_t, time_t, int);
-            pqxx::result execute_query(pqxx::transaction_base&, std::string);
-            void populate_emap(pqxx::result&, std::map<int, std::list<Event> >*, View);
-            static void get_week_offset_for_current_year(boost::posix_time::ptime&, boost::gregorian::date&, int&, int&, int&);
-            v8::Handle<v8::Array> build_wrapped_events(pqxx::result&);
-            std::string time_region_;
-    };
+      static void
+      get_week_offset_for_current_year(
+        boost::posix_time::ptime&,
+        boost::gregorian::date&, int&, int&, int&);
+
+      v8::Handle<v8::Array>
+      build_wrapped_events(pqxx::result&);
+
+      std::string time_region_;
+  };
 }
 
 #endif

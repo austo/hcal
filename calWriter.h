@@ -1,5 +1,5 @@
-#ifndef GUARD__CALWRITER_H
-#define GUARD__CALWRITER_H
+#ifndef CALWRITER_H
+#define CALWRITER_H
 
 #include <node.h>
 #include "posix_time/posix_time.hpp"
@@ -22,19 +22,22 @@
 
 namespace hcal {
 
-    class CalWriter {
+  class CalWriter {
 
-    public:
-        virtual ~CalWriter(){};
-        virtual const char* write_calendar() = 0;
+  public:
+    virtual ~CalWriter(){};
+    virtual const char* write_calendar() = 0;
 
-    protected:
-        HPDF_Doc doc_;
-        std::map< int, std::list<Event> >* eventMap_;
-        int venue_;
-        virtual std::map< int, std::list<Event> >* get_evt_map(v8::Array* arr) = 0;
-        //virtual void write_events(HPDF_Page, float, float, int, int, int, int, int) = 0;       
-    };
+  protected:
+    HPDF_Doc doc_;
+    std::map< int, std::list<Event> >* eventMap_;
+    int venue_;
+    virtual std::map< int, std::list<Event> >*
+    get_evt_map(v8::Array* arr) = 0;
+
+    /* virtual void
+    write_events(HPDF_Page, float, float, int, int, int, int, int) = 0; */
+  };
 }
 
 #endif
